@@ -30,6 +30,9 @@
     };
     window.drawRemote = function(points) {
       var point, _i, _len;
+      if (points.length === 0) {
+        return;
+      }
       ctx.moveTo(points[0].x, points[0].y);
       for (_i = 0, _len = points.length; _i < _len; _i++) {
         point = points[_i];

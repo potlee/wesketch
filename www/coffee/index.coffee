@@ -24,6 +24,8 @@ window.initDraw = ->
     paintingOn = false
 
   window.drawRemote = (points) ->
+    if points.length == 0
+      return
     ctx.moveTo(points[0].x, points[0].y)
     for point in points
       ctx.lineTo(point.x, point.y)
