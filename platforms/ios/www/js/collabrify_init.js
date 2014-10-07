@@ -1,5 +1,9 @@
 (function() {
+  var tag;
+
   console.log("INIT COLLABRIFY FROM coffee");
+
+  tag = prompt("Class: ");
 
   window.c = new CollabrifyClient({
     application_id: '4891981239025664',
@@ -8,17 +12,19 @@
 
   c.createSession({
     name: 'potlee.wesketch31',
-    tags: ['potlee.wesketch31'],
+    tags: [tag],
     startPaused: false
   }).then(function(session) {
-    return console.log('CREATED: ', session);
+    console.log('CREATED: ', session);
+    return initDraw();
   })["catch"](function(error) {
-    return c.listSessions(['potlee.wesketch31']).then(function(sessions) {
+    return c.listSessions([tag]).then(function(sessions) {
       return c.joinSession({
         session: sessions[0]
       });
     }).then(function(session) {
-      return console.log('JOINED: ', session);
+      console.log('JOINED: ', session);
+      return initDraw();
     })["catch"](console.log);
   });
 
