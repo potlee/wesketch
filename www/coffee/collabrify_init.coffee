@@ -1,6 +1,6 @@
 console.log "INIT COLLABRIFY FROM coffee"
 
-tag = prompt "Class: "
+tag = 'deeph' #prompt "Class: ", ''
 
 window.c = new CollabrifyClient
   application_id: '4891981239025664',
