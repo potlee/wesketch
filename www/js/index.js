@@ -1,11 +1,12 @@
 (function() {
   window.initDraw = function() {
-    var canvas, ctx, localPoints, paintingOn;
+    var canvas, ctx, h, localPoints, paintingOn, w;
     canvas = document.getElementsByClassName("canvas")[0];
     ctx = canvas.getContext("2d");
+    ctx.lineWidth = 10;
     paintingOn = false;
-    canvas.height = screen.height;
-    canvas.width = screen.width;
+    h = canvas.height = screen.height;
+    w = canvas.width = screen.width;
     localPoints = [];
     window.onmove = function(e) {
       if (paintingOn) {
@@ -28,15 +29,16 @@
       return paintingOn = false;
     };
     window.drawRemote = function(points) {
-      var point, _i, _len, _results;
+      var point, _i, _len;
       ctx.moveTo(points[0].x, points[0].y);
-      _results = [];
       for (_i = 0, _len = points.length; _i < _len; _i++) {
         point = points[_i];
         ctx.lineTo(point.x, point.y);
-        _results.push(ctx.stroke());
+        ctx.stroke();
       }
-      return _results;
+      if (localPoints.length) {
+        return ctx.moveTo(localPoints[0].x, localPoints[0].y);
+      }
     };
     canvas.addEventListener('touchstart', onstart, false);
     canvas.addEventListener('mousedown', onstart, false);

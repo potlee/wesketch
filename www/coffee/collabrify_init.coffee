@@ -1,6 +1,6 @@
 console.log "INIT COLLABRIFY FROM coffee"
 
-tag = promt "Class: "
+tag = prompt "Class: "
 
 window.c = new CollabrifyClient
   application_id: '4891981239025664',
@@ -23,6 +23,7 @@ c.createSession
     console.log 'JOINED: ', session
     initDraw()
   .catch console.log
+
 c.on 'event', (e) ->
   e = e.data()
   console.log e

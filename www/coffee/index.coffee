@@ -1,9 +1,10 @@
 window.initDraw = ->
   canvas = document.getElementsByClassName("canvas")[0]
   ctx = canvas.getContext("2d")
+  ctx.lineWidth = 10
   paintingOn = false
-  canvas.height = screen.height
-  canvas.width = screen.width
+  h = canvas.height = screen.height
+  w = canvas.width = screen.width
   localPoints = []
 
   window.onmove = (e) ->
@@ -27,6 +28,8 @@ window.initDraw = ->
     for point in points
       ctx.lineTo(point.x, point.y)
       ctx.stroke()
+    if localPoints.length
+      ctx.moveTo(localPoints[0].x, localPoints[0].y)
 
   canvas.addEventListener('touchstart', onstart,  false)
   canvas.addEventListener('mousedown', onstart,  false)
