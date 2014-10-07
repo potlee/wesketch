@@ -3,7 +3,7 @@
 
   console.log("INIT COLLABRIFY FROM coffee");
 
-  tag = 'deepi';
+  tag = 'deepj';
 
   window.c = new CollabrifyClient({
     application_id: '4891981239025664',
