@@ -2,6 +2,7 @@
   window.initDraw = function() {
     var canvas, ctx, h, localPoints, paintingOn, w;
     canvas = document.getElementsByClassName("canvas")[0];
+    canvas.classList.remove('hidden');
     ctx = canvas.getContext("2d");
     ctx.lineWidth = 10;
     paintingOn = false;
