@@ -9,18 +9,20 @@ window.initDraw = ->
   localPoints = []
 
   window.onmove = (e) ->
+    e.preventDefault()
     if(paintingOn)
-      e.preventDefault()
       localPoints.push x: e.pageX, y: e.pageY
       ctx.lineWidth = 2
       ctx.lineTo(e.pageX, e.pageY)
       ctx.stroke()
 
   window.onstart = (e) ->
+    e.preventDefault()
     paintingOn = true
     ctx.moveTo(e.pageX, e.pageY)
 
   window.onend = (e) ->
+    e.preventDefault()
     c.broadcast(localPoints)
     localPoints = []
     paintingOn = false
@@ -36,9 +38,14 @@ window.initDraw = ->
     if localPoints.length
       ctx.moveTo(localPoints[0].x, localPoints[0].y)
 
-  canvas.addEventListener('touchstart', onstart,  false)
-  canvas.addEventListener('mousedown', onstart,  false)
-  canvas.addEventListener('touchmove', onmove, false)
-  canvas.addEventListener('mousemove', onmove, false)
-  canvas.addEventListener('touchend', onend, false)
-  canvas.addEventListener('mouseup', onend, false)
+  if (window.navigator.msPointerEnabled)
+    canvas.addEventListener('MSPointerDown', onstart,  false)
+    canvas.addEventListener('MSPointerMove', onmove, false)
+    canvas.addEventListener('MSPointerUp', onend, false)
+  else
+    canvas.addEventListener('touchstart', onstart,  false)
+    canvas.addEventListener('mousedown', onstart,  false)
+    canvas.addEventListener('touchmove', onmove, false)
+    canvas.addEventListener('mousemove', onmove, false)
+    canvas.addEventListener('touchend', onend, false)
+    canvas.addEventListener('mouseup', onend, false)

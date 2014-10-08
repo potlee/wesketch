@@ -10,8 +10,8 @@
     w = canvas.width = screen.width;
     localPoints = [];
     window.onmove = function(e) {
+      e.preventDefault();
       if (paintingOn) {
-        e.preventDefault();
         localPoints.push({
           x: e.pageX,
           y: e.pageY
@@ -22,10 +22,12 @@
       }
     };
     window.onstart = function(e) {
+      e.preventDefault();
       paintingOn = true;
       return ctx.moveTo(e.pageX, e.pageY);
     };
     window.onend = function(e) {
+      e.preventDefault();
       c.broadcast(localPoints);
       localPoints = [];
       return paintingOn = false;
@@ -46,12 +48,18 @@
         return ctx.moveTo(localPoints[0].x, localPoints[0].y);
       }
     };
-    canvas.addEventListener('touchstart', onstart, false);
-    canvas.addEventListener('mousedown', onstart, false);
-    canvas.addEventListener('touchmove', onmove, false);
-    canvas.addEventListener('mousemove', onmove, false);
-    canvas.addEventListener('touchend', onend, false);
-    return canvas.addEventListener('mouseup', onend, false);
+    if (window.navigator.msPointerEnabled) {
+      canvas.addEventListener('MSPointerDown', onstart, false);
+      canvas.addEventListener('MSPointerMove', onmove, false);
+      return canvas.addEventListener('MSPointerUp', onend, false);
+    } else {
+      canvas.addEventListener('touchstart', onstart, false);
+      canvas.addEventListener('mousedown', onstart, false);
+      canvas.addEventListener('touchmove', onmove, false);
+      canvas.addEventListener('mousemove', onmove, false);
+      canvas.addEventListener('touchend', onend, false);
+      return canvas.addEventListener('mouseup', onend, false);
+    }
   };
 
 }).call(this);

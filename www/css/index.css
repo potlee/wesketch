@@ -35,6 +35,10 @@
   display: none;
 }
 
+html {
+  -ms-touch-action: none; /* Direct all pointer events to JavaScript code. */
+}
+
 
 body {
     -webkit-touch-callout: none;                /* prevent callout to copy image, etc when tap to hold */
