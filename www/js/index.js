@@ -4,7 +4,7 @@
     canvas = document.getElementsByClassName("canvas")[0];
     canvas.classList.remove('hidden');
     ctx = canvas.getContext("2d");
-    ctx.lineWidth = 10;
+    ctx.beginPath();
     paintingOn = false;
     h = canvas.height = screen.height;
     w = canvas.width = screen.width;
@@ -16,6 +16,7 @@
           x: e.pageX,
           y: e.pageY
         });
+        ctx.lineWidth = 2;
         ctx.lineTo(e.pageX, e.pageY);
         return ctx.stroke();
       }
@@ -37,6 +38,7 @@
       ctx.moveTo(points[0].x, points[0].y);
       for (_i = 0, _len = points.length; _i < _len; _i++) {
         point = points[_i];
+        ctx.lineWidth = 2;
         ctx.lineTo(point.x, point.y);
         ctx.stroke();
       }

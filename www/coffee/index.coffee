@@ -2,7 +2,7 @@ window.initDraw = ->
   canvas = document.getElementsByClassName("canvas")[0]
   canvas.classList.remove('hidden')
   ctx = canvas.getContext("2d")
-  ctx.lineWidth = 10
+  ctx.beginPath()
   paintingOn = false
   h = canvas.height = screen.height
   w = canvas.width = screen.width
@@ -12,6 +12,7 @@ window.initDraw = ->
     if(paintingOn)
       e.preventDefault()
       localPoints.push x: e.pageX, y: e.pageY
+      ctx.lineWidth = 2
       ctx.lineTo(e.pageX, e.pageY)
       ctx.stroke()
 
@@ -29,6 +30,7 @@ window.initDraw = ->
       return
     ctx.moveTo(points[0].x, points[0].y)
     for point in points
+      ctx.lineWidth = 2
       ctx.lineTo(point.x, point.y)
       ctx.stroke()
     if localPoints.length
