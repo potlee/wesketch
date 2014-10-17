@@ -45,23 +45,27 @@ window.WSCanvas = (function() {
     e.preventDefault();
     this.ctx.closePath();
     this.strokes.push(this.localPoints);
-    c.broadcast(this.localPoints);
+    c.broadcast({
+      points: this.localPoints,
+      color: this.color
+    });
     this.localPoints = [];
     return this.paintingOn = false;
   };
 
   WSCanvas.prototype.drawStroke = function(stroke) {
-    var point, _i, _len;
-    if (stroke.length === 0) {
+    var point, points, _i, _len;
+    points = stroke.points;
+    if (points.length === 0) {
       return;
     }
     this.ctx.closePath();
-    this.ctx.moveTo(stroke[0].x, stroke[0].y);
+    this.ctx.moveTo(points[0].x, points[0].y);
     this.ctx.beginPath();
-    for (_i = 0, _len = stroke.length; _i < _len; _i++) {
-      point = stroke[_i];
+    for (_i = 0, _len = points.length; _i < _len; _i++) {
+      point = points[_i];
       this.ctx.lineWidth = 2;
-      this.ctx.strokeStyle = this.color;
+      this.ctx.strokeStyle = stroke.color;
       this.ctx.lineTo(point.x, point.y);
       this.ctx.stroke();
     }

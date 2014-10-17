@@ -35,19 +35,20 @@ class window.WSCanvas
     e.preventDefault()
     @ctx.closePath()
     @strokes.push(@localPoints)
-    c.broadcast(@localPoints)
+    c.broadcast({points: @localPoints, color: @color})
     @localPoints = []
     @paintingOn = false
 
   drawStroke: (stroke) ->
-    if stroke.length == 0
+    points = stroke.points
+    if points.length == 0
       return
     @ctx.closePath()
-    @ctx.moveTo(stroke[0].x, stroke[0].y)
+    @ctx.moveTo(points[0].x, points[0].y)
     @ctx.beginPath()
-    for point in stroke
+    for point in points
       @ctx.lineWidth = 2
-      @ctx.strokeStyle = @color
+      @ctx.strokeStyle = stroke.color
       @ctx.lineTo(point.x, point.y)
       @ctx.stroke()
     @ctx.closePath()
