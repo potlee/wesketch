@@ -78,9 +78,9 @@ class window.WSCanvas
   #  @drawStroke s
   attachEvents: () ->
     if (window.navigator.msPointerEnabled)
-      @canvas.addEventListener('MSPointerDown', @onstart,  false)
-      @canvas.addEventListener('MSPointerMove', @onmove, false)
-      @canvas.addEventListener('MSPointerUp', @onend, false)
+      @canvas.addEventListener('MSPointerDown', @onstart.bind(this),  false)
+      @canvas.addEventListener('MSPointerMove', @onmove.bind(this), false)
+      @canvas.addEventListener('MSPointerUp', @onend.bind(this), false)
       @colorPickerIcon.addEventListener('MSPointerUp', @showColorPicker.bind(this), false)
       #@colorPicker.addEventListener('MSPointerUp', @selectColor.bind(this). false)
     else

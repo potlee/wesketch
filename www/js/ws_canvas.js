@@ -90,9 +90,9 @@ window.WSCanvas = (function() {
 
   WSCanvas.prototype.attachEvents = function() {
     if (window.navigator.msPointerEnabled) {
-      this.canvas.addEventListener('MSPointerDown', this.onstart, false);
-      this.canvas.addEventListener('MSPointerMove', this.onmove, false);
-      this.canvas.addEventListener('MSPointerUp', this.onend, false);
+      this.canvas.addEventListener('MSPointerDown', this.onstart.bind(this), false);
+      this.canvas.addEventListener('MSPointerMove', this.onmove.bind(this), false);
+      this.canvas.addEventListener('MSPointerUp', this.onend.bind(this), false);
       this.colorPickerIcon.addEventListener('MSPointerUp', this.showColorPicker.bind(this), false);
     } else {
       this.canvas.addEventListener('touchstart', this.onstart.bind(this), false);
