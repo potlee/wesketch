@@ -1,10 +1,9 @@
 window.initDraw = ->
-  canvas = document.getElementsByClassName("canvas")[0]
+  window.canvas = document.getElementsByClassName("canvas")[0]
   canvas.classList.remove('hidden')
-  ctx = canvas.getContext("2d")
-  ctx.beginPath()
+  window.ctx = canvas.getContext("2d")
   paintingOn = false
-  h = canvas.height = screen.height
+  window.h = canvas.height = screen.height - 200
   w = canvas.width = screen.width
   localPoints = []
 
@@ -18,25 +17,36 @@ window.initDraw = ->
 
   window.onstart = (e) ->
     e.preventDefault()
+    ctx.beginPath()
     paintingOn = true
     ctx.moveTo(e.pageX, e.pageY)
 
   window.onend = (e) ->
     e.preventDefault()
+    ctx.closePath()
     c.broadcast(localPoints)
+    strokes.push(localPoints)
     localPoints = []
     paintingOn = false
 
-  window.drawRemote = (points) ->
+  window.drawStroke = (points) ->
     if points.length == 0
       return
     ctx.moveTo(points[0].x, points[0].y)
+    ctx.beginPath()
     for point in points
       ctx.lineWidth = 2
       ctx.lineTo(point.x, point.y)
       ctx.stroke()
+    ctx.closePath()
     if localPoints.length
       ctx.moveTo(localPoints[0].x, localPoints[0].y)
+
+  window.undo = () ->
+    strokes.pop()
+    ctx.clearRect(0, 0, canvas.width, canvas.height)
+    for s in strokes
+      drawStroke s
 
   if (window.navigator.msPointerEnabled)
     canvas.addEventListener('MSPointerDown', onstart,  false)

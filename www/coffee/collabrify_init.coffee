@@ -1,7 +1,8 @@
 console.log "INIT COLLABRIFY FROM coffee"
 
 tag = 'deepj' #prompt "Class: ", ''
-
+window.redoQueue = []
+window.strokes = []
 document.getElementById('go').onclick = ->
   document.getElementById('welcome-screen').classList.add('hidden')
   spinner.spin(document.body)
@@ -33,4 +34,5 @@ document.getElementById('go').onclick = ->
   c.on 'event', (e) ->
     e = e.data()
     unless c.participant.participant_id == e.participant_id
-      window.drawRemote(e)
+      strokes.push(e)
+      window.drawStroke(e)
