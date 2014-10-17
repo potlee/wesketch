@@ -1,14 +1,9 @@
-var tag;
-
 console.log("INIT COLLABRIFY FROM coffee");
 
-tag = 'deepj';
-
-window.redoQueue = [];
-
-window.strokes = [];
+window.wsCanvas = new WSCanvas;
 
 document.getElementById('go').onclick = function() {
+  var tag;
   document.getElementById('welcome-screen').classList.add('hidden');
   spinner.spin(document.body);
   tag = document.getElementById('sketch-name').value;
@@ -22,24 +17,24 @@ document.getElementById('go').onclick = function() {
     startPaused: false
   }).then(function(session) {
     console.log('CREATED: ', session);
-    spinner.stop();
-    return initDraw();
+    return spinner.stop();
   })["catch"](function(error) {
     return c.listSessions([tag]).then(function(sessions) {
       return c.joinSession({
         session: sessions[0]
       });
     }).then(function(session) {
-      console.log('JOINED: ', session);
-      spinner.stop();
-      return initDraw();
-    })["catch"](console.log);
-  });
+      return console.log('JOINED: ', session);
+    });
+  }).then(function() {
+    spinner.stop();
+    return wsCanvas.fitToScreen();
+  })["catch"](console.log);
   return c.on('event', function(e) {
     e = e.data();
     if (c.participant.participant_id !== e.participant_id) {
-      strokes.push(e);
-      return window.drawStroke(e);
+      wsCanvas.strokes.push(e);
+      return wsCanvas.drawStroke(e);
     }
   });
 };

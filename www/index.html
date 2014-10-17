@@ -10,12 +10,27 @@
   <title>Hello World</title>
 </head>
 <body>
-  <div id="welcome-screen">
-    <h1>What is this sketch going to be called</h1>
-    <input id="sketch-name"  type="text" />
-    <input id="go" type="button" value="go" />
+  <div id="main">
+    <div id="welcome-screen">
+      <h1>What is this sketch going to be called</h1>
+      <input id="sketch-name"  type="text" />
+      <input id="go" type="button" value="go" />
+    </div>
+    <canvas class="canvas hidden"></canvas>
+    <div id="color-picker" class="hidden">
+      <div _color="#e74c3c" class="color red"></div>
+      <div _color="#2ecc71" class="color green"></div>
+      <div _color="#9b59b6" class="color purple"></div>
+      <div _color="#e67e22" class="color orange"></div>
+      <div _color="#3498db" class="color blue"></div>
+      <div _color="#f1c40f" class="color yellow"></div>
+      <div _color="#1abc9c" class="color turquoise"></div>
+      <div _color="#666" class="color gray"></div>
+    </div>
   </div>
-  <canvas class="canvas hidden"></canvas>
+  <div id="toolbar">
+    <img class="tool" id="tool-color-picker"  alt="colors" src="img/color-picker.png" />
+  </div>
   <script>
     //ios8 fix
     var o =XMLHttpRequest.prototype.open;
@@ -47,12 +62,13 @@
       };
       var spinner = new Spinner(opts).spin(document.body);
       spinner.stop()
-  </script>
+    </script>
+  <script src="js/monkey_matches.js"></script>
   <script src="https://www.promisejs.org/polyfills/promise-6.0.0.min.js"></script>
   <script type="text/javascript" src="cordova.js"></script>
   <script type="text/javascript" src="js/hammer.js"></script>
 	<script type="text/javascript" src="release/collabrify.js"></script>
+  <script type="text/javascript" src="js/ws_canvas.js"></script>
 	<script type="text/javascript" src="js/collabrify_init.js"></script>
-  <script type="text/javascript" src="js/index.js"></script>
 </body>
 </html>
