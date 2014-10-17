@@ -93,7 +93,7 @@ window.WSCanvas = (function() {
       this.canvas.addEventListener('MSPointerDown', this.onstart, false);
       this.canvas.addEventListener('MSPointerMove', this.onmove, false);
       this.canvas.addEventListener('MSPointerUp', this.onend, false);
-      return this.colorPickerIcon.addEventListener('MSPointerUp', this.showColorPicker.bind(this), false);
+      this.colorPickerIcon.addEventListener('MSPointerUp', this.showColorPicker.bind(this), false);
     } else {
       this.canvas.addEventListener('touchstart', this.onstart.bind(this), false);
       this.canvas.addEventListener('mousedown', this.onstart.bind(this), false);
@@ -103,8 +103,8 @@ window.WSCanvas = (function() {
       this.canvas.addEventListener('mouseup', this.onend.bind(this), false);
       this.colorPickerIcon.addEventListener('mouseup', this.showColorPicker.bind(this), false);
       this.colorPickerIcon.addEventListener('touchend', this.showColorPicker.bind(this), false);
-      return this.colorPicker.addEventListener('click', this.selectColor.bind(this), false);
     }
+    return this.colorPicker.addEventListener('click', this.selectColor.bind(this), false);
   };
 
   return WSCanvas;

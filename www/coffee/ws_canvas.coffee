@@ -92,5 +92,5 @@ class window.WSCanvas
       @canvas.addEventListener('mouseup', @onend.bind(this), false)
       @colorPickerIcon.addEventListener('mouseup', @showColorPicker.bind(this), false)
       @colorPickerIcon.addEventListener('touchend', @showColorPicker.bind(this), false)
-      @colorPicker.addEventListener('click', @selectColor.bind(this), false)
+    @colorPicker.addEventListener('click', @selectColor.bind(this), false)
       #@colorPicker.addEventListener('touchend', @selectColor.bind(this), false)
