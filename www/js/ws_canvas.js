@@ -5,6 +5,7 @@ window.WSCanvas = (function() {
     this.color = '#666';
     this.colorPickerIcon = document.getElementById('tool-color-picker');
     this.colorPicker = document.getElementById('color-picker');
+    this.colorPickerHammer = new Hammer(this.colorPicker, {});
     this.attachEvents();
   }
 
@@ -22,6 +23,9 @@ window.WSCanvas = (function() {
 
   WSCanvas.prototype.onstart = function(e) {
     e.preventDefault();
+    if (e.touches) {
+      e = e.touches[0];
+    }
     this.paintingOn = true;
     this.ctx.beginPath();
     return this.ctx.moveTo(e.pageX, e.pageY);
@@ -29,6 +33,9 @@ window.WSCanvas = (function() {
 
   WSCanvas.prototype.onmove = function(e) {
     e.preventDefault();
+    if (e.touches) {
+      e = e.touches[0];
+    }
     if (this.paintingOn) {
       this.localPoints.push({
         x: e.pageX,
@@ -77,8 +84,8 @@ window.WSCanvas = (function() {
   };
 
   WSCanvas.prototype.showColorPicker = function() {
-    this.canvas.classList.add('hidden');
-    return this.colorPicker.classList.remove('hidden');
+    this.canvas.classList.toggle('hidden');
+    return this.colorPicker.classList.toggle('hidden');
   };
 
   WSCanvas.prototype.selectColor = function(e) {
@@ -104,7 +111,7 @@ window.WSCanvas = (function() {
       this.colorPickerIcon.addEventListener('mouseup', this.showColorPicker.bind(this), false);
       this.colorPickerIcon.addEventListener('touchend', this.showColorPicker.bind(this), false);
     }
-    return this.colorPicker.addEventListener('click', this.selectColor.bind(this), false);
+    return this.colorPickerHammer.on('tap', this.selectColor.bind(this));
   };
 
   return WSCanvas;

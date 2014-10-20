@@ -31,10 +31,9 @@ document.getElementById('go').onclick = function() {
     return wsCanvas.fitToScreen();
   })["catch"](console.log);
   return c.on('event', function(e) {
+    console.log(e);
     e = e.data();
-    if (c.participant.participant_id !== e.participant_id) {
-      wsCanvas.strokes.push(e);
-      return wsCanvas.drawStroke(e);
-    }
+    wsCanvas.strokes.push(e);
+    return wsCanvas.drawStroke(e);
   });
 };

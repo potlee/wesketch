@@ -20,12 +20,16 @@ class window.WSCanvas
 
   onstart: (e) ->
     e.preventDefault()
+    if e.touches
+      e = e.touches[0]
     @paintingOn = true
     @ctx.beginPath()
     @ctx.moveTo(e.pageX, e.pageY)
 
   onmove: (e) ->
     e.preventDefault()
+    if e.touches
+      e = e.touches[0]
     if(@paintingOn)
       @localPoints.push x: e.pageX, y: e.pageY
       @ctx.lineWidth = 2
@@ -59,8 +63,8 @@ class window.WSCanvas
       @ctx.beginPath()
 
   showColorPicker: () ->
-    @canvas.classList.add 'hidden'
-    @colorPicker.classList.remove 'hidden'
+    @canvas.classList.toggle 'hidden'
+    @colorPicker.classList.toggle 'hidden'
 
   selectColor: (e) ->
     console.log e.target
