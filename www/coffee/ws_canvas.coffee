@@ -63,8 +63,8 @@ class window.WSCanvas
       @ctx.beginPath()
 
   showColorPicker: () ->
-    @canvas.classList.toggle 'hidden'
-    @colorPicker.classList.toggle 'hidden'
+    @canvas.classList.add 'hidden'
+    @colorPicker.classList.remove 'hidden'
 
   selectColor: (e) ->
     console.log e.target

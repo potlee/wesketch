@@ -84,8 +84,8 @@ window.WSCanvas = (function() {
   };
 
   WSCanvas.prototype.showColorPicker = function() {
-    this.canvas.classList.toggle('hidden');
-    return this.colorPicker.classList.toggle('hidden');
+    this.canvas.classList.add('hidden');
+    return this.colorPicker.classList.remove('hidden');
   };
 
   WSCanvas.prototype.selectColor = function(e) {
