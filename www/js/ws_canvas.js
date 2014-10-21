@@ -63,18 +63,21 @@ window.WSCanvas = (function() {
   };
 
   WSCanvas.prototype.drawStroke = function(stroke) {
-    var points;
+    var p, points, _i, _len;
     points = stroke.points;
     console.log(points);
     if (points.length === 0) {
       return;
     }
     this.ctx.closePath();
-    this.ctx.moveTo(points[0][0], points[0][1]);
     this.ctx.beginPath();
+    this.ctx.moveTo(points[0][0], points[0][1]);
     this.ctx.lineWidth = 2;
     this.ctx.strokeStyle = stroke.color;
-    this.ctx.curve(points.flatten());
+    for (_i = 0, _len = points.length; _i < _len; _i++) {
+      p = points[_i];
+      this.ctx.lineTo(p[0], p[1]);
+    }
     this.ctx.stroke();
     this.ctx.closePath();
     if (this.localPoints.length) {
@@ -104,7 +107,11 @@ window.WSCanvas = (function() {
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       s = _ref[_i];
       console.log(s);
-      _results.push(this.drawStroke(s));
+      if (!s.cancelled) {
+        _results.push(this.drawStroke(s));
+      } else {
+        _results.push(void 0);
+      }
     }
     return _results;
   };
@@ -119,7 +126,7 @@ window.WSCanvas = (function() {
       }
       i--;
     }
-    return rerender();
+    return this.rerender();
   };
 
   WSCanvas.prototype.attachEvents = function() {

@@ -49,7 +49,7 @@ class window.WSCanvas
     @localPoints = []
     @paintingOn = false
     c.broadcast stroke
-    @rerender()
+    #@rerender()
 
   drawStroke: (stroke) ->
     points = stroke.points
@@ -57,11 +57,12 @@ class window.WSCanvas
     if points.length == 0
       return
     @ctx.closePath()
-    @ctx.moveTo(points[0][0], points[0][1])
     @ctx.beginPath()
+    @ctx.moveTo(points[0][0], points[0][1])
     @ctx.lineWidth = 2
     @ctx.strokeStyle = stroke.color
-    @ctx.curve(points.flatten())
+    for p in points
+      @ctx.lineTo p[0], p[1]
     @ctx.stroke()
     @ctx.closePath()
     if @localPoints.length
@@ -83,7 +84,8 @@ class window.WSCanvas
     @ctx.closePath()
     for s in @strokes
       console.log s
-      @drawStroke(s)
+      if !s.cancelled
+        @drawStroke(s)
 
   undo: () ->
     i = @strokes.length - 1
@@ -92,7 +94,7 @@ class window.WSCanvas
         @strokes[i].cancelled = true
         break
       i--
-    rerender()
+    @rerender()
   #  @redoQueue.push @strokes.pop()
   #  @ctx.clearRect(0, 0, canvas.width, canvas.height)
   #  for s in strokes
