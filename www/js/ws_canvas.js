@@ -59,8 +59,7 @@ window.WSCanvas = (function() {
     this.strokes.push(stroke);
     this.localPoints = [];
     this.paintingOn = false;
-    c.broadcast(stroke);
-    return this.rerender();
+    return c.broadcast(stroke);
   };
 
   WSCanvas.prototype.drawStroke = function(stroke) {
