@@ -6,7 +6,7 @@ class window.WSCanvas
     @colorPickerIcon = document.getElementById('tool-color-picker')
     @colorPicker = document.getElementById('color-picker')
     @colorPickerHammer = new Hammer @colorPicker, {}
-
+    @colorPickerIconHammer = new Hammer @colorPickerIcon, {}
     @attachEvents()
 
   fitToScreen: () ->
@@ -25,13 +25,14 @@ class window.WSCanvas
     @paintingOn = true
     @ctx.beginPath()
     @ctx.moveTo(e.pageX, e.pageY)
+    @localPoints.push [e.pageX, e.pageY]
 
   onmove: (e) ->
     e.preventDefault()
     if e.touches
       e = e.touches[0]
     if(@paintingOn)
-      @localPoints.push x: e.pageX, y: e.pageY
+      @localPoints.push [e.pageX, e.pageY]
       @ctx.lineWidth = 2
       @ctx.strokeStyle = @color
       @ctx.lineTo(e.pageX, e.pageY)
@@ -40,26 +41,31 @@ class window.WSCanvas
   onend: (e) ->
     e.preventDefault()
     @ctx.closePath()
-    @strokes.push(@localPoints)
-    c.broadcast({points: @localPoints, color: @color})
+    stroke =
+      points: @localPoints
+      color: @color
+      id: Math.random()
+    @strokes.push stroke
     @localPoints = []
     @paintingOn = false
+    c.broadcast stroke
+    @rerender()
 
   drawStroke: (stroke) ->
     points = stroke.points
+    console.log points
     if points.length == 0
       return
     @ctx.closePath()
-    @ctx.moveTo(points[0].x, points[0].y)
+    @ctx.moveTo(points[0][0], points[0][1])
     @ctx.beginPath()
-    for point in points
-      @ctx.lineWidth = 2
-      @ctx.strokeStyle = stroke.color
-      @ctx.lineTo(point.x, point.y)
-      @ctx.stroke()
+    @ctx.lineWidth = 2
+    @ctx.strokeStyle = stroke.color
+    @ctx.curve(points.flatten())
+    @ctx.stroke()
     @ctx.closePath()
     if @localPoints.length
-      @ctx.moveTo(@localPoints.last().x, @localPoints.last().y)
+      @ctx.moveTo(@localPoints.last()[0], @localPoints.last()[1])
       @ctx.beginPath()
 
   showColorPicker: () ->
@@ -67,12 +73,26 @@ class window.WSCanvas
     @colorPicker.classList.remove 'hidden'
 
   selectColor: (e) ->
-    console.log e.target
     @colorPicker.classList.add 'hidden'
     @canvas.classList.remove 'hidden'
-    @color = e.target.getAttribute '_color'
+    @color = getComputedStyle(e.target).backgroundColor
 
-  #undo: () ->
+  rerender: () ->
+    @ctx.beginPath()
+    @ctx.clearRect(0,0,10000,10000)
+    @ctx.closePath()
+    for s in @strokes
+      console.log s
+      @drawStroke(s)
+
+  undo: () ->
+    i = @strokes.length - 1
+    while i
+      if @strokes[i].cancelled
+        @strokes[i].cancelled = true
+        break
+      i--
+    rerender()
   #  @redoQueue.push @strokes.pop()
   #  @ctx.clearRect(0, 0, canvas.width, canvas.height)
   #  for s in strokes
@@ -84,20 +104,15 @@ class window.WSCanvas
   #  @drawStroke s
   attachEvents: () ->
     if (window.navigator.msPointerEnabled)
-      @canvas.addEventListener('MSPointerDown', @onstart.bind(this),  false)
-      @canvas.addEventListener('MSPointerMove', @onmove.bind(this), false)
-      @canvas.addEventListener('MSPointerUp', @onend.bind(this), false)
-      @colorPickerIcon.addEventListener('MSPointerUp', @showColorPicker.bind(this), false)
-      #@colorPicker.addEventListener('MSPointerUp', @selectColor.bind(this). false)
+      @canvas.addEventListener('MSPointerDown', @onstart.bind(this),  true)
+      @canvas.addEventListener('MSPointerMove', @onmove.bind(this), true)
+      @canvas.addEventListener('MSPointerUp', @onend.bind(this), true)
     else
-      @canvas.addEventListener('touchstart', @onstart.bind(this),  false)
-      @canvas.addEventListener('mousedown', @onstart.bind(this),  false)
-      @canvas.addEventListener('touchmove', @onmove.bind(this), false)
-      @canvas.addEventListener('mousemove', @onmove.bind(this), false)
-      @canvas.addEventListener('touchend', @onend.bind(this), false)
-      @canvas.addEventListener('mouseup', @onend.bind(this), false)
-      @colorPickerIcon.addEventListener('mouseup', @showColorPicker.bind(this), false)
-      @colorPickerIcon.addEventListener('touchend', @showColorPicker.bind(this), false)
-    #@colorPicker.addEventListener('click', @selectColor.bind(this), false)
+      @canvas.addEventListener('touchstart', @onstart.bind(this),  true)
+      @canvas.addEventListener('mousedown', @onstart.bind(this),  true)
+      @canvas.addEventListener('touchmove', @onmove.bind(this), true)
+      @canvas.addEventListener('mousemove', @onmove.bind(this), true)
+      @canvas.addEventListener('touchend', @onend.bind(this), true)
+      @canvas.addEventListener('mouseup', @onend.bind(this), true)
+    @colorPickerIconHammer.on 'tap', @showColorPicker.bind(this)
     @colorPickerHammer.on 'tap', @selectColor.bind(this)
-      #@colorPicker.addEventListener('touchend', @selectColor.bind(this), false)

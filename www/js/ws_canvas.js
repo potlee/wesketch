@@ -6,6 +6,7 @@ window.WSCanvas = (function() {
     this.colorPickerIcon = document.getElementById('tool-color-picker');
     this.colorPicker = document.getElementById('color-picker');
     this.colorPickerHammer = new Hammer(this.colorPicker, {});
+    this.colorPickerIconHammer = new Hammer(this.colorPickerIcon, {});
     this.attachEvents();
   }
 
@@ -28,7 +29,8 @@ window.WSCanvas = (function() {
     }
     this.paintingOn = true;
     this.ctx.beginPath();
-    return this.ctx.moveTo(e.pageX, e.pageY);
+    this.ctx.moveTo(e.pageX, e.pageY);
+    return this.localPoints.push([e.pageX, e.pageY]);
   };
 
   WSCanvas.prototype.onmove = function(e) {
@@ -37,10 +39,7 @@ window.WSCanvas = (function() {
       e = e.touches[0];
     }
     if (this.paintingOn) {
-      this.localPoints.push({
-        x: e.pageX,
-        y: e.pageY
-      });
+      this.localPoints.push([e.pageX, e.pageY]);
       this.ctx.lineWidth = 2;
       this.ctx.strokeStyle = this.color;
       this.ctx.lineTo(e.pageX, e.pageY);
@@ -49,36 +48,38 @@ window.WSCanvas = (function() {
   };
 
   WSCanvas.prototype.onend = function(e) {
+    var stroke;
     e.preventDefault();
     this.ctx.closePath();
-    this.strokes.push(this.localPoints);
-    c.broadcast({
+    stroke = {
       points: this.localPoints,
-      color: this.color
-    });
+      color: this.color,
+      id: Math.random()
+    };
+    this.strokes.push(stroke);
     this.localPoints = [];
-    return this.paintingOn = false;
+    this.paintingOn = false;
+    c.broadcast(stroke);
+    return this.rerender();
   };
 
   WSCanvas.prototype.drawStroke = function(stroke) {
-    var point, points, _i, _len;
+    var points;
     points = stroke.points;
+    console.log(points);
     if (points.length === 0) {
       return;
     }
     this.ctx.closePath();
-    this.ctx.moveTo(points[0].x, points[0].y);
+    this.ctx.moveTo(points[0][0], points[0][1]);
     this.ctx.beginPath();
-    for (_i = 0, _len = points.length; _i < _len; _i++) {
-      point = points[_i];
-      this.ctx.lineWidth = 2;
-      this.ctx.strokeStyle = stroke.color;
-      this.ctx.lineTo(point.x, point.y);
-      this.ctx.stroke();
-    }
+    this.ctx.lineWidth = 2;
+    this.ctx.strokeStyle = stroke.color;
+    this.ctx.curve(points.flatten());
+    this.ctx.stroke();
     this.ctx.closePath();
     if (this.localPoints.length) {
-      this.ctx.moveTo(this.localPoints.last().x, this.localPoints.last().y);
+      this.ctx.moveTo(this.localPoints.last()[0], this.localPoints.last()[1]);
       return this.ctx.beginPath();
     }
   };
@@ -89,28 +90,53 @@ window.WSCanvas = (function() {
   };
 
   WSCanvas.prototype.selectColor = function(e) {
-    console.log(e.target);
     this.colorPicker.classList.add('hidden');
     this.canvas.classList.remove('hidden');
-    return this.color = e.target.getAttribute('_color');
+    return this.color = getComputedStyle(e.target).backgroundColor;
+  };
+
+  WSCanvas.prototype.rerender = function() {
+    var s, _i, _len, _ref, _results;
+    this.ctx.beginPath();
+    this.ctx.clearRect(0, 0, 10000, 10000);
+    this.ctx.closePath();
+    _ref = this.strokes;
+    _results = [];
+    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
+      s = _ref[_i];
+      console.log(s);
+      _results.push(this.drawStroke(s));
+    }
+    return _results;
+  };
+
+  WSCanvas.prototype.undo = function() {
+    var i;
+    i = this.strokes.length - 1;
+    while (i) {
+      if (this.strokes[i].cancelled) {
+        this.strokes[i].cancelled = true;
+        break;
+      }
+      i--;
+    }
+    return rerender();
   };
 
   WSCanvas.prototype.attachEvents = function() {
     if (window.navigator.msPointerEnabled) {
-      this.canvas.addEventListener('MSPointerDown', this.onstart.bind(this), false);
-      this.canvas.addEventListener('MSPointerMove', this.onmove.bind(this), false);
-      this.canvas.addEventListener('MSPointerUp', this.onend.bind(this), false);
-      this.colorPickerIcon.addEventListener('MSPointerUp', this.showColorPicker.bind(this), false);
+      this.canvas.addEventListener('MSPointerDown', this.onstart.bind(this), true);
+      this.canvas.addEventListener('MSPointerMove', this.onmove.bind(this), true);
+      this.canvas.addEventListener('MSPointerUp', this.onend.bind(this), true);
     } else {
-      this.canvas.addEventListener('touchstart', this.onstart.bind(this), false);
-      this.canvas.addEventListener('mousedown', this.onstart.bind(this), false);
-      this.canvas.addEventListener('touchmove', this.onmove.bind(this), false);
-      this.canvas.addEventListener('mousemove', this.onmove.bind(this), false);
-      this.canvas.addEventListener('touchend', this.onend.bind(this), false);
-      this.canvas.addEventListener('mouseup', this.onend.bind(this), false);
-      this.colorPickerIcon.addEventListener('mouseup', this.showColorPicker.bind(this), false);
-      this.colorPickerIcon.addEventListener('touchend', this.showColorPicker.bind(this), false);
+      this.canvas.addEventListener('touchstart', this.onstart.bind(this), true);
+      this.canvas.addEventListener('mousedown', this.onstart.bind(this), true);
+      this.canvas.addEventListener('touchmove', this.onmove.bind(this), true);
+      this.canvas.addEventListener('mousemove', this.onmove.bind(this), true);
+      this.canvas.addEventListener('touchend', this.onend.bind(this), true);
+      this.canvas.addEventListener('mouseup', this.onend.bind(this), true);
     }
+    this.colorPickerIconHammer.on('tap', this.showColorPicker.bind(this));
     return this.colorPickerHammer.on('tap', this.selectColor.bind(this));
   };
 

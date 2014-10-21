@@ -34,7 +34,6 @@ document.getElementById('go').onclick = ->
   .catch console.log
 
   c.on 'event', (e) ->
-    console.log e
     e = e.data()
     wsCanvas.strokes.push(e)
     wsCanvas.drawStroke(e)

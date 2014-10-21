@@ -31,7 +31,6 @@ document.getElementById('go').onclick = function() {
     return wsCanvas.fitToScreen();
   })["catch"](console.log);
   return c.on('event', function(e) {
-    console.log(e);
     e = e.data();
     wsCanvas.strokes.push(e);
     return wsCanvas.drawStroke(e);
