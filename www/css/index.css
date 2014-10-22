@@ -45,7 +45,7 @@
   overflow: scroll;
   -webkit-overflow-scrolling: touch;
   position: absolute;
-  width: 100%;
+  width: calc(100%-20px);
   text-align: center;
 }
 
