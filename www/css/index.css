@@ -39,8 +39,12 @@
 }
 
 #welcome-screen {
+  padding: 10px;
+  height: calc(100% - 20px);
+  width: 100%;
+  overflow: scroll;
+  -webkit-overflow-scrolling: touch;
   position: absolute;
-  top: 5%;
   width: 100%;
   text-align: center;
 }
