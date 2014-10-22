@@ -29,6 +29,11 @@ window.WSCanvas = (function() {
     }
     this.paintingOn = true;
     this.ctx.beginPath();
+    this.ctx.lineJoin = this.ctx.lineCap = 'round';
+    this.ctx.shadowBlur = 2;
+    this.ctx.shadowColor = this.color;
+    this.ctx.strokeStyle = this.color;
+    this.ctx.lineWidth = 3;
     this.ctx.moveTo(e.pageX, e.pageY);
     return this.localPoints.push([e.pageX, e.pageY]);
   };
@@ -40,8 +45,6 @@ window.WSCanvas = (function() {
     }
     if (this.paintingOn) {
       this.localPoints.push([e.pageX, e.pageY]);
-      this.ctx.lineWidth = 2;
-      this.ctx.strokeStyle = this.color;
       this.ctx.lineTo(e.pageX, e.pageY);
       return this.ctx.stroke();
     }
@@ -64,15 +67,19 @@ window.WSCanvas = (function() {
 
   WSCanvas.prototype.drawStroke = function(stroke) {
     var p, points, _i, _len;
+    if (stroke.cancelled) {
+      return;
+    }
     points = stroke.points;
-    console.log(points);
     if (points.length === 0) {
       return;
     }
     this.ctx.closePath();
     this.ctx.beginPath();
-    this.ctx.moveTo(points[0][0], points[0][1]);
-    this.ctx.lineWidth = 2;
+    this.ctx.lineJoin = this.ctx.lineCap = 'round';
+    this.ctx.shadowBlur = 2;
+    this.ctx.shadowColor = stroke.color;
+    this.ctx.lineWidth = 3;
     this.ctx.strokeStyle = stroke.color;
     for (_i = 0, _len = points.length; _i < _len; _i++) {
       p = points[_i];
@@ -106,27 +113,9 @@ window.WSCanvas = (function() {
     _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       s = _ref[_i];
-      console.log(s);
-      if (!s.cancelled) {
-        _results.push(this.drawStroke(s));
-      } else {
-        _results.push(void 0);
-      }
+      _results.push(this.drawStroke(s));
     }
     return _results;
-  };
-
-  WSCanvas.prototype.undo = function() {
-    var i;
-    i = this.strokes.length - 1;
-    while (i) {
-      if (this.strokes[i].cancelled) {
-        this.strokes[i].cancelled = true;
-        break;
-      }
-      i--;
-    }
-    return this.rerender();
   };
 
   WSCanvas.prototype.attachEvents = function() {

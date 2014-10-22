@@ -34,6 +34,8 @@ document.getElementById('go').onclick = ->
   .catch console.log
 
   c.on 'event', (e) ->
+    if c.participant.participant_id.low == e.author_participant_id.low
+      return
     e = e.data()
     wsCanvas.strokes.push(e)
     wsCanvas.drawStroke(e)

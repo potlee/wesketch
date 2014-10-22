@@ -24,6 +24,11 @@ class window.WSCanvas
       e = e.touches[0]
     @paintingOn = true
     @ctx.beginPath()
+    @ctx.lineJoin = @ctx.lineCap = 'round'
+    @ctx.shadowBlur = 2
+    @ctx.shadowColor = @color
+    @ctx.strokeStyle = @color
+    @ctx.lineWidth = 3
     @ctx.moveTo(e.pageX, e.pageY)
     @localPoints.push [e.pageX, e.pageY]
 
@@ -33,8 +38,6 @@ class window.WSCanvas
       e = e.touches[0]
     if(@paintingOn)
       @localPoints.push [e.pageX, e.pageY]
-      @ctx.lineWidth = 2
-      @ctx.strokeStyle = @color
       @ctx.lineTo(e.pageX, e.pageY)
       @ctx.stroke()
 
@@ -52,14 +55,20 @@ class window.WSCanvas
     #@rerender()
 
   drawStroke: (stroke) ->
+    #console.log stroke
+    if stroke.cancelled
+      return
+    #if stroke.type == 'undo'
+    #  return @undo stroke.stroke_id
     points = stroke.points
-    console.log points
     if points.length == 0
       return
     @ctx.closePath()
     @ctx.beginPath()
-    @ctx.moveTo(points[0][0], points[0][1])
-    @ctx.lineWidth = 2
+    @ctx.lineJoin = @ctx.lineCap = 'round'
+    @ctx.shadowBlur = 2
+    @ctx.shadowColor = stroke.color
+    @ctx.lineWidth = 3
     @ctx.strokeStyle = stroke.color
     for p in points
       @ctx.lineTo p[0], p[1]
@@ -83,34 +92,42 @@ class window.WSCanvas
     @ctx.clearRect(0,0,10000,10000)
     @ctx.closePath()
     for s in @strokes
-      console.log s
-      if !s.cancelled
-        @drawStroke(s)
+      @drawStroke(s)
 
-  undo: () ->
-    i = @strokes.length - 1
-    while i
-      if @strokes[i].cancelled
-        @strokes[i].cancelled = true
-        break
-      i--
-    @rerender()
+  #undo: (id) ->
+  #  i = @strokes.length - 1
+  #  while i
+  #    if (!id and !@strokes[i].cancelled) or @strokes[i].id == id
+  #      @strokes[i].cancelled = true
+  #      if !id
+  #        c.broadcast
+  #          type: 'undo'
+  #          stroke_id: @strokes[i].id
+  #      break
+  #    i--
+  #  @rerender()
   #  @redoQueue.push @strokes.pop()
   #  @ctx.clearRect(0, 0, canvas.width, canvas.height)
   #  for s in strokes
   #    @drawStroke s
 
   #redo: () ->
-  #  s = @redoQueue.pop()
-  #  @strokes.push(s)
-  #  @drawStroke s
+  #  i = @strokes.length - 1
+  #  while i
+  #    if @strokes[i].cancelled
+  #      @strokes[i].cancelled = false
+  #      break
+  #    if @strokes[i].cancelled == undefined
+  #      break
+  #  @rerender()
+
   attachEvents: () ->
     if (window.navigator.msPointerEnabled)
-      @canvas.addEventListener('MSPointerDown', @onstart.bind(this),  true)
+      @canvas.addEventListener('MSPointerDown', @onstart.bind(this), true)
       @canvas.addEventListener('MSPointerMove', @onmove.bind(this), true)
       @canvas.addEventListener('MSPointerUp', @onend.bind(this), true)
     else
-      @canvas.addEventListener('touchstart', @onstart.bind(this),  true)
+      @canvas.addEventListener('touchstart', @onstart.bind(this), true)
       @canvas.addEventListener('mousedown', @onstart.bind(this),  true)
       @canvas.addEventListener('touchmove', @onmove.bind(this), true)
       @canvas.addEventListener('mousemove', @onmove.bind(this), true)
