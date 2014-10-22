@@ -5,7 +5,7 @@ window.wsCanvas = new WSCanvas
 document.getElementById('go').onclick = ->
   document.getElementById('welcome-screen').classList.add('hidden')
   spinner.spin(document.body)
-  tag = document.getElementById('sketch-name').value
+  tag = 'watercycledemo' + document.getElementById('sketch-name').value
   window.c = new CollabrifyClient
     application_id: '4891981239025664',
     user_id: 'collabrify.tester@gmail.com'
