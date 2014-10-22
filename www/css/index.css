@@ -164,4 +164,6 @@ body {
 #content {
   margin-bottom: 70px;
   padding: 10px;
+  overflow: scroll;
+  -webkit-overflow-scrolling: touch;
 }
