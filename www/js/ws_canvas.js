@@ -24,6 +24,9 @@ window.WSCanvas = (function() {
 
   WSCanvas.prototype.onstart = function(e) {
     e.preventDefault();
+    if (e.touches) {
+      e = e.touches[0];
+    }
     this.paintingOn = true;
     this.ctx.beginPath();
     this.ctx.lineJoin = this.ctx.lineCap = 'round';

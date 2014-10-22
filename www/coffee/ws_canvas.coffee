@@ -20,8 +20,8 @@ class window.WSCanvas
 
   onstart: (e) ->
     e.preventDefault()
-    #if e.touches
-    #  e = e.touches[0]
+    if e.touches
+      e = e.touches[0]
     @paintingOn = true
     @ctx.beginPath()
     @ctx.lineJoin = @ctx.lineCap = 'round'
