@@ -162,8 +162,9 @@ body {
 }
 
 #content {
-  margin-bottom: 70px;
   padding: 10px;
+  height: calc(100% - 20px);
+  width: 100%;
   overflow: scroll;
   -webkit-overflow-scrolling: touch;
 }
