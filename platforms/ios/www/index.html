@@ -1,3 +1,4 @@
+<!DOCTYPE html>
 <html>
 <head>
   <meta charset="utf-8" />
@@ -9,7 +10,39 @@
   <title>Hello World</title>
 </head>
 <body>
-  <canvas class="canvas"></canvas>
+  <div id="main">
+    <div id="welcome-screen">
+      <h1>What is this sketch going to be called</h1>
+      <input id="sketch-name"  type="text" />
+      <input id="go" type="button" value="go" />
+    </div>
+    <canvas class="canvas hidden"></canvas>
+    <div id="color-picker" class="hidden">
+      <div class="color turquoise"></div>
+      <div class="color emerland"></div>
+      <div class="color green-sea"></div>
+      <div class="color nephritis"></div>
+      <div class="color sun-flower"></div>
+      <div class="color carrot"></div>
+      <div class="color orange"></div>
+      <div class="color pumpkin"></div>
+      <div class="color peter-river"></div>
+      <div class="color amethyst"></div>
+      <div class="color belize-hole"></div>
+      <div class="color wisteria"></div>
+      <div class="color alizarin"></div>
+      <div class="color clouds"></div>
+      <div class="color pomegranate"></div>
+      <div class="color silver"></div>
+      <div class="color wet-asphalt"></div>
+      <div class="color concrete"></div>
+      <div class="color midnight-blue"></div>
+      <div class="color asbestos"></div>
+    </div>
+  </div>
+  <div id="toolbar">
+    <img class="tool" id="tool-color-picker"  alt="colors" src="img/color-picker.png" />
+  </div>
   <script>
     //ios8 fix
     var o =XMLHttpRequest.prototype.open;
@@ -18,12 +51,37 @@
       return o.apply(this, arguments);
     };
   </script>
-  <!--<script src="js/arraybuffer_slice.js"></script>-->
+  <script src="js/arraybuffer_slice.js"></script>
+  <script src="js/spin.js"> </script>
+  <script>
+    var opts = {
+      lines: 13, // The number of lines to draw
+      length: 20, // The length of each line
+      width: 10, // The line thickness
+      radius: 30, // The radius of the inner circle
+      corners: 1, // Corner roundness (0..1)
+      rotate: 0, // The rotation offset
+      direction: 1, // 1: clockwise, -1: counterclockwise
+      color: '#000', // #rgb or #rrggbb or array of colors
+      speed: 1, // Rounds per second
+      trail: 60, // Afterglow percentage
+      shadow: false, // Whether to render a shadow
+      hwaccel: false, // Whether to use hardware acceleration
+      className: 'spinner', // The CSS class to assign to the spinner
+      zIndex: 2e9, // The z-index (defaults to 2000000000)
+      top: '50%', // Top position relative to parent
+      left: '50%' // Left position relative to parent
+      };
+      var spinner = new Spinner(opts).spin(document.body);
+      spinner.stop()
+    </script>
+  <script src="cordova.js"></script>
+  <script src="js/hammer.js"></script>
+  <!--<script src="js/cardinal-spline-js/curve.min.js"></script>-->
   <script src="https://www.promisejs.org/polyfills/promise-6.0.0.min.js"></script>
-  <script type="text/javascript" src="cordova.js"></script>
-  <script type="text/javascript" src="js/hammer.js"></script>
-	<script type="text/javascript" src="release/collabrify.js"></script>
-	<script type="text/javascript" src="js/collabrify_init.js"></script>
-  <script type="text/javascript" src="js/index.js"></script>
+	<script src="release/collabrify.js"></script>
+  <script src="js/monkey_matches.js"></script>
+  <script src="js/ws_canvas.js"></script>
+	<script src="js/collabrify_init.js"></script>
 </body>
 </html>
