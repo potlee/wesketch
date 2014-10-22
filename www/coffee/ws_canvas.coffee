@@ -20,17 +20,17 @@ class window.WSCanvas
 
   onstart: (e) ->
     e.preventDefault()
-    if e.touches
-      e = e.touches[0]
+    #if e.touches
+    #  e = e.touches[0]
     @paintingOn = true
     @ctx.beginPath()
     @ctx.lineJoin = @ctx.lineCap = 'round'
     @ctx.shadowBlur = 2
+    @ctx.lineWidth = 3
     @ctx.shadowColor = @color
     @ctx.strokeStyle = @color
-    @ctx.lineWidth = 3
     @ctx.moveTo(e.pageX, e.pageY)
-    @localPoints.push [e.pageX, e.pageY]
+    #@localPoints.push [e.pageX, e.pageY]
 
   onmove: (e) ->
     e.preventDefault()
@@ -67,12 +67,12 @@ class window.WSCanvas
     @ctx.beginPath()
     @ctx.lineJoin = @ctx.lineCap = 'round'
     @ctx.shadowBlur = 2
-    @ctx.shadowColor = stroke.color
     @ctx.lineWidth = 3
+    @ctx.shadowColor = stroke.color
     @ctx.strokeStyle = stroke.color
     for p in points
       @ctx.lineTo p[0], p[1]
-    @ctx.stroke()
+      @ctx.stroke()
     @ctx.closePath()
     if @localPoints.length
       @ctx.moveTo(@localPoints.last()[0], @localPoints.last()[1])
@@ -87,12 +87,12 @@ class window.WSCanvas
     @canvas.classList.remove 'hidden'
     @color = getComputedStyle(e.target).backgroundColor
 
-  rerender: () ->
-    @ctx.beginPath()
-    @ctx.clearRect(0,0,10000,10000)
-    @ctx.closePath()
-    for s in @strokes
-      @drawStroke(s)
+  #rerender: () ->
+  #  @ctx.beginPath()
+  #  @ctx.clearRect(0,0,10000,10000)
+  #  @ctx.closePath()
+  #  for s in @strokes
+  #    @drawStroke(s)
 
   #undo: (id) ->
   #  i = @strokes.length - 1

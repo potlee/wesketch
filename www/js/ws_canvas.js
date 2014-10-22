@@ -24,18 +24,14 @@ window.WSCanvas = (function() {
 
   WSCanvas.prototype.onstart = function(e) {
     e.preventDefault();
-    if (e.touches) {
-      e = e.touches[0];
-    }
     this.paintingOn = true;
     this.ctx.beginPath();
     this.ctx.lineJoin = this.ctx.lineCap = 'round';
     this.ctx.shadowBlur = 2;
+    this.ctx.lineWidth = 3;
     this.ctx.shadowColor = this.color;
     this.ctx.strokeStyle = this.color;
-    this.ctx.lineWidth = 3;
-    this.ctx.moveTo(e.pageX, e.pageY);
-    return this.localPoints.push([e.pageX, e.pageY]);
+    return this.ctx.moveTo(e.pageX, e.pageY);
   };
 
   WSCanvas.prototype.onmove = function(e) {
@@ -75,14 +71,14 @@ window.WSCanvas = (function() {
     this.ctx.beginPath();
     this.ctx.lineJoin = this.ctx.lineCap = 'round';
     this.ctx.shadowBlur = 2;
-    this.ctx.shadowColor = stroke.color;
     this.ctx.lineWidth = 3;
+    this.ctx.shadowColor = stroke.color;
     this.ctx.strokeStyle = stroke.color;
     for (_i = 0, _len = points.length; _i < _len; _i++) {
       p = points[_i];
       this.ctx.lineTo(p[0], p[1]);
+      this.ctx.stroke();
     }
-    this.ctx.stroke();
     this.ctx.closePath();
     if (this.localPoints.length) {
       this.ctx.moveTo(this.localPoints.last()[0], this.localPoints.last()[1]);
@@ -99,20 +95,6 @@ window.WSCanvas = (function() {
     this.colorPicker.classList.add('hidden');
     this.canvas.classList.remove('hidden');
     return this.color = getComputedStyle(e.target).backgroundColor;
-  };
-
-  WSCanvas.prototype.rerender = function() {
-    var s, _i, _len, _ref, _results;
-    this.ctx.beginPath();
-    this.ctx.clearRect(0, 0, 10000, 10000);
-    this.ctx.closePath();
-    _ref = this.strokes;
-    _results = [];
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      s = _ref[_i];
-      _results.push(this.drawStroke(s));
-    }
-    return _results;
   };
 
   WSCanvas.prototype.attachEvents = function() {

@@ -31,9 +31,6 @@ document.getElementById('go').onclick = function() {
     return wsCanvas.fitToScreen();
   })["catch"](console.log);
   return c.on('event', function(e) {
-    if (c.participant.participant_id.low === e.author_participant_id.low) {
-      return;
-    }
     e = e.data();
     wsCanvas.strokes.push(e);
     return wsCanvas.drawStroke(e);
