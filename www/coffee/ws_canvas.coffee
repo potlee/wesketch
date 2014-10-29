@@ -10,6 +10,7 @@ class window.WSCanvas
     @colorPickerHammer = new Hammer @colorPicker, {}
     @colorPickerIconHammer = new Hammer @colorPickerIcon, {}
     @undoHammer = new Hammer document.getElementById('tool-undo'), {}
+    @redoHammer = new Hammer document.getElementById('tool-redo'), {}
     @attachEvents()
 
   fitToScreen: () ->
@@ -105,6 +106,13 @@ class window.WSCanvas
     i-- while @strokes[i].cancelled and i != 0
     @strokes[i]
 
+  lastCancelledStroke: ->
+    i = @strokes.length - 1
+    i-- while @strokes[i].cancelled and i != 0
+    return if i == @strokes.length - 1
+    i++
+    @strokes[i]
+
   strokeWithId: (id) ->
     i = @strokes.length - 1
     i-- while @strokes[i].id != id and i != 0
@@ -122,10 +130,28 @@ class window.WSCanvas
     stroke.id
 
   undoLocal: ->
-    console.log "local"
     id = @undo()
+    return if !id
     c.broadcast
       type: 'undo'
+      id: id
+
+  redo: (id) ->
+    stroke = {}
+    if id
+      stroke = @strokeWithId(id)
+    else
+      stroke = @lastCancelledStroke()
+    return if !stroke
+    stroke.cancelled = false
+    @rerender()
+    stroke.id
+
+  redoLocal: ->
+    id = @redo()
+    return if !id
+    c.broadcast
+      type: 'redo'
       id: id
 
   #  i = @strokes.length - 1
@@ -169,6 +195,7 @@ class window.WSCanvas
     @colorPickerIconHammer.on 'tap', @showColorPicker.bind(this)
     @colorPickerHammer.on 'tap', @selectColor.bind(this)
     @undoHammer.on 'tap', @undoLocal.bind(this)
+    @redoHammer.on 'tap', @redoLocal.bind(this)
 
   # optimize to O(1) with map
   strokeIsDrawn: (stroke) ->

@@ -39,8 +39,9 @@ document.getElementById('go').onclick = ->
     e = e.data()
 
     if e.type == 'undo'
-      console.log e
       wsCanvas.undo e.id
+    else if e.type == 'redo'
+      wsCanvas.redo e.id
     else if !wsCanvas.strokeIsDrawn(e)
       wsCanvas.strokes.push(e)
       wsCanvas.drawStroke(e)

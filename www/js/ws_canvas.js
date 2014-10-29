@@ -10,6 +10,7 @@ window.WSCanvas = (function() {
     this.colorPickerHammer = new Hammer(this.colorPicker, {});
     this.colorPickerIconHammer = new Hammer(this.colorPickerIcon, {});
     this.undoHammer = new Hammer(document.getElementById('tool-undo'), {});
+    this.redoHammer = new Hammer(document.getElementById('tool-redo'), {});
     this.attachEvents();
   }
 
@@ -129,6 +130,19 @@ window.WSCanvas = (function() {
     return this.strokes[i];
   };
 
+  WSCanvas.prototype.lastCancelledStroke = function() {
+    var i;
+    i = this.strokes.length - 1;
+    while (this.strokes[i].cancelled && i !== 0) {
+      i--;
+    }
+    if (i === this.strokes.length - 1) {
+      return;
+    }
+    i++;
+    return this.strokes[i];
+  };
+
   WSCanvas.prototype.strokeWithId = function(id) {
     var i;
     i = this.strokes.length - 1;
@@ -156,10 +170,40 @@ window.WSCanvas = (function() {
 
   WSCanvas.prototype.undoLocal = function() {
     var id;
-    console.log("local");
     id = this.undo();
+    if (!id) {
+      return;
+    }
     return c.broadcast({
       type: 'undo',
+      id: id
+    });
+  };
+
+  WSCanvas.prototype.redo = function(id) {
+    var stroke;
+    stroke = {};
+    if (id) {
+      stroke = this.strokeWithId(id);
+    } else {
+      stroke = this.lastCancelledStroke();
+    }
+    if (!stroke) {
+      return;
+    }
+    stroke.cancelled = false;
+    this.rerender();
+    return stroke.id;
+  };
+
+  WSCanvas.prototype.redoLocal = function() {
+    var id;
+    id = this.redo();
+    if (!id) {
+      return;
+    }
+    return c.broadcast({
+      type: 'redo',
       id: id
     });
   };
@@ -179,7 +223,8 @@ window.WSCanvas = (function() {
     }
     this.colorPickerIconHammer.on('tap', this.showColorPicker.bind(this));
     this.colorPickerHammer.on('tap', this.selectColor.bind(this));
-    return this.undoHammer.on('tap', this.undoLocal.bind(this));
+    this.undoHammer.on('tap', this.undoLocal.bind(this));
+    return this.redoHammer.on('tap', this.redoLocal.bind(this));
   };
 
   WSCanvas.prototype.strokeIsDrawn = function(stroke) {

@@ -33,8 +33,9 @@ document.getElementById('go').onclick = function() {
   return c.on('event', function(e) {
     e = e.data();
     if (e.type === 'undo') {
-      console.log(e);
       return wsCanvas.undo(e.id);
+    } else if (e.type === 'redo') {
+      return wsCanvas.redo(e.id);
     } else if (!wsCanvas.strokeIsDrawn(e)) {
       wsCanvas.strokes.push(e);
       return wsCanvas.drawStroke(e);
