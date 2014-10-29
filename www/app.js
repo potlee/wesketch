@@ -12,7 +12,7 @@ http.createServer(function(req, res) {
     } else {
       if(url.indexOf('.css') == -1)
         res.writeHead(200, {'Content-Type': 'text/html', 'Content-Length': html.length})
-      else if(url.indexOf('.svg') == -1)
+      if(url.indexOf('.svg') == -1)
         res.writeHead(200, {'Content-Type': 'image/svg+xml', 'Content-Length': html.length})
       else
         res.writeHead(200, {'Content-Type': 'text/css', 'Content-Length': html.length})
