@@ -1,1 +1,3 @@
-web: node www/app.js
+web: http-server
+/*web: node www/app.js*/
+
