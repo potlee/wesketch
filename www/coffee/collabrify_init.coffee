@@ -37,5 +37,10 @@ document.getElementById('go').onclick = ->
     #if c.participant.participant_id.low == e.author_participant_id.low
     #  return
     e = e.data()
-    wsCanvas.strokes.push(e)
-    wsCanvas.drawStroke(e)
+
+    if e.type == 'undo'
+      console.log e
+      wsCanvas.undo e.id
+    else if !wsCanvas.strokeIsDrawn(e)
+      wsCanvas.strokes.push(e)
+      wsCanvas.drawStroke(e)

@@ -32,7 +32,12 @@ document.getElementById('go').onclick = function() {
   })["catch"](console.log);
   return c.on('event', function(e) {
     e = e.data();
-    wsCanvas.strokes.push(e);
-    return wsCanvas.drawStroke(e);
+    if (e.type === 'undo') {
+      console.log(e);
+      return wsCanvas.undo(e.id);
+    } else if (!wsCanvas.strokeIsDrawn(e)) {
+      wsCanvas.strokes.push(e);
+      return wsCanvas.drawStroke(e);
+    }
   });
 };

@@ -1,18 +1,24 @@
 class window.WSCanvas
   constructor: () ->
-    @canvas = document.getElementsByClassName("canvas")[0]
+    @canvas = document.getElementById("canvas")
+    @canvasTemp = document.getElementById("canvas-temp")
     @ctx = @canvas.getContext("2d")
+    @ctxTemp = @canvasTemp.getContext("2d")
     @color = '#666'
     @colorPickerIcon = document.getElementById('tool-color-picker')
     @colorPicker = document.getElementById('color-picker')
     @colorPickerHammer = new Hammer @colorPicker, {}
     @colorPickerIconHammer = new Hammer @colorPickerIcon, {}
+    @undoHammer = new Hammer document.getElementById('tool-undo'), {}
     @attachEvents()
 
   fitToScreen: () ->
     @canvas.classList.remove('hidden')
+    @canvasTemp.classList.remove('hidden')
     @canvas.height = @canvas.clientHeight
     @canvas.width = @canvas.clientWidth
+    @canvasTemp.height = @canvas.clientHeight
+    @canvasTemp.width = @canvas.clientWidth
 
   localPoints: []
   strokes: []
@@ -23,13 +29,13 @@ class window.WSCanvas
     if e.touches
       e = e.touches[0]
     @paintingOn = true
-    @ctx.beginPath()
-    @ctx.lineJoin = @ctx.lineCap = 'round'
-    @ctx.shadowBlur = 2
-    @ctx.lineWidth = 3
-    @ctx.shadowColor = @color
-    @ctx.strokeStyle = @color
-    @ctx.moveTo(e.pageX, e.pageY)
+    @ctxTemp.beginPath()
+    @ctxTemp.lineJoin = @ctxTemp.lineCap = 'round'
+    @ctxTemp.shadowBlur = 2
+    @ctxTemp.lineWidth = 3
+    @ctxTemp.shadowColor = @color
+    @ctxTemp.strokeStyle = @color
+    @ctxTemp.moveTo(e.pageX, e.pageY)
     #@localPoints.push [e.pageX, e.pageY]
 
   onmove: (e) ->
@@ -38,12 +44,12 @@ class window.WSCanvas
       e = e.touches[0]
     if(@paintingOn)
       @localPoints.push [e.pageX, e.pageY]
-      @ctx.lineTo(e.pageX, e.pageY)
-      @ctx.stroke()
+      @ctxTemp.lineTo(e.pageX, e.pageY)
+      @ctxTemp.stroke()
 
   onend: (e) ->
     e.preventDefault()
-    @ctx.closePath()
+    @ctxTemp.closePath()
     stroke =
       points: @localPoints
       color: @color
@@ -56,14 +62,11 @@ class window.WSCanvas
 
   drawStroke: (stroke) ->
     #console.log stroke
-    #if stroke.cancelled
-    #  return
+    if stroke.cancelled
+      return
     #if stroke.type == 'undo'
     #  return @undo stroke.stroke_id
     points = stroke.points
-    if points.length == 0
-      return
-    @ctx.closePath()
     @ctx.beginPath()
     @ctx.lineJoin = @ctx.lineCap = 'round'
     @ctx.shadowBlur = 2
@@ -74,27 +77,57 @@ class window.WSCanvas
       @ctx.lineTo p[0], p[1]
       @ctx.stroke()
     @ctx.closePath()
-    if @localPoints.length
-      @ctx.moveTo(@localPoints.last()[0], @localPoints.last()[1])
-      @ctx.beginPath()
 
   showColorPicker: () ->
     @canvas.classList.add 'hidden'
+    @canvasTemp.classList.add 'hidden'
     @colorPicker.classList.remove 'hidden'
 
   selectColor: (e) ->
     @colorPicker.classList.add 'hidden'
     @canvas.classList.remove 'hidden'
+    @canvasTemp.classList.remove 'hidden'
     @color = getComputedStyle(e.target).backgroundColor
 
-  #rerender: () ->
-  #  @ctx.beginPath()
-  #  @ctx.clearRect(0,0,10000,10000)
-  #  @ctx.closePath()
-  #  for s in @strokes
-  #    @drawStroke(s)
+  rerender: ->
+    @ctx.beginPath()
+    @ctx.clearRect(0,0,10000,10000)
+    @ctx.closePath()
+    @ctxTemp.beginPath()
+    @ctxTemp.clearRect(0,0,10000,10000)
+    @ctxTemp.closePath()
 
-  #undo: (id) ->
+    for s in @strokes
+      @drawStroke(s)
+
+  lastUncancelledStroke: ->
+    i = @strokes.length - 1
+    i-- while @strokes[i].cancelled and i != 0
+    @strokes[i]
+
+  strokeWithId: (id) ->
+    i = @strokes.length - 1
+    i-- while @strokes[i].id != id and i != 0
+    @strokes[i]
+
+  undo: (id) ->
+    stroke = {}
+    if id
+      stroke = @strokeWithId(id)
+    else
+      stroke = @lastUncancelledStroke()
+    return if !stroke
+    stroke.cancelled = true
+    @rerender()
+    stroke.id
+
+  undoLocal: ->
+    console.log "local"
+    id = @undo()
+    c.broadcast
+      type: 'undo'
+      id: id
+
   #  i = @strokes.length - 1
   #  while i
   #    if (!id and !@strokes[i].cancelled) or @strokes[i].id == id
@@ -123,15 +156,23 @@ class window.WSCanvas
 
   attachEvents: () ->
     if (window.navigator.msPointerEnabled)
-      @canvas.addEventListener('MSPointerDown', @onstart.bind(this), true)
-      @canvas.addEventListener('MSPointerMove', @onmove.bind(this), true)
-      @canvas.addEventListener('MSPointerUp', @onend.bind(this), true)
+      @canvasTemp.addEventListener('MSPointerDown', @onstart.bind(this), true)
+      @canvasTemp.addEventListener('MSPointerMove', @onmove.bind(this), true)
+      @canvasTemp.addEventListener('MSPointerUp', @onend.bind(this), true)
     else
-      @canvas.addEventListener('touchstart', @onstart.bind(this), true)
-      @canvas.addEventListener('mousedown', @onstart.bind(this),  true)
-      @canvas.addEventListener('touchmove', @onmove.bind(this), true)
-      @canvas.addEventListener('mousemove', @onmove.bind(this), true)
-      @canvas.addEventListener('touchend', @onend.bind(this), true)
-      @canvas.addEventListener('mouseup', @onend.bind(this), true)
+      @canvasTemp.addEventListener('touchstart', @onstart.bind(this), true)
+      @canvasTemp.addEventListener('mousedown', @onstart.bind(this),  true)
+      @canvasTemp.addEventListener('touchmove', @onmove.bind(this), true)
+      @canvasTemp.addEventListener('mousemove', @onmove.bind(this), true)
+      @canvasTemp.addEventListener('touchend', @onend.bind(this), true)
+      @canvasTemp.addEventListener('mouseup', @onend.bind(this), true)
     @colorPickerIconHammer.on 'tap', @showColorPicker.bind(this)
     @colorPickerHammer.on 'tap', @selectColor.bind(this)
+    @undoHammer.on 'tap', @undoLocal.bind(this)
+
+  # optimize to O(1) with map
+  strokeIsDrawn: (stroke) ->
+    for s in @strokes
+      if s.id == stroke.id
+        return true
+    return false
