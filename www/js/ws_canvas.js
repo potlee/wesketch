@@ -40,12 +40,14 @@ window.WSCanvas = (function() {
     this.ctxTemp.lineWidth = 3;
     this.ctxTemp.shadowColor = this.color;
     this.ctxTemp.strokeStyle = this.color;
+    this.ctxTemp.fillStyle = this.color;
     this.ctxTemp.moveTo(e.pageX, e.pageY);
     this.undoStack = [];
     return this.localPoints.push([e.pageX, e.pageY]);
   };
 
   WSCanvas.prototype.onmove = function(e) {
+    var radius;
     e.preventDefault();
     if (e.touches) {
       e = e.touches[0];
@@ -57,6 +59,13 @@ window.WSCanvas = (function() {
         this.ctxTemp.closePath();
         this.ctxTemp.fillRect(this.localPoints[0][0], this.localPoints[0][1], e.pageX - this.localPoints[0][0], e.pageY - this.localPoints[0][1]);
         return this.ctxTemp.stroke();
+      } else if (this.mode === 'c') {
+        this.ctxTemp.beginPath();
+        this.ctxTemp.clearRect(0, 0, 10000, 10000);
+        this.ctxTemp.closePath();
+        radius = Math.sqrt(Math.pow(this.localPoints[0][0] - e.pageX, 2) + Math.pow(this.localPoints[0][1] - e.pageY, 2));
+        this.ctxTemp.arc(this.localPoints[0][0], this.localPoints[0][1], radius, 0, Math.PI * 2, true);
+        return this.ctxTemp.fill();
       } else {
         this.localPoints.push([e.pageX, e.pageY]);
         this.ctxTemp.lineTo(e.pageX, e.pageY);
@@ -89,24 +98,33 @@ window.WSCanvas = (function() {
   };
 
   WSCanvas.prototype.drawStroke = function(stroke) {
-    var p, points, _i, _len;
+    var p, points, radius, _i, _j, _len, _len1;
     if (stroke.cancelled) {
       return;
     }
     points = stroke.points;
     this.ctx.beginPath();
-    this.ctx.lineJoin = this.ctx.lineCap = 'round';
+    this.ctx.lineJoin = this.ctxTemp.lineCap = 'round';
     this.ctx.shadowBlur = 2;
     this.ctx.lineWidth = 3;
     this.ctx.shadowColor = stroke.color;
     this.ctx.strokeStyle = stroke.color;
+    this.ctx.fillStyle = stroke.color;
     if (stroke.mode === 'l') {
       for (_i = 0, _len = points.length; _i < _len; _i++) {
         p = points[_i];
         this.ctx.lineTo(p[0], p[1]);
+        this.ctx.stroke();
       }
-    } else {
+    } else if (stroke.mode === 'r') {
       this.ctx.fillRect(points[0][0], points[0][1], points[1][0] - points[0][0], points[1][1] - points[0][1]);
+    } else if (stroke.mode === 'c') {
+      radius = Math.sqrt(Math.pow(points[0][0] - points[1][0], 2) + Math.pow(points[0][1] - points[1][1], 2));
+      for (_j = 0, _len1 = points.length; _j < _len1; _j++) {
+        p = points[_j];
+        this.ctx.arc(points[0][0], points[0][1], radius, 0, Math.PI * 2, false);
+        this.ctx.fill();
+      }
     }
     this.ctx.stroke();
     return this.ctx.closePath();
@@ -241,9 +259,14 @@ window.WSCanvas = (function() {
         return _this.mode = 'c';
       };
     })(this));
-    return this.rectangleHammer.on('tap', (function(_this) {
+    this.rectangleHammer.on('tap', (function(_this) {
       return function() {
         return _this.mode = 'r';
+      };
+    })(this));
+    return this.brushHammer.on('tap', (function(_this) {
+      return function() {
+        return _this.mode = 'l';
       };
     })(this));
   };
@@ -255,7 +278,8 @@ window.WSCanvas = (function() {
     this.undoHammer = new Hammer(document.getElementById('tool-undo'), {});
     this.redoHammer = new Hammer(document.getElementById('tool-redo'), {});
     this.circleHammer = new Hammer(this.circleIcon, {});
-    return this.rectangleHammer = new Hammer(this.rectangleIcon, {});
+    this.rectangleHammer = new Hammer(this.rectangleIcon, {});
+    return this.brushHammer = new Hammer(this.brushIcon, {});
   };
 
   WSCanvas.prototype.initElements = function() {
@@ -265,6 +289,7 @@ window.WSCanvas = (function() {
     this.ctxTemp = this.canvasTemp.getContext("2d");
     this.colorPickerIcon = document.getElementById('tool-color-picker');
     this.circleIcon = document.getElementById('tool-circle');
+    this.brushIcon = document.getElementById('tool-brush');
     this.rectangleIcon = document.getElementById('tool-rectangle');
     return this.colorPicker = document.getElementById('color-picker');
   };

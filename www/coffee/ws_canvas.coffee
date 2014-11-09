@@ -31,6 +31,7 @@ class window.WSCanvas
     @ctxTemp.lineWidth = 3
     @ctxTemp.shadowColor = @color
     @ctxTemp.strokeStyle = @color
+    @ctxTemp.fillStyle = @color
     @ctxTemp.moveTo(e.pageX, e.pageY)
     @undoStack = []
     @localPoints.push [e.pageX, e.pageY]
@@ -51,6 +52,15 @@ class window.WSCanvas
           e.pageY - @localPoints[0][1]
         )
         @ctxTemp.stroke()
+      else if @mode == 'c'
+        @ctxTemp.beginPath()
+        @ctxTemp.clearRect(0,0,10000,10000)
+        @ctxTemp.closePath()
+        radius = Math.sqrt(
+          Math.pow(@localPoints[0][0] - e.pageX,2) + Math.pow(@localPoints[0][1] - e.pageY,2)
+        )
+        @ctxTemp.arc(@localPoints[0][0], @localPoints[0][1], radius, 0, Math.PI*2, true)
+        @ctxTemp.fill()
       else
         @localPoints.push [e.pageX, e.pageY]
         @ctxTemp.lineTo(e.pageX, e.pageY)
@@ -83,21 +93,30 @@ class window.WSCanvas
     #  return @undo stroke.stroke_id
     points = stroke.points
     @ctx.beginPath()
-    @ctx.lineJoin = @ctx.lineCap = 'round'
+    @ctx.lineJoin = @ctxTemp.lineCap = 'round'
     @ctx.shadowBlur = 2
     @ctx.lineWidth = 3
     @ctx.shadowColor = stroke.color
     @ctx.strokeStyle = stroke.color
+    @ctx.fillStyle = stroke.color
     if stroke.mode == 'l'
       for p in points
         @ctx.lineTo p[0], p[1]
-    else
+        @ctx.stroke()
+    else if stroke.mode == 'r'
       @ctx.fillRect(
         points[0][0]
         points[0][1]
         points[1][0] - points[0][0]
         points[1][1] - points[0][1]
       )
+    else if stroke.mode == 'c'
+      radius = Math.sqrt(
+        Math.pow(points[0][0] - points[1][0], 2) + Math.pow(points[0][1] - points[1][1],2)
+      )
+      for p in points
+        @ctx.arc(points[0][0], points[0][1], radius,0, Math.PI * 2, false)
+        @ctx.fill()
     @ctx.stroke()
     @ctx.closePath()
 
@@ -191,6 +210,7 @@ class window.WSCanvas
     @redoHammer.on 'tap', @redoLocal.bind(this)
     @circleHammer.on 'tap', => @mode = 'c'
     @rectangleHammer.on 'tap', => @mode = 'r'
+    @brushHammer.on 'tap', => @mode = 'l'
 
   initHamers: ->
     @ctxTempHammer = new Hammer @canvasTemp, {}
@@ -200,6 +220,7 @@ class window.WSCanvas
     @redoHammer = new Hammer document.getElementById('tool-redo'), {}
     @circleHammer = new Hammer @circleIcon, {}
     @rectangleHammer = new Hammer @rectangleIcon, {}
+    @brushHammer = new Hammer @brushIcon, {}
 
   initElements: ->
     @canvas = document.getElementById("canvas")
@@ -208,5 +229,6 @@ class window.WSCanvas
     @ctxTemp = @canvasTemp.getContext("2d")
     @colorPickerIcon = document.getElementById('tool-color-picker')
     @circleIcon = document.getElementById('tool-circle')
+    @brushIcon = document.getElementById('tool-brush')
     @rectangleIcon = document.getElementById('tool-rectangle')
     @colorPicker = document.getElementById('color-picker')
