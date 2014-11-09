@@ -36,10 +36,19 @@
 
 .tool-icon {
   width: 60%;
+  height: 60%;
   display: block;
   margin-left: auto;
   margin-right: auto;
   padding-bottom: 2px;
+}
+
+.circle-icon {
+  background-color: #ddd;
+  border-radius: 50%;
+}
+.rectangle-icon {
+  background-color: #ddd;
 }
 
 .undo-icon {
@@ -53,7 +62,7 @@
   padding-left: 4px;
   padding-right: 4px;
   text-align: center;
-  color: #CCC;
+  color: #DDD;
   display: inline-block;
 }
 

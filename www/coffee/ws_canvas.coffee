@@ -5,6 +5,7 @@ class window.WSCanvas
   strokes: []
   paintingOn: false
   drawnStrokes: {}
+  mode: 'l'
 
   constructor: () ->
     @initElements()
@@ -55,7 +56,7 @@ class window.WSCanvas
     @localPoints = []
     @paintingOn = false
     c.broadcast stroke
-    #@rerender()
+    @rerender()
 
   drawStroke: (stroke) ->
     #console.log stroke
@@ -137,9 +138,9 @@ class window.WSCanvas
     @rerender()
     stroke.id
 
-  redoLocal: ->
     id = @redo(@undoStack.pop())
     return if !id
+  redoLocal: ->
     stroke =
       type: 'redo'
       id: Math.random()
@@ -163,6 +164,8 @@ class window.WSCanvas
     @colorPickerHammer.on 'tap', @selectColor.bind(this)
     @undoHammer.on 'tap', @undoLocal.bind(this)
     @redoHammer.on 'tap', @redoLocal.bind(this)
+    @circleHammer.on 'tap', => @mode = 'c'
+    @rectangleHammer.on 'tap', => @mode = 'r'
 
   initHamers: ->
     @ctxTempHammer = new Hammer @canvasTemp, {}
@@ -170,6 +173,8 @@ class window.WSCanvas
     @colorPickerIconHammer = new Hammer @colorPickerIcon, {}
     @undoHammer = new Hammer document.getElementById('tool-undo'), {}
     @redoHammer = new Hammer document.getElementById('tool-redo'), {}
+    @circleHammer = new Hammer @circleIcon, {}
+    @rectangleHammer = new Hammer @rectangleIcon, {}
 
   initElements: ->
     @canvas = document.getElementById("canvas")
@@ -177,4 +182,6 @@ class window.WSCanvas
     @ctx = @canvas.getContext("2d")
     @ctxTemp = @canvasTemp.getContext("2d")
     @colorPickerIcon = document.getElementById('tool-color-picker')
+    @circleIcon = document.getElementById('tool-circle')
+    @rectangleIcon = document.getElementById('tool-rectangle')
     @colorPicker = document.getElementById('color-picker')

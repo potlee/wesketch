@@ -11,6 +11,8 @@ window.WSCanvas = (function() {
 
   WSCanvas.prototype.drawnStrokes = {};
 
+  WSCanvas.prototype.mode = 'l';
+
   function WSCanvas() {
     this.initElements();
     this.initHamers();
@@ -67,7 +69,8 @@ window.WSCanvas = (function() {
     this.drawnStrokes[stroke.id] = true;
     this.localPoints = [];
     this.paintingOn = false;
-    return c.broadcast(stroke);
+    c.broadcast(stroke);
+    return this.rerender();
   };
 
   WSCanvas.prototype.drawStroke = function(stroke) {
@@ -179,15 +182,15 @@ window.WSCanvas = (function() {
     }
     stroke.cancelled = false;
     this.rerender();
-    return stroke.id;
+    stroke.id;
+    id = this.redo(this.undoStack.pop());
+    if (!id) {
+
+    }
   };
 
   WSCanvas.prototype.redoLocal = function() {
-    var id, stroke;
-    id = this.redo(this.undoStack.pop());
-    if (!id) {
-      return;
-    }
+    var stroke;
     stroke = {
       type: 'redo',
       id: Math.random(),
@@ -213,7 +216,17 @@ window.WSCanvas = (function() {
     this.colorPickerIconHammer.on('tap', this.showColorPicker.bind(this));
     this.colorPickerHammer.on('tap', this.selectColor.bind(this));
     this.undoHammer.on('tap', this.undoLocal.bind(this));
-    return this.redoHammer.on('tap', this.redoLocal.bind(this));
+    this.redoHammer.on('tap', this.redoLocal.bind(this));
+    this.circleHammer.on('tap', (function(_this) {
+      return function() {
+        return _this.mode = 'c';
+      };
+    })(this));
+    return this.rectangleHammer.on('tap', (function(_this) {
+      return function() {
+        return _this.mode = 'r';
+      };
+    })(this));
   };
 
   WSCanvas.prototype.initHamers = function() {
@@ -221,7 +234,9 @@ window.WSCanvas = (function() {
     this.colorPickerHammer = new Hammer(this.colorPicker, {});
     this.colorPickerIconHammer = new Hammer(this.colorPickerIcon, {});
     this.undoHammer = new Hammer(document.getElementById('tool-undo'), {});
-    return this.redoHammer = new Hammer(document.getElementById('tool-redo'), {});
+    this.redoHammer = new Hammer(document.getElementById('tool-redo'), {});
+    this.circleHammer = new Hammer(this.circleIcon, {});
+    return this.rectangleHammer = new Hammer(this.rectangleIcon, {});
   };
 
   WSCanvas.prototype.initElements = function() {
@@ -230,6 +245,8 @@ window.WSCanvas = (function() {
     this.ctx = this.canvas.getContext("2d");
     this.ctxTemp = this.canvasTemp.getContext("2d");
     this.colorPickerIcon = document.getElementById('tool-color-picker');
+    this.circleIcon = document.getElementById('tool-circle');
+    this.rectangleIcon = document.getElementById('tool-rectangle');
     return this.colorPicker = document.getElementById('color-picker');
   };
 
