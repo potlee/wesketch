@@ -122,8 +122,7 @@ window.WSCanvas = (function() {
       if (!(points.length > 1)) {
         return;
       }
-      Math.pow(points[0][0] - points[1][0], 2) + Math.pow(points[0][1] - points[1][1], 2);
-      radius = Math.sqrt();
+      radius = Math.sqrt(Math.pow(points[0][0] - points[1][0], 2) + Math.pow(points[0][1] - points[1][1], 2));
       for (_j = 0, _len1 = points.length; _j < _len1; _j++) {
         p = points[_j];
         this.ctx.arc(points[0][0], points[0][1], radius, 0, Math.PI * 2, false);
