@@ -52,6 +52,7 @@ class window.WSCanvas
           e.pageY - @localPoints[0][1]
         )
         @ctxTemp.stroke()
+        @localPoints[1] = [e.pageX, e.pageY]
       else if @mode == 'c'
         @localPoints[1] = [e.pageX, e.pageY]
         @ctxTemp.beginPath()
