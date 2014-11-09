@@ -55,6 +55,7 @@ class window.WSCanvas
         @localPoints[1] = [e.pageX, e.pageY]
       else if @mode == 'c'
         @localPoints[1] = [e.pageX, e.pageY]
+        @localPoints[1] = [e.pageX, e.pageY]
         @ctxTemp.beginPath()
         @ctxTemp.clearRect(0,0,10000,10000)
         @ctxTemp.closePath()

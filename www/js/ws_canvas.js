@@ -61,6 +61,7 @@ window.WSCanvas = (function() {
         return this.localPoints[1] = [e.pageX, e.pageY];
       } else if (this.mode === 'c') {
         this.localPoints[1] = [e.pageX, e.pageY];
+        this.localPoints[1] = [e.pageX, e.pageY];
         this.ctxTemp.beginPath();
         this.ctxTemp.clearRect(0, 0, 10000, 10000);
         this.ctxTemp.closePath();
