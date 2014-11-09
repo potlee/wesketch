@@ -59,12 +59,14 @@ window.WSCanvas = (function() {
         this.ctxTemp.fillRect(this.localPoints[0][0], this.localPoints[0][1], e.pageX - this.localPoints[0][0], e.pageY - this.localPoints[0][1]);
         return this.ctxTemp.stroke();
       } else if (this.mode === 'c') {
+        this.localPoints[1] = [e.pageX, e.pageY];
         this.ctxTemp.beginPath();
         this.ctxTemp.clearRect(0, 0, 10000, 10000);
         this.ctxTemp.closePath();
         radius = Math.sqrt(Math.pow(this.localPoints[0][0] - e.pageX, 2) + Math.pow(this.localPoints[0][1] - e.pageY, 2));
         this.ctxTemp.arc(this.localPoints[0][0], this.localPoints[0][1], radius, 0, Math.PI * 2, true);
-        return this.ctxTemp.fill();
+        this.ctxTemp.fill();
+        return this.localPoints[1] = [e.pageX, e.pageY];
       } else {
         this.localPoints.push([e.pageX, e.pageY]);
         this.ctxTemp.lineTo(e.pageX, e.pageY);
@@ -76,11 +78,6 @@ window.WSCanvas = (function() {
   WSCanvas.prototype.onend = function(e) {
     var stroke;
     e.preventDefault();
-    if (e.touches) {
-      e = e.touches[0];
-    }
-    this.localPoints.push([e.pageX, e.pageY]);
-    console.log(e.pageX);
     this.ctxTemp.closePath();
     stroke = {
       points: this.localPoints,
@@ -89,15 +86,15 @@ window.WSCanvas = (function() {
       mode: this.mode
     };
     this.strokes.push(stroke);
-    this.drawnStrokes[stroke.id] = true;
     this.localPoints = [];
+    this.drawnStrokes[stroke.id] = true;
     this.paintingOn = false;
     c.broadcast(stroke);
     return this.rerender();
   };
 
   WSCanvas.prototype.drawStroke = function(stroke) {
-    var p, points, radius, _i, _j, _len, _len1;
+    var p, points, radius, _i, _len;
     if (stroke.cancelled) {
       return;
     }
@@ -123,11 +120,8 @@ window.WSCanvas = (function() {
         return;
       }
       radius = Math.sqrt(Math.pow(points[0][0] - points[1][0], 2) + Math.pow(points[0][1] - points[1][1], 2));
-      for (_j = 0, _len1 = points.length; _j < _len1; _j++) {
-        p = points[_j];
-        this.ctx.arc(points[0][0], points[0][1], radius, 0, Math.PI * 2, false);
-        this.ctx.fill();
-      }
+      this.ctx.arc(points[0][0], points[0][1], radius, 0, Math.PI * 2, false);
+      this.ctx.fill();
     }
     this.ctx.stroke();
     return this.ctx.closePath();

@@ -53,6 +53,7 @@ class window.WSCanvas
         )
         @ctxTemp.stroke()
       else if @mode == 'c'
+        @localPoints[1] = [e.pageX, e.pageY]
         @ctxTemp.beginPath()
         @ctxTemp.clearRect(0,0,10000,10000)
         @ctxTemp.closePath()
@@ -61,6 +62,7 @@ class window.WSCanvas
         )
         @ctxTemp.arc(@localPoints[0][0], @localPoints[0][1], radius, 0, Math.PI*2, true)
         @ctxTemp.fill()
+        @localPoints[1] = [e.pageX, e.pageY]
       else
         @localPoints.push [e.pageX, e.pageY]
         @ctxTemp.lineTo(e.pageX, e.pageY)
@@ -68,10 +70,9 @@ class window.WSCanvas
 
   onend: (e) ->
     e.preventDefault()
-    if e.touches
-      e = e.touches[0]
-    @localPoints.push [e.pageX, e.pageY]
-    console.log e.pageX
+    #if e.touches
+    #  e = e.touches[0]
+    #@localPoints.push [e.pageX, e.pageY]
     @ctxTemp.closePath()
     stroke =
       points: @localPoints
@@ -79,8 +80,8 @@ class window.WSCanvas
       id: Math.random()
       mode: @mode
     @strokes.push stroke
-    @drawnStrokes[stroke.id] = true
     @localPoints = []
+    @drawnStrokes[stroke.id] = true
     @paintingOn = false
     c.broadcast stroke
     @rerender()
