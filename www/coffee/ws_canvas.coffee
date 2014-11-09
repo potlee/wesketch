@@ -27,7 +27,7 @@ class window.WSCanvas
     @paintingOn = true
     @ctxTemp.beginPath()
     @ctxTemp.lineJoin = @ctxTemp.lineCap = 'round'
-    @ctxTemp.shadowBlur = 2
+    #@ctxTemp.shadowBlur = 2
     @ctxTemp.lineWidth = 3
     @ctxTemp.shadowColor = @color
     @ctxTemp.strokeStyle = @color
@@ -94,7 +94,7 @@ class window.WSCanvas
     points = stroke.points
     @ctx.beginPath()
     @ctx.lineJoin = @ctxTemp.lineCap = 'round'
-    @ctx.shadowBlur = 2
+    #@ctx.shadowBlur = 2
     @ctx.lineWidth = 3
     @ctx.shadowColor = stroke.color
     @ctx.strokeStyle = stroke.color
@@ -102,7 +102,6 @@ class window.WSCanvas
     if stroke.mode == 'l'
       for p in points
         @ctx.lineTo p[0], p[1]
-        @ctx.stroke()
     else if stroke.mode == 'r'
       return if !(points.length > 1)
       @ctx.fillRect(
@@ -113,8 +112,8 @@ class window.WSCanvas
       )
     else if stroke.mode == 'c'
       return if !(points.length > 1)
-      radius = Math.sqrt(
         Math.pow(points[0][0] - points[1][0], 2) + Math.pow(points[0][1] - points[1][1],2)
+      radius = Math.sqrt(
       )
       for p in points
         @ctx.arc(points[0][0], points[0][1], radius,0, Math.PI * 2, false)

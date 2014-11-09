@@ -36,7 +36,6 @@ window.WSCanvas = (function() {
     this.paintingOn = true;
     this.ctxTemp.beginPath();
     this.ctxTemp.lineJoin = this.ctxTemp.lineCap = 'round';
-    this.ctxTemp.shadowBlur = 2;
     this.ctxTemp.lineWidth = 3;
     this.ctxTemp.shadowColor = this.color;
     this.ctxTemp.strokeStyle = this.color;
@@ -105,7 +104,6 @@ window.WSCanvas = (function() {
     points = stroke.points;
     this.ctx.beginPath();
     this.ctx.lineJoin = this.ctxTemp.lineCap = 'round';
-    this.ctx.shadowBlur = 2;
     this.ctx.lineWidth = 3;
     this.ctx.shadowColor = stroke.color;
     this.ctx.strokeStyle = stroke.color;
@@ -114,7 +112,6 @@ window.WSCanvas = (function() {
       for (_i = 0, _len = points.length; _i < _len; _i++) {
         p = points[_i];
         this.ctx.lineTo(p[0], p[1]);
-        this.ctx.stroke();
       }
     } else if (stroke.mode === 'r') {
       if (!(points.length > 1)) {
@@ -123,9 +120,9 @@ window.WSCanvas = (function() {
       this.ctx.fillRect(points[0][0], points[0][1], points[1][0] - points[0][0], points[1][1] - points[0][1]);
     } else if (stroke.mode === 'c') {
       if (!(points.length > 1)) {
-        return;
+        return Math.pow(points[0][0] - points[1][0], 2) + Math.pow(points[0][1] - points[1][1], 2);
       }
-      radius = Math.sqrt(Math.pow(points[0][0] - points[1][0], 2) + Math.pow(points[0][1] - points[1][1], 2));
+      radius = Math.sqrt();
       for (_j = 0, _len1 = points.length; _j < _len1; _j++) {
         p = points[_j];
         this.ctx.arc(points[0][0], points[0][1], radius, 0, Math.PI * 2, false);
