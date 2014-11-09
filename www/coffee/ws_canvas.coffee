@@ -33,24 +33,41 @@ class window.WSCanvas
     @ctxTemp.strokeStyle = @color
     @ctxTemp.moveTo(e.pageX, e.pageY)
     @undoStack = []
-    #@localPoints.push [e.pageX, e.pageY]
+    @localPoints.push [e.pageX, e.pageY]
 
   onmove: (e) ->
     e.preventDefault()
     if e.touches
       e = e.touches[0]
-    if(@paintingOn)
-      @localPoints.push [e.pageX, e.pageY]
-      @ctxTemp.lineTo(e.pageX, e.pageY)
-      @ctxTemp.stroke()
+    if @paintingOn
+      if @mode == 'r'
+        @ctxTemp.beginPath()
+        @ctxTemp.clearRect(0,0,10000,10000)
+        @ctxTemp.closePath()
+        @ctxTemp.fillRect(
+          @localPoints[0][0]
+          @localPoints[0][1]
+          e.pageX - @localPoints[0][0]
+          e.pageY - @localPoints[0][1]
+        )
+        @ctxTemp.stroke()
+      else
+        @localPoints.push [e.pageX, e.pageY]
+        @ctxTemp.lineTo(e.pageX, e.pageY)
+        @ctxTemp.stroke()
 
   onend: (e) ->
     e.preventDefault()
+    if e.touches
+      e = e.touches[0]
+    @localPoints.push [e.pageX, e.pageY]
+    console.log e.pageX
     @ctxTemp.closePath()
     stroke =
       points: @localPoints
       color: @color
       id: Math.random()
+      mode: @mode
     @strokes.push stroke
     @drawnStrokes[stroke.id] = true
     @localPoints = []
@@ -71,9 +88,17 @@ class window.WSCanvas
     @ctx.lineWidth = 3
     @ctx.shadowColor = stroke.color
     @ctx.strokeStyle = stroke.color
-    for p in points
-      @ctx.lineTo p[0], p[1]
-      @ctx.stroke()
+    if stroke.mode == 'l'
+      for p in points
+        @ctx.lineTo p[0], p[1]
+    else
+      @ctx.fillRect(
+        points[0][0]
+        points[0][1]
+        points[1][0] - points[0][0]
+        points[1][1] - points[0][1]
+      )
+    @ctx.stroke()
     @ctx.closePath()
 
   showColorPicker: () ->
@@ -138,9 +163,9 @@ class window.WSCanvas
     @rerender()
     stroke.id
 
+  redoLocal: ->
     id = @redo(@undoStack.pop())
     return if !id
-  redoLocal: ->
     stroke =
       type: 'redo'
       id: Math.random()

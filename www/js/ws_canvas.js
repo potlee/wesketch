@@ -41,7 +41,8 @@ window.WSCanvas = (function() {
     this.ctxTemp.shadowColor = this.color;
     this.ctxTemp.strokeStyle = this.color;
     this.ctxTemp.moveTo(e.pageX, e.pageY);
-    return this.undoStack = [];
+    this.undoStack = [];
+    return this.localPoints.push([e.pageX, e.pageY]);
   };
 
   WSCanvas.prototype.onmove = function(e) {
@@ -50,20 +51,34 @@ window.WSCanvas = (function() {
       e = e.touches[0];
     }
     if (this.paintingOn) {
-      this.localPoints.push([e.pageX, e.pageY]);
-      this.ctxTemp.lineTo(e.pageX, e.pageY);
-      return this.ctxTemp.stroke();
+      if (this.mode === 'r') {
+        this.ctxTemp.beginPath();
+        this.ctxTemp.clearRect(0, 0, 10000, 10000);
+        this.ctxTemp.closePath();
+        this.ctxTemp.fillRect(this.localPoints[0][0], this.localPoints[0][1], e.pageX - this.localPoints[0][0], e.pageY - this.localPoints[0][1]);
+        return this.ctxTemp.stroke();
+      } else {
+        this.localPoints.push([e.pageX, e.pageY]);
+        this.ctxTemp.lineTo(e.pageX, e.pageY);
+        return this.ctxTemp.stroke();
+      }
     }
   };
 
   WSCanvas.prototype.onend = function(e) {
     var stroke;
     e.preventDefault();
+    if (e.touches) {
+      e = e.touches[0];
+    }
+    this.localPoints.push([e.pageX, e.pageY]);
+    console.log(e.pageX);
     this.ctxTemp.closePath();
     stroke = {
       points: this.localPoints,
       color: this.color,
-      id: Math.random()
+      id: Math.random(),
+      mode: this.mode
     };
     this.strokes.push(stroke);
     this.drawnStrokes[stroke.id] = true;
@@ -85,11 +100,15 @@ window.WSCanvas = (function() {
     this.ctx.lineWidth = 3;
     this.ctx.shadowColor = stroke.color;
     this.ctx.strokeStyle = stroke.color;
-    for (_i = 0, _len = points.length; _i < _len; _i++) {
-      p = points[_i];
-      this.ctx.lineTo(p[0], p[1]);
-      this.ctx.stroke();
+    if (stroke.mode === 'l') {
+      for (_i = 0, _len = points.length; _i < _len; _i++) {
+        p = points[_i];
+        this.ctx.lineTo(p[0], p[1]);
+      }
+    } else {
+      this.ctx.fillRect(points[0][0], points[0][1], points[1][0] - points[0][0], points[1][1] - points[0][1]);
     }
+    this.ctx.stroke();
     return this.ctx.closePath();
   };
 
@@ -182,15 +201,15 @@ window.WSCanvas = (function() {
     }
     stroke.cancelled = false;
     this.rerender();
-    stroke.id;
-    id = this.redo(this.undoStack.pop());
-    if (!id) {
-
-    }
+    return stroke.id;
   };
 
   WSCanvas.prototype.redoLocal = function() {
-    var stroke;
+    var id, stroke;
+    id = this.redo(this.undoStack.pop());
+    if (!id) {
+      return;
+    }
     stroke = {
       type: 'redo',
       id: Math.random(),
