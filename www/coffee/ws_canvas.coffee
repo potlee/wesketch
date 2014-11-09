@@ -112,6 +112,7 @@ class window.WSCanvas
         points[1][1] - points[0][1]
       )
     else if stroke.mode == 'c'
+      return if !(points.length > 1)
       radius = Math.sqrt(
         Math.pow(points[0][0] - points[1][0], 2) + Math.pow(points[0][1] - points[1][1],2)
       )
