@@ -1,16 +1,14 @@
 class window.WSCanvas
+  undoStack: []
+  color: '#666'
+  localPoints: []
+  strokes: []
+  paintingOn: false
+  drawnStrokes: {}
+
   constructor: () ->
-    @canvas = document.getElementById("canvas")
-    @canvasTemp = document.getElementById("canvas-temp")
-    @ctx = @canvas.getContext("2d")
-    @ctxTemp = @canvasTemp.getContext("2d")
-    @color = '#666'
-    @colorPickerIcon = document.getElementById('tool-color-picker')
-    @colorPicker = document.getElementById('color-picker')
-    @colorPickerHammer = new Hammer @colorPicker, {}
-    @colorPickerIconHammer = new Hammer @colorPickerIcon, {}
-    @undoHammer = new Hammer document.getElementById('tool-undo'), {}
-    @redoHammer = new Hammer document.getElementById('tool-redo'), {}
+    @initElements()
+    @initHamers()
     @attachEvents()
 
   fitToScreen: () ->
@@ -20,10 +18,6 @@ class window.WSCanvas
     @canvas.width = @canvas.clientWidth
     @canvasTemp.height = @canvas.clientHeight
     @canvasTemp.width = @canvas.clientWidth
-
-  localPoints: []
-  strokes: []
-  paintingOn: false
 
   onstart: (e) ->
     e.preventDefault()
@@ -37,6 +31,7 @@ class window.WSCanvas
     @ctxTemp.shadowColor = @color
     @ctxTemp.strokeStyle = @color
     @ctxTemp.moveTo(e.pageX, e.pageY)
+    @undoStack = []
     #@localPoints.push [e.pageX, e.pageY]
 
   onmove: (e) ->
@@ -56,6 +51,7 @@ class window.WSCanvas
       color: @color
       id: Math.random()
     @strokes.push stroke
+    @drawnStrokes[stroke.id] = true
     @localPoints = []
     @paintingOn = false
     c.broadcast stroke
@@ -106,13 +102,6 @@ class window.WSCanvas
     i-- while @strokes[i].cancelled and i != 0
     @strokes[i]
 
-  lastCancelledStroke: ->
-    i = @strokes.length - 1
-    i-- while @strokes[i].cancelled and i != 0
-    return if i == @strokes.length - 1
-    i++
-    @strokes[i]
-
   strokeWithId: (id) ->
     i = @strokes.length - 1
     i-- while @strokes[i].id != id and i != 0
@@ -126,59 +115,37 @@ class window.WSCanvas
       stroke = @lastUncancelledStroke()
     return if !stroke
     stroke.cancelled = true
+    @undoStack.push stroke.id
     @rerender()
     stroke.id
 
   undoLocal: ->
     id = @undo()
     return if !id
-    c.broadcast
+    stroke =
       type: 'undo'
-      id: id
+      id: Math.random()
+      strokeId: id
+    c.broadcast stroke
+    @drawnStrokes[stroke.id] = true
 
   redo: (id) ->
     stroke = {}
-    if id
-      stroke = @strokeWithId(id)
-    else
-      stroke = @lastCancelledStroke()
+    stroke = @strokeWithId(id)
     return if !stroke
     stroke.cancelled = false
     @rerender()
     stroke.id
 
   redoLocal: ->
-    id = @redo()
+    id = @redo(@undoStack.pop())
     return if !id
-    c.broadcast
+    stroke =
       type: 'redo'
-      id: id
-
-  #  i = @strokes.length - 1
-  #  while i
-  #    if (!id and !@strokes[i].cancelled) or @strokes[i].id == id
-  #      @strokes[i].cancelled = true
-  #      if !id
-  #        c.broadcast
-  #          type: 'undo'
-  #          stroke_id: @strokes[i].id
-  #      break
-  #    i--
-  #  @rerender()
-  #  @redoQueue.push @strokes.pop()
-  #  @ctx.clearRect(0, 0, canvas.width, canvas.height)
-  #  for s in strokes
-  #    @drawStroke s
-
-  #redo: () ->
-  #  i = @strokes.length - 1
-  #  while i
-  #    if @strokes[i].cancelled
-  #      @strokes[i].cancelled = false
-  #      break
-  #    if @strokes[i].cancelled == undefined
-  #      break
-  #  @rerender()
+      id: Math.random()
+      strokeId: id
+    c.broadcast stroke
+    @drawnStrokes[stroke.id] = true
 
   attachEvents: () ->
     if (window.navigator.msPointerEnabled)
@@ -197,9 +164,17 @@ class window.WSCanvas
     @undoHammer.on 'tap', @undoLocal.bind(this)
     @redoHammer.on 'tap', @redoLocal.bind(this)
 
-  # optimize to O(1) with map
-  strokeIsDrawn: (stroke) ->
-    for s in @strokes
-      if s.id == stroke.id
-        return true
-    return false
+  initHamers: ->
+    @ctxTempHammer = new Hammer @canvasTemp, {}
+    @colorPickerHammer = new Hammer @colorPicker, {}
+    @colorPickerIconHammer = new Hammer @colorPickerIcon, {}
+    @undoHammer = new Hammer document.getElementById('tool-undo'), {}
+    @redoHammer = new Hammer document.getElementById('tool-redo'), {}
+
+  initElements: ->
+    @canvas = document.getElementById("canvas")
+    @canvasTemp = document.getElementById("canvas-temp")
+    @ctx = @canvas.getContext("2d")
+    @ctxTemp = @canvasTemp.getContext("2d")
+    @colorPickerIcon = document.getElementById('tool-color-picker')
+    @colorPicker = document.getElementById('color-picker')

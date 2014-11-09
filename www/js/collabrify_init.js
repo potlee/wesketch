@@ -32,13 +32,17 @@ document.getElementById('go').onclick = function() {
   })["catch"](console.log);
   return c.on('event', function(e) {
     e = e.data();
-    if (e.type === 'undo') {
-      return wsCanvas.undo(e.id);
-    } else if (e.type === 'redo') {
-      return wsCanvas.redo(e.id);
-    } else if (!wsCanvas.strokeIsDrawn(e)) {
-      wsCanvas.strokes.push(e);
-      return wsCanvas.drawStroke(e);
+    if (wsCanvas.drawnStrokes[e.id]) {
+      return;
     }
+    if (e.type === 'undo') {
+      wsCanvas.undo(e.strokeId);
+    } else if (e.type === 'redo') {
+      wsCanvas.redo(e.strokeId);
+    } else {
+      wsCanvas.strokes.push(e);
+      wsCanvas.drawStroke(e);
+    }
+    return wsCanvas.drawnStrokes[e.id] = true;
   });
 };

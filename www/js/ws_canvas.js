@@ -1,16 +1,19 @@
 window.WSCanvas = (function() {
+  WSCanvas.prototype.undoStack = [];
+
+  WSCanvas.prototype.color = '#666';
+
+  WSCanvas.prototype.localPoints = [];
+
+  WSCanvas.prototype.strokes = [];
+
+  WSCanvas.prototype.paintingOn = false;
+
+  WSCanvas.prototype.drawnStrokes = {};
+
   function WSCanvas() {
-    this.canvas = document.getElementById("canvas");
-    this.canvasTemp = document.getElementById("canvas-temp");
-    this.ctx = this.canvas.getContext("2d");
-    this.ctxTemp = this.canvasTemp.getContext("2d");
-    this.color = '#666';
-    this.colorPickerIcon = document.getElementById('tool-color-picker');
-    this.colorPicker = document.getElementById('color-picker');
-    this.colorPickerHammer = new Hammer(this.colorPicker, {});
-    this.colorPickerIconHammer = new Hammer(this.colorPickerIcon, {});
-    this.undoHammer = new Hammer(document.getElementById('tool-undo'), {});
-    this.redoHammer = new Hammer(document.getElementById('tool-redo'), {});
+    this.initElements();
+    this.initHamers();
     this.attachEvents();
   }
 
@@ -22,12 +25,6 @@ window.WSCanvas = (function() {
     this.canvasTemp.height = this.canvas.clientHeight;
     return this.canvasTemp.width = this.canvas.clientWidth;
   };
-
-  WSCanvas.prototype.localPoints = [];
-
-  WSCanvas.prototype.strokes = [];
-
-  WSCanvas.prototype.paintingOn = false;
 
   WSCanvas.prototype.onstart = function(e) {
     e.preventDefault();
@@ -41,7 +38,8 @@ window.WSCanvas = (function() {
     this.ctxTemp.lineWidth = 3;
     this.ctxTemp.shadowColor = this.color;
     this.ctxTemp.strokeStyle = this.color;
-    return this.ctxTemp.moveTo(e.pageX, e.pageY);
+    this.ctxTemp.moveTo(e.pageX, e.pageY);
+    return this.undoStack = [];
   };
 
   WSCanvas.prototype.onmove = function(e) {
@@ -66,6 +64,7 @@ window.WSCanvas = (function() {
       id: Math.random()
     };
     this.strokes.push(stroke);
+    this.drawnStrokes[stroke.id] = true;
     this.localPoints = [];
     this.paintingOn = false;
     return c.broadcast(stroke);
@@ -130,19 +129,6 @@ window.WSCanvas = (function() {
     return this.strokes[i];
   };
 
-  WSCanvas.prototype.lastCancelledStroke = function() {
-    var i;
-    i = this.strokes.length - 1;
-    while (this.strokes[i].cancelled && i !== 0) {
-      i--;
-    }
-    if (i === this.strokes.length - 1) {
-      return;
-    }
-    i++;
-    return this.strokes[i];
-  };
-
   WSCanvas.prototype.strokeWithId = function(id) {
     var i;
     i = this.strokes.length - 1;
@@ -164,30 +150,30 @@ window.WSCanvas = (function() {
       return;
     }
     stroke.cancelled = true;
+    this.undoStack.push(stroke.id);
     this.rerender();
     return stroke.id;
   };
 
   WSCanvas.prototype.undoLocal = function() {
-    var id;
+    var id, stroke;
     id = this.undo();
     if (!id) {
       return;
     }
-    return c.broadcast({
+    stroke = {
       type: 'undo',
-      id: id
-    });
+      id: Math.random(),
+      strokeId: id
+    };
+    c.broadcast(stroke);
+    return this.drawnStrokes[stroke.id] = true;
   };
 
   WSCanvas.prototype.redo = function(id) {
     var stroke;
     stroke = {};
-    if (id) {
-      stroke = this.strokeWithId(id);
-    } else {
-      stroke = this.lastCancelledStroke();
-    }
+    stroke = this.strokeWithId(id);
     if (!stroke) {
       return;
     }
@@ -197,15 +183,18 @@ window.WSCanvas = (function() {
   };
 
   WSCanvas.prototype.redoLocal = function() {
-    var id;
-    id = this.redo();
+    var id, stroke;
+    id = this.redo(this.undoStack.pop());
     if (!id) {
       return;
     }
-    return c.broadcast({
+    stroke = {
       type: 'redo',
-      id: id
-    });
+      id: Math.random(),
+      strokeId: id
+    };
+    c.broadcast(stroke);
+    return this.drawnStrokes[stroke.id] = true;
   };
 
   WSCanvas.prototype.attachEvents = function() {
@@ -227,16 +216,21 @@ window.WSCanvas = (function() {
     return this.redoHammer.on('tap', this.redoLocal.bind(this));
   };
 
-  WSCanvas.prototype.strokeIsDrawn = function(stroke) {
-    var s, _i, _len, _ref;
-    _ref = this.strokes;
-    for (_i = 0, _len = _ref.length; _i < _len; _i++) {
-      s = _ref[_i];
-      if (s.id === stroke.id) {
-        return true;
-      }
-    }
-    return false;
+  WSCanvas.prototype.initHamers = function() {
+    this.ctxTempHammer = new Hammer(this.canvasTemp, {});
+    this.colorPickerHammer = new Hammer(this.colorPicker, {});
+    this.colorPickerIconHammer = new Hammer(this.colorPickerIcon, {});
+    this.undoHammer = new Hammer(document.getElementById('tool-undo'), {});
+    return this.redoHammer = new Hammer(document.getElementById('tool-redo'), {});
+  };
+
+  WSCanvas.prototype.initElements = function() {
+    this.canvas = document.getElementById("canvas");
+    this.canvasTemp = document.getElementById("canvas-temp");
+    this.ctx = this.canvas.getContext("2d");
+    this.ctxTemp = this.canvasTemp.getContext("2d");
+    this.colorPickerIcon = document.getElementById('tool-color-picker');
+    return this.colorPicker = document.getElementById('color-picker');
   };
 
   return WSCanvas;
