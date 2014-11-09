@@ -115,9 +115,8 @@ class window.WSCanvas
       radius = Math.sqrt(
         Math.pow(points[0][0] - points[1][0], 2) + Math.pow(points[0][1] - points[1][1],2)
       )
-      for p in points
-        @ctx.arc(points[0][0], points[0][1], radius,0, Math.PI * 2, false)
-        @ctx.fill()
+      @ctx.arc(points[0][0], points[0][1], radius,0, Math.PI * 2, false)
+      @ctx.fill()
     @ctx.stroke()
     @ctx.closePath()
 
