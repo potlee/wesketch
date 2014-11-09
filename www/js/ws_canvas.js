@@ -117,6 +117,9 @@ window.WSCanvas = (function() {
         this.ctx.stroke();
       }
     } else if (stroke.mode === 'r') {
+      if (!(points.length > 1)) {
+        return;
+      }
       this.ctx.fillRect(points[0][0], points[0][1], points[1][0] - points[0][0], points[1][1] - points[0][1]);
     } else if (stroke.mode === 'c') {
       radius = Math.sqrt(Math.pow(points[0][0] - points[1][0], 2) + Math.pow(points[0][1] - points[1][1], 2));

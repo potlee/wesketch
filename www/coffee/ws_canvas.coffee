@@ -104,6 +104,7 @@ class window.WSCanvas
         @ctx.lineTo p[0], p[1]
         @ctx.stroke()
     else if stroke.mode == 'r'
+      return if !(points.length > 1)
       @ctx.fillRect(
         points[0][0]
         points[0][1]
