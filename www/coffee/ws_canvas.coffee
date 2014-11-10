@@ -216,14 +216,22 @@ class window.WSCanvas
     @brushHammer.on 'tap', => @mode = 'l'
 
   initHamers: ->
-    @ctxTempHammer = new Hammer @canvasTemp, {}
-    @colorPickerHammer = new Hammer @colorPicker, {}
-    @colorPickerIconHammer = new Hammer @colorPickerIcon, {}
-    @undoHammer = new Hammer document.getElementById('tool-undo'), {}
-    @redoHammer = new Hammer document.getElementById('tool-redo'), {}
-    @circleHammer = new Hammer @circleIcon, {}
-    @rectangleHammer = new Hammer @rectangleIcon, {}
-    @brushHammer = new Hammer @brushIcon, {}
+    options =
+      recognizers: [
+        [Hammer.Tap, {
+          time: 2000
+          threshold: 5
+          interval: 1
+        }]
+      ]
+    @ctxTempHammer = new Hammer.Manager @canvasTemp, options
+    @colorPickerHammer = new Hammer.Manager @colorPicker, options
+    @colorPickerIconHammer = new Hammer.Manager @colorPickerIcon, options
+    @undoHammer = new Hammer.Manager document.getElementById('tool-undo'), options
+    @redoHammer = new Hammer.Manager document.getElementById('tool-redo'), options
+    @circleHammer = new Hammer.Manager @circleIcon, options
+    @rectangleHammer = new Hammer.Manager @rectangleIcon, options
+    @brushHammer = new Hammer.Manager @brushIcon, options
 
   initElements: ->
     @canvas = document.getElementById("canvas")
