@@ -273,16 +273,13 @@ window.WSCanvas = (function() {
   WSCanvas.prototype.initHamers = function() {
     var options;
     options = {
-      recognizers: [[Hammer.Tap, {}]]
+      interval: 1,
+      time: 2000,
+      threshold: 5
     };
-    this.ctxTempHammer = new Hammer.Manager(this.canvasTemp, options);
-    this.colorPickerHammer = new Hammer.Manager(this.colorPicker, options);
-    this.colorPickerIconHammer = new Hammer.Manager(this.colorPickerIcon, options);
-    this.undoHammer = new Hammer.Manager(document.getElementById('tool-undo'), options);
-    this.redoHammer = new Hammer.Manager(document.getElementById('tool-redo'), options);
-    this.circleHammer = new Hammer.Manager(this.circleIcon, options);
-    this.rectangleHammer = new Hammer.Manager(this.rectangleIcon, options);
-    return this.brushHammer = new Hammer.Manager(this.brushIcon, options);
+    return [this.ctxTempHammer = new Hammer(this.canvasTemp), this.colorPickerHammer = new Hammer(this.colorPicker), this.colorPickerIconHammer = new Hammer(this.colorPickerIcon), this.undoHammer = new Hammer(document.getElementById('tool-undo')), this.redoHammer = new Hammer(document.getElementById('tool-redo')), this.circleHammer = new Hammer(this.circleIcon), this.rectangleHammer = new Hammer(this.rectangleIcon), this.brushHammer = new Hammer(this.brushIcon)].forEach(function(h) {
+      return h.get('tap').set(options);
+    });
   };
 
   WSCanvas.prototype.initElements = function() {

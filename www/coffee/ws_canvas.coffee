@@ -89,11 +89,8 @@ class window.WSCanvas
     @rerender()
 
   drawStroke: (stroke) ->
-    #console.log stroke
     if stroke.cancelled
       return
-    #if stroke.type == 'undo'
-    #  return @undo stroke.stroke_id
     points = stroke.points
     @ctx.beginPath()
     @ctx.lineJoin = @ctxTemp.lineCap = 'round'
@@ -217,21 +214,20 @@ class window.WSCanvas
 
   initHamers: ->
     options =
-      recognizers: [
-        [Hammer.Tap, {
-          #time: 2000
-          #interval: 1
-          #threshold: 5
-        }]
-      ]
-    @ctxTempHammer = new Hammer.Manager @canvasTemp, options
-    @colorPickerHammer = new Hammer.Manager @colorPicker, options
-    @colorPickerIconHammer = new Hammer.Manager @colorPickerIcon, options
-    @undoHammer = new Hammer.Manager document.getElementById('tool-undo'), options
-    @redoHammer = new Hammer.Manager document.getElementById('tool-redo'), options
-    @circleHammer = new Hammer.Manager @circleIcon, options
-    @rectangleHammer = new Hammer.Manager @rectangleIcon, options
-    @brushHammer = new Hammer.Manager @brushIcon, options
+      interval: 1
+      time: 2000
+      threshold: 5
+    [
+      @ctxTempHammer = new Hammer @canvasTemp
+      @colorPickerHammer = new Hammer @colorPicker
+      @colorPickerIconHammer = new Hammer @colorPickerIcon
+      @undoHammer = new Hammer document.getElementById('tool-undo')
+      @redoHammer = new Hammer document.getElementById('tool-redo')
+      @circleHammer = new Hammer @circleIcon
+      @rectangleHammer = new Hammer @rectangleIcon
+      @brushHammer = new Hammer @brushIcon
+    ].forEach (h) ->
+      h.get('tap').set options
 
   initElements: ->
     @canvas = document.getElementById("canvas")
