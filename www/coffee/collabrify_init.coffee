@@ -30,6 +30,8 @@ document.getElementById('go').onclick = ->
       console.log 'JOINED: ', session
       alert 'JOINED: '
 
+    .catch (e) -> alert(e)
+
   .then () ->
     spinner.stop()
     wsCanvas.fitToScreen()
@@ -51,3 +53,4 @@ document.getElementById('go').onclick = ->
       wsCanvas.strokes.push(e)
       wsCanvas.drawStroke(e)
     wsCanvas.drawnStrokes[e.id] = true
+  c.on 'error', (e) -> alert(e)

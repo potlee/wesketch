@@ -28,6 +28,8 @@ document.getElementById('go').onclick = function() {
     }).then(function(session) {
       console.log('JOINED: ', session);
       return alert('JOINED: ');
+    })["catch"](function(e) {
+      return alert(e);
     });
   }).then(function() {
     spinner.stop();
@@ -35,7 +37,7 @@ document.getElementById('go').onclick = function() {
   })["catch"](function(x) {
     return alert(JSON.stringify(x));
   });
-  return c.on('event', function(e) {
+  c.on('event', function(e) {
     e = e.data();
     if (wsCanvas.drawnStrokes[e.id]) {
       return;
@@ -49,5 +51,8 @@ document.getElementById('go').onclick = function() {
       wsCanvas.drawStroke(e);
     }
     return wsCanvas.drawnStrokes[e.id] = true;
+  });
+  return c.on('error', function(e) {
+    return alert(e);
   });
 };
