@@ -2,6 +2,10 @@ console.log("INIT COLLABRIFY FROM coffee");
 
 window.wsCanvas = new WSCanvas;
 
+document.body.addEventListener('touchstart', (function(e) {
+  return e.preventDefault();
+}), true);
+
 document.getElementById('go').onclick = function() {
   var tag;
   document.getElementById('welcome-screen').classList.add('hidden');
