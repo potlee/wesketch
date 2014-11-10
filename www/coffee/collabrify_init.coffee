@@ -2,8 +2,6 @@ console.log "INIT COLLABRIFY FROM coffee"
 
 window.wsCanvas = new WSCanvas
 
-document.body.addEventListener 'touchstart', ((e) -> e.preventDefault()), true
-
 document.getElementById('go').onclick = ->
   document.getElementById('welcome-screen').classList.add('hidden')
   spinner.spin(document.body)
