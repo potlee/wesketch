@@ -17,6 +17,7 @@ document.getElementById('go').onclick = ->
 
   .then (session) ->
     console.log('CREATED: ', session)
+    alert('CREATED: ')
     spinner.stop()
 
   .catch (error) ->
@@ -26,6 +27,7 @@ document.getElementById('go').onclick = ->
 
     .then (session) ->
       console.log 'JOINED: ', session
+      alert 'JOINED: '
 
   .then () ->
     spinner.stop()

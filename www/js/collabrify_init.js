@@ -17,6 +17,7 @@ document.getElementById('go').onclick = function() {
     startPaused: false
   }).then(function(session) {
     console.log('CREATED: ', session);
+    alert('CREATED: ');
     return spinner.stop();
   })["catch"](function(error) {
     return c.listSessions([tag]).then(function(sessions) {
@@ -24,7 +25,8 @@ document.getElementById('go').onclick = function() {
         session: sessions[0]
       });
     }).then(function(session) {
-      return console.log('JOINED: ', session);
+      console.log('JOINED: ', session);
+      return alert('JOINED: ');
     });
   }).then(function() {
     spinner.stop();
