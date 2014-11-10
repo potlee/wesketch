@@ -7,6 +7,7 @@ document.getElementById('go').onclick = function() {
   document.getElementById('welcome-screen').classList.add('hidden');
   spinner.spin(document.body);
   tag = 'watercycledemo' + document.getElementById('sketch-name').value;
+  alert(CollabrifyClient);
   window.c = new CollabrifyClient({
     application_id: '4891981239025664',
     user_id: 'collabrify.tester@gmail.com'
