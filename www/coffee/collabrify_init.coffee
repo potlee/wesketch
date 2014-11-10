@@ -31,7 +31,7 @@ document.getElementById('go').onclick = ->
     spinner.stop()
     wsCanvas.fitToScreen()
 
-  .catch console.log
+  .catch (x) -> alert JSON.stringify(x)
 
   c.on 'event', (e) ->
     #if c.participant.participant_id.low == e.author_participant_id.low

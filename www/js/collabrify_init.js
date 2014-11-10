@@ -29,7 +29,9 @@ document.getElementById('go').onclick = function() {
   }).then(function() {
     spinner.stop();
     return wsCanvas.fitToScreen();
-  })["catch"](console.log);
+  })["catch"](function(x) {
+    return alert(JSON.stringify(x));
+  });
   return c.on('event', function(e) {
     e = e.data();
     if (wsCanvas.drawnStrokes[e.id]) {
