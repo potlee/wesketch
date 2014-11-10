@@ -273,15 +273,7 @@ window.WSCanvas = (function() {
   WSCanvas.prototype.initHamers = function() {
     var options;
     options = {
-      recognizers: [
-        [
-          Hammer.Tap, {
-            time: 2000,
-            threshold: 5,
-            interval: 1
-          }
-        ]
-      ]
+      recognizers: [[Hammer.Tap, {}]]
     };
     this.ctxTempHammer = new Hammer.Manager(this.canvasTemp, options);
     this.colorPickerHammer = new Hammer.Manager(this.colorPicker, options);

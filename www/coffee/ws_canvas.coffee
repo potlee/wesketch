@@ -219,9 +219,9 @@ class window.WSCanvas
     options =
       recognizers: [
         [Hammer.Tap, {
-          time: 2000
-          threshold: 5
-          interval: 1
+          #time: 2000
+          #interval: 1
+          #threshold: 5
         }]
       ]
     @ctxTempHammer = new Hammer.Manager @canvasTemp, options
