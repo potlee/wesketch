@@ -51,6 +51,7 @@ window.WSCanvas = (function() {
     if (e.touches) {
       e = e.touches[0];
     }
+    console.log(e.pageY);
     if (this.paintingOn) {
       if (this.mode === 'r') {
         this.ctxTemp.beginPath();
