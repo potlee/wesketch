@@ -56,6 +56,13 @@
   margin-bottom: 15%;
 }
 
+.move-icon {
+  border-color: #ddd;
+  border-width: 2px;
+  border-style: dashed;
+}
+
+
 .rectangle-icon {
   background-color: #ddd;
 }

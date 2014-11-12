@@ -1,5 +1,9 @@
 console.log("INIT COLLABRIFY FROM coffee");
 
+window.onerror = function(e) {
+  return alert(JSON.stringify(e));
+};
+
 window.wsCanvas = new WSCanvas;
 
 document.getElementById('go').onclick = function() {
@@ -7,7 +11,6 @@ document.getElementById('go').onclick = function() {
   document.getElementById('welcome-screen').classList.add('hidden');
   spinner.spin(document.body);
   tag = 'watercycledemo' + document.getElementById('sketch-name').value;
-  alert(CollabrifyClient);
   window.c = new CollabrifyClient({
     application_id: '4891981239025664',
     user_id: 'collabrify.tester@gmail.com'
@@ -18,7 +21,6 @@ document.getElementById('go').onclick = function() {
     startPaused: false
   }).then(function(session) {
     console.log('CREATED: ', session);
-    alert('CREATED: ');
     return spinner.stop();
   })["catch"](function(error) {
     return c.listSessions([tag]).then(function(sessions) {
@@ -26,8 +28,7 @@ document.getElementById('go').onclick = function() {
         session: sessions[0]
       });
     }).then(function(session) {
-      console.log('JOINED: ', session);
-      return alert('JOINED: ');
+      return console.log('JOINED: ', session);
     })["catch"](function(e) {
       return alert(e);
     });

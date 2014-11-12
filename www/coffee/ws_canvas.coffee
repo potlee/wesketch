@@ -40,7 +40,6 @@ class window.WSCanvas
     e.preventDefault()
     if e.touches
       e = e.touches[0]
-    console.log e.pageY
     if @paintingOn
       if @mode == 'r'
         @ctxTemp.beginPath()

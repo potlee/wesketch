@@ -1,12 +1,11 @@
 console.log "INIT COLLABRIFY FROM coffee"
-
+window.onerror = (e) -> alert JSON.stringify(e)
 window.wsCanvas = new WSCanvas
 
 document.getElementById('go').onclick = ->
   document.getElementById('welcome-screen').classList.add('hidden')
   spinner.spin(document.body)
   tag = 'watercycledemo' + document.getElementById('sketch-name').value
-  alert(CollabrifyClient)
   window.c = new CollabrifyClient
     application_id: '4891981239025664',
     user_id: 'collabrify.tester@gmail.com'
@@ -18,7 +17,7 @@ document.getElementById('go').onclick = ->
 
   .then (session) ->
     console.log('CREATED: ', session)
-    alert('CREATED: ')
+    #alert('CREATED: ')
     spinner.stop()
 
   .catch (error) ->
@@ -28,7 +27,7 @@ document.getElementById('go').onclick = ->
 
     .then (session) ->
       console.log 'JOINED: ', session
-      alert 'JOINED: '
+      #alert 'JOINED: '
 
     .catch (e) -> alert(e)
 
