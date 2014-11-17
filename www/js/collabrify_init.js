@@ -6,6 +6,10 @@ window.onerror = function(e) {
 
 window.wsCanvas = new WSCanvas;
 
+if (Keyboard) {
+  Keyboard.automaticScrollToTopOnHiding = true;
+}
+
 document.addEventListener('focusout', function(e) {
   return scrollTo(0, 0);
 });

@@ -6,6 +6,10 @@ window.onerror = function(e) {
 
 window.wsCanvas = new WSCanvas;
 
+document.addEventListener('focusout', function(e) {
+  return scrollTo(0, 0);
+});
+
 document.getElementById('go').onclick = function() {
   var tag;
   document.getElementById('welcome-screen').classList.add('hidden');
