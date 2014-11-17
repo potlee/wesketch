@@ -74,7 +74,7 @@ window.WSCanvas = (function() {
         break;
       case 'm':
         this.localPoints[1] = [e.pageX, e.pageY];
-        this.ctxTemp.putImageData(this.moveImageData, this.moveRect[0][0] - this.localPoints[0][0] + e.pageX, this.moveRect[0][1] - this.localPoints[0][1] + e.pageY);
+        this.ctxTemp.putImageData(this.moveImageData, Math.min(this.moveRect[0][0], this.moveRect[1][0]) - this.localPoints[0][0] + e.pageX, Math.min(this.moveRect[0][1], this.moveRect[1][1]) - this.localPoints[0][1] + e.pageY);
         break;
       case 'c':
         this.localPoints[1] = [e.pageX, e.pageY];
@@ -159,7 +159,7 @@ window.WSCanvas = (function() {
         rect = this.rect(stroke.moveRect);
         tempImageData = (_ref1 = this.ctx).getImageData.apply(_ref1, rect);
         (_ref2 = this.ctx).clearRect.apply(_ref2, rect);
-        this.ctx.putImageData(tempImageData, stroke.moveRect[0][0] - points[0][0] + points[1][0], stroke.moveRect[0][1] - points[0][1] + points[1][1]);
+        this.ctx.putImageData(tempImageData, Math.min(stroke.moveRect[0][0], stroke.moveRect[1][0]) - points[0][0] + points[1][0], Math.min(stroke.moveRect[0][1], stroke.moveRect[1][1]) - points[0][1] + points[1][1]);
     }
     this.ctx.stroke();
     return this.ctx.closePath();

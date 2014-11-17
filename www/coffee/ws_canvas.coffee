@@ -62,8 +62,8 @@ class window.WSCanvas
         @localPoints[1] = [e.pageX, e.pageY]
         @ctxTemp.putImageData(
           @moveImageData
-          @moveRect[0][0] - @localPoints[0][0] + e.pageX
-          @moveRect[0][1] - @localPoints[0][1] + e.pageY
+          Math.min(@moveRect[0][0], @moveRect[1][0]) - @localPoints[0][0] + e.pageX
+          Math.min(@moveRect[0][1], @moveRect[1][1]) - @localPoints[0][1] + e.pageY
         )
 
       when 'c'
@@ -135,8 +135,8 @@ class window.WSCanvas
         @ctx.clearRect rect...
         @ctx.putImageData(
           tempImageData
-          stroke.moveRect[0][0] - points[0][0] + points[1][0]
-          stroke.moveRect[0][1] - points[0][1] + points[1][1]
+          Math.min(stroke.moveRect[0][0], stroke.moveRect[1][0]) - points[0][0] + points[1][0]
+          Math.min(stroke.moveRect[0][1], stroke.moveRect[1][1]) - points[0][1] + points[1][1]
         )
 
     @ctx.stroke()
