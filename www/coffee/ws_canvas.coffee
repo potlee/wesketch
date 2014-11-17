@@ -43,7 +43,9 @@ class window.WSCanvas
     e.preventDefault()
     return unless @paintingOn
     e = e.touches[0] if e.touches
+    @ctxTemp.beginPath()
     @ctxTemp.clearRect(0,0,10000,10000)
+    @ctxTemp.closePath()
     switch @mode
       when 'r'
         @localPoints[1] = [e.pageX, e.pageY]
@@ -75,7 +77,8 @@ class window.WSCanvas
 
       when 'l'
         @localPoints.push [e.pageX, e.pageY]
-        @ctxTemp.lineTo(e.pageX, e.pageY)
+        for p in @localPoints
+          @ctxTemp.lineTo(p[0],p[1])
 
       else throw new Error('mode: ', @mode)
 

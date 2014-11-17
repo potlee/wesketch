@@ -48,7 +48,7 @@ window.WSCanvas = (function() {
   };
 
   WSCanvas.prototype.onmove = function(e) {
-    var radius, _ref, _ref1;
+    var p, radius, _i, _len, _ref, _ref1, _ref2;
     e.preventDefault();
     if (!this.paintingOn) {
       return;
@@ -56,7 +56,9 @@ window.WSCanvas = (function() {
     if (e.touches) {
       e = e.touches[0];
     }
+    this.ctxTemp.beginPath();
     this.ctxTemp.clearRect(0, 0, 10000, 10000);
+    this.ctxTemp.closePath();
     switch (this.mode) {
       case 'r':
         this.localPoints[1] = [e.pageX, e.pageY];
@@ -83,7 +85,11 @@ window.WSCanvas = (function() {
         break;
       case 'l':
         this.localPoints.push([e.pageX, e.pageY]);
-        this.ctxTemp.lineTo(e.pageX, e.pageY);
+        _ref2 = this.localPoints;
+        for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+          p = _ref2[_i];
+          this.ctxTemp.lineTo(p[0], p[1]);
+        }
         break;
       default:
         throw new Error('mode: ', this.mode);

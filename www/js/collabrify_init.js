@@ -6,7 +6,7 @@ window.onerror = function(e) {
 
 window.wsCanvas = new WSCanvas;
 
-if (Keyboard) {
+if (window.Keyboard) {
   Keyboard.automaticScrollToTopOnHiding = true;
 }
 

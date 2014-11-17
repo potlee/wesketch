@@ -1,7 +1,7 @@
 console.log "INIT COLLABRIFY FROM coffee"
 window.onerror = (e) -> alert JSON.stringify(e)
 window.wsCanvas = new WSCanvas
-Keyboard.automaticScrollToTopOnHiding = true if Keyboard
+Keyboard.automaticScrollToTopOnHiding = true if window.Keyboard
 document.addEventListener 'focusout', (e) -> scrollTo(0, 0)
 document.getElementById('go').onclick = ->
   document.getElementById('welcome-screen').classList.add('hidden')
