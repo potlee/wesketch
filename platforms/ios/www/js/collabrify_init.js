@@ -1,12 +1,16 @@
 console.log("INIT COLLABRIFY FROM coffee");
 
+window.onerror = function(e) {
+  return alert(JSON.stringify(e));
+};
+
 window.wsCanvas = new WSCanvas;
 
 document.getElementById('go').onclick = function() {
   var tag;
   document.getElementById('welcome-screen').classList.add('hidden');
   spinner.spin(document.body);
-  tag = document.getElementById('sketch-name').value;
+  tag = 'watercycledemo' + document.getElementById('sketch-name').value;
   window.c = new CollabrifyClient({
     application_id: '4891981239025664',
     user_id: 'collabrify.tester@gmail.com'
@@ -25,17 +29,31 @@ document.getElementById('go').onclick = function() {
       });
     }).then(function(session) {
       return console.log('JOINED: ', session);
+    })["catch"](function(e) {
+      return alert(e);
     });
   }).then(function() {
     spinner.stop();
     return wsCanvas.fitToScreen();
-  })["catch"](console.log);
-  return c.on('event', function(e) {
-    if (c.participant.participant_id.low === e.author_participant_id.low) {
+  })["catch"](function(x) {
+    return alert(JSON.stringify(x));
+  });
+  c.on('event', function(e) {
+    e = e.data();
+    if (wsCanvas.drawnStrokes[e.id]) {
       return;
     }
-    e = e.data();
-    wsCanvas.strokes.push(e);
-    return wsCanvas.drawStroke(e);
+    if (e.type === 'undo') {
+      wsCanvas.undo(e.strokeId);
+    } else if (e.type === 'redo') {
+      wsCanvas.redo(e.strokeId);
+    } else {
+      wsCanvas.strokes.push(e);
+      wsCanvas.drawStroke(e);
+    }
+    return wsCanvas.drawnStrokes[e.id] = true;
+  });
+  return c.on('error', function(e) {
+    return alert(e);
   });
 };

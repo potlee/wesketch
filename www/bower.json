@@ -13,6 +13,7 @@
     "tests"
   ],
   "dependencies": {
-    "rsvp": "~3.0.13"
+    "rsvp": "~3.0.13",
+    "slick.js": "~1.3.15"
   }
 }

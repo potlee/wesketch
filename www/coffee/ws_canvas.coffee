@@ -1,13 +1,13 @@
 class window.WSCanvas
-  undoStack: []
-  color: '#666'
-  localPoints: []
-  strokes: []
-  paintingOn: false
-  drawnStrokes: {}
-  mode: 'l'
-
   constructor: () ->
+    @undoStack = []
+    @color = '#666'
+    @localPoints = []
+    @moveRect = []
+    @strokes = []
+    @paintingOn = false
+    @drawnStrokes = {}
+    @mode = 'l'
     @initElements()
     @initHamers()
     @attachEvents()
@@ -22,9 +22,12 @@ class window.WSCanvas
 
   onstart: (e) ->
     e.preventDefault()
-    if e.touches
-      e = e.touches[0]
+    e = e.touches[0] if e.touches
     @paintingOn = true
+    if @moveRect.length == 2 and @inMoveRect(e.pageX, e.pageY)
+      @mode = 'm'
+      @moveImageData = @ctx.getImageData(@rect(@moveRect)...)
+      @ctx.clearRect(@rect(@moveRect)...)
     @ctxTemp.beginPath()
     @ctxTemp.lineJoin = @ctxTemp.lineCap = 'round'
     #@ctxTemp.shadowBlur = 2
@@ -34,63 +37,71 @@ class window.WSCanvas
     @ctxTemp.fillStyle = @color
     @ctxTemp.moveTo(e.pageX, e.pageY)
     @undoStack = []
-    @localPoints.push [e.pageX, e.pageY]
+    @localPoints = [[e.pageX, e.pageY]]
 
   onmove: (e) ->
     e.preventDefault()
-    if e.touches
-      e = e.touches[0]
-    if @paintingOn
-      if @mode == 'r'
-        @ctxTemp.beginPath()
-        @ctxTemp.clearRect(0,0,10000,10000)
-        @ctxTemp.closePath()
-        @ctxTemp.fillRect(
-          @localPoints[0][0]
-          @localPoints[0][1]
-          e.pageX - @localPoints[0][0]
-          e.pageY - @localPoints[0][1]
+    return unless @paintingOn
+    e = e.touches[0] if e.touches
+    @ctxTemp.clearRect(0,0,10000,10000)
+    switch @mode
+      when 'r'
+        @localPoints[1] = [e.pageX, e.pageY]
+        @ctxTemp.fillRect(@rect(@localPoints)...)
+
+      when 's'
+        @localPoints[1] = [e.pageX, e.pageY]
+        @ctxTemp.setLineDash [1,1]
+        @ctxTemp.strokeRect(@rect(@localPoints)...)
+        if @localPoints[0][0] == e.pageX or @localPoints[0][1] == e.pageY
+          return
+        @copyToTemp(@localPoints)
+
+      when 'm'
+        @localPoints[1] = [e.pageX, e.pageY]
+        @ctxTemp.putImageData(
+          @moveImageData
+          @moveRect[0][0] - @localPoints[0][0] + e.pageX
+          @moveRect[0][1] - @localPoints[0][1] + e.pageY
         )
-        @ctxTemp.stroke()
+
+      when 'c'
         @localPoints[1] = [e.pageX, e.pageY]
-        @localPoints[1] = [e.pageX, e.pageY]
-      else if @mode == 'c'
-        @localPoints[1] = [e.pageX, e.pageY]
-        @ctxTemp.beginPath()
-        @ctxTemp.clearRect(0,0,10000,10000)
-        @ctxTemp.closePath()
         radius = Math.sqrt(
           Math.pow(@localPoints[0][0] - e.pageX,2) + Math.pow(@localPoints[0][1] - e.pageY,2)
         )
         @ctxTemp.arc(@localPoints[0][0], @localPoints[0][1], radius, 0, Math.PI*2, true)
         @ctxTemp.fill()
-        @localPoints[1] = [e.pageX, e.pageY]
-      else
+
+      when 'l'
         @localPoints.push [e.pageX, e.pageY]
         @ctxTemp.lineTo(e.pageX, e.pageY)
-        @ctxTemp.stroke()
+
+      else throw new Error('mode: ', @mode)
+
+    @ctxTemp.stroke()
 
   onend: (e) ->
     e.preventDefault()
-    #if e.touches
-    #  e = e.touches[0]
-    #@localPoints.push [e.pageX, e.pageY]
     @ctxTemp.closePath()
+    @paintingOn = false
     stroke =
       points: @localPoints
       color: @color
       id: Math.random()
       mode: @mode
-    @strokes.push stroke
+      moveRect: @moveRect if @mode is 'm'
+    @moveRect = if @mode is 's' then @localPoints else []
     @localPoints = []
+    return if @mode is 's'
+    @strokes.push stroke
     @drawnStrokes[stroke.id] = true
-    @paintingOn = false
+    @mode = 's' if @mode is 'm'
     c.broadcast stroke
     @rerender()
 
   drawStroke: (stroke) ->
-    if stroke.cancelled
-      return
+    return if stroke.cancelled
     points = stroke.points
     @ctx.beginPath()
     @ctx.lineJoin = @ctxTemp.lineCap = 'round'
@@ -99,26 +110,56 @@ class window.WSCanvas
     @ctx.shadowColor = stroke.color
     @ctx.strokeStyle = stroke.color
     @ctx.fillStyle = stroke.color
-    if stroke.mode == 'l'
-      for p in points
-        @ctx.lineTo p[0], p[1]
-    else if stroke.mode == 'r'
-      return if !(points.length > 1)
-      @ctx.fillRect(
-        points[0][0]
-        points[0][1]
-        points[1][0] - points[0][0]
-        points[1][1] - points[0][1]
-      )
-    else if stroke.mode == 'c'
-      return if !(points.length > 1)
-      radius = Math.sqrt(
-        Math.pow(points[0][0] - points[1][0], 2) + Math.pow(points[0][1] - points[1][1],2)
-      )
-      @ctx.arc(points[0][0], points[0][1], radius,0, Math.PI * 2, false)
-      @ctx.fill()
+    switch stroke.mode
+      when 'l'
+        for p in points
+          @ctx.lineTo p[0], p[1]
+
+      when 'r'
+        return if !(points.length > 1)
+        @ctx.fillRect(@rect(points)...)
+
+      when 'c'
+        return if !(points.length > 1)
+        radius = Math.sqrt(
+          Math.pow(points[0][0] - points[1][0], 2) + Math.pow(points[0][1] - points[1][1],2)
+        )
+        @ctx.arc(points[0][0], points[0][1], radius,0, Math.PI * 2, false)
+        @ctx.fill()
+
+      when 'm'
+        rect = @rect(stroke.moveRect)
+        tempImageData = @ctx.getImageData rect...
+        @ctx.clearRect rect...
+        @ctx.putImageData(
+          tempImageData
+          stroke.moveRect[0][0] - points[0][0] + points[1][0]
+          stroke.moveRect[0][1] - points[0][1] + points[1][1]
+        )
+
     @ctx.stroke()
     @ctx.closePath()
+
+  rect: (points) ->
+    x = points[0][0]
+    y = points[0][1]
+    width = points[1][0] - points[0][0]
+    height = points[1][1] - points[0][1]
+    if width < 0
+      width = -width
+      x -= width
+    if height < 0
+      height = - height
+      y -= height
+    [x, y, width, height]
+
+
+  copyToTemp: (points) ->
+    rect = @rect(points)
+    @ctxTemp.drawImage(@canvas, rect..., rect...)
+
+  inMoveRect: (x, y) ->
+    @moveRect[0][0] < x < @moveRect[1][0] and @moveRect[0][1] < y < @moveRect[1][1]
 
   showColorPicker: () ->
     @canvas.classList.add 'hidden'
@@ -132,12 +173,8 @@ class window.WSCanvas
     @color = getComputedStyle(e.target).backgroundColor
 
   rerender: ->
-    @ctx.beginPath()
     @ctx.clearRect(0,0,10000,10000)
-    @ctx.closePath()
-    @ctxTemp.beginPath()
     @ctxTemp.clearRect(0,0,10000,10000)
-    @ctxTemp.closePath()
 
     for s in @strokes
       @drawStroke(s)
@@ -183,6 +220,7 @@ class window.WSCanvas
     stroke.id
 
   redoLocal: ->
+    return if not @undoStack.length
     id = @redo(@undoStack.pop())
     return if !id
     stroke =
@@ -211,6 +249,7 @@ class window.WSCanvas
     @circleHammer.on 'tap', => @mode = 'c'
     @rectangleHammer.on 'tap', => @mode = 'r'
     @brushHammer.on 'tap', => @mode = 'l'
+    @moveHammer.on 'tap', => @mode = 's'
 
   initHamers: ->
     options =
@@ -218,7 +257,6 @@ class window.WSCanvas
       time: 2000
       threshold: 5
     [
-      @ctxTempHammer = new Hammer @canvasTemp
       @colorPickerHammer = new Hammer @colorPicker
       @colorPickerIconHammer = new Hammer @colorPickerIcon
       @undoHammer = new Hammer document.getElementById('tool-undo')
@@ -226,6 +264,7 @@ class window.WSCanvas
       @circleHammer = new Hammer @circleIcon
       @rectangleHammer = new Hammer @rectangleIcon
       @brushHammer = new Hammer @brushIcon
+      @moveHammer = new Hammer @moveIcon
     ].forEach (h) ->
       h.get('tap').set options
 
@@ -238,4 +277,5 @@ class window.WSCanvas
     @circleIcon = document.getElementById('tool-circle')
     @brushIcon = document.getElementById('tool-brush')
     @rectangleIcon = document.getElementById('tool-rectangle')
+    @moveIcon = document.getElementById('tool-move')
     @colorPicker = document.getElementById('color-picker')
