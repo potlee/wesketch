@@ -189,7 +189,7 @@ window.WSCanvas = (function() {
   };
 
   WSCanvas.prototype.inMoveRect = function(x, y) {
-    return (this.moveRect[0][0] < x && x < this.moveRect[1][0]) && (this.moveRect[0][1] < y && y < this.moveRect[1][1]);
+    return (((this.moveRect[0][0] < x && x < this.moveRect[1][0])) || ((this.moveRect[1][0] < x && x < this.moveRect[0][0]))) && (((this.moveRect[0][1] < y && y < this.moveRect[1][1])) || ((this.moveRect[1][1] < y && y < this.moveRect[0][1])));
   };
 
   WSCanvas.prototype.showColorPicker = function() {

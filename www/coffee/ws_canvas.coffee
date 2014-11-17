@@ -161,7 +161,8 @@ class window.WSCanvas
     @ctxTemp.drawImage(@canvas, rect..., rect...)
 
   inMoveRect: (x, y) ->
-    @moveRect[0][0] < x < @moveRect[1][0] and @moveRect[0][1] < y < @moveRect[1][1]
+    ((@moveRect[0][0] < x < @moveRect[1][0]) or (@moveRect[1][0] < x < @moveRect[0][0])) and
+    ((@moveRect[0][1] < y < @moveRect[1][1]) or (@moveRect[1][1] < y < @moveRect[0][1]))
 
   showColorPicker: () ->
     @canvas.classList.add 'hidden'
