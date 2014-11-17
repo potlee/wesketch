@@ -53,7 +53,6 @@ class window.WSCanvas
 
       when 's'
         @localPoints[1] = [e.pageX, e.pageY]
-        @ctxTemp.setLineDash [1,1]
         @ctxTemp.strokeRect(@rect(@localPoints)...)
         if @localPoints[0][0] == e.pageX or @localPoints[0][1] == e.pageY
           return

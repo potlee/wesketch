@@ -66,7 +66,6 @@ window.WSCanvas = (function() {
         break;
       case 's':
         this.localPoints[1] = [e.pageX, e.pageY];
-        this.ctxTemp.setLineDash([1, 1]);
         (_ref1 = this.ctxTemp).strokeRect.apply(_ref1, this.rect(this.localPoints));
         if (this.localPoints[0][0] === e.pageX || this.localPoints[0][1] === e.pageY) {
           return;
