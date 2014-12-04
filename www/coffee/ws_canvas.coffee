@@ -13,6 +13,7 @@ class window.WSCanvas
     @initElements()
     @initHamers()
     @attachEvents()
+    @width = 4
 
   fitToScreen: () ->
     @mainScreen.classList.remove('hidden')
@@ -58,9 +59,7 @@ class window.WSCanvas
       @ctx.clearRect(@rect(@moveRect)...)
     @ctxTemp.beginPath()
     @ctxTemp.lineJoin = @ctxTemp.lineCap = 'round'
-    #@ctxTemp.shadowBlur = 2
-    @ctxTemp.lineWidth = 3
-    @ctxTemp.shadowColor = @color
+    @ctxTemp.lineWidth = @width
     @ctxTemp.strokeStyle = @color
     @ctxTemp.fillStyle = @color
     @ctxTemp.moveTo(e.pageX, e.pageY)
@@ -121,6 +120,7 @@ class window.WSCanvas
       id: Math.random()
       mode: @mode
       moveRect: @moveRect if @mode is 'm'
+      width: @width if @mode is 'l'
       frame: @currentFrame
     @moveRect = if @mode is 's' then @localPoints else []
     @localPoints = []
@@ -137,7 +137,7 @@ class window.WSCanvas
     @ctx.beginPath()
     @ctx.lineJoin = @ctxTemp.lineCap = 'round'
     #@ctx.shadowBlur = 2
-    @ctx.lineWidth = 3
+    @ctx.lineWidth = stroke.width
     @ctx.shadowColor = stroke.color
     @ctx.strokeStyle = stroke.color
     @ctx.fillStyle = stroke.color
@@ -162,11 +162,18 @@ class window.WSCanvas
         rect = @rect(stroke.moveRect)
         tempImageData = @ctx.getImageData rect...
         @ctx.clearRect rect...
-        @ctx.putImageData(
+        @ctxTemp.beginPath()
+        @ctxTemp.clearRect(0,0,10000,10000)
+        @ctxTemp.closePath()
+        @ctxTemp.putImageData(
           tempImageData
           Math.min(stroke.moveRect[0][0], stroke.moveRect[1][0]) - points[0][0] + points[1][0]
           Math.min(stroke.moveRect[0][1], stroke.moveRect[1][1]) - points[0][1] + points[1][1]
         )
+        @ctx.drawImage(@canvasTemp, 0,0)
+        ctxTemp.beginPath()
+        @ctxTemp.clearRect(0,0,10000,10000)
+        @ctxTemp.closePath()
 
       when 'f'
         @newFrame()
@@ -200,11 +207,23 @@ class window.WSCanvas
     @canvasTemp.classList.add 'hidden'
     @colorPicker.classList.remove 'hidden'
 
+  showBrushPicker: () ->
+    @canvas.classList.add 'hidden'
+    @canvasTemp.classList.add 'hidden'
+    @brushPicker.classList.remove 'hidden'
+
   selectColor: (e) ->
     @colorPicker.classList.add 'hidden'
     @canvas.classList.remove 'hidden'
     @canvasTemp.classList.remove 'hidden'
     @color = getComputedStyle(e.target).backgroundColor
+
+  selectBursh: (e) ->
+    @brushPicker.classList.add 'hidden'
+    @canvas.classList.remove 'hidden'
+    @canvasTemp.classList.remove 'hidden'
+    @width = parseInt(e.target.getAttribute('value'))
+    @mode = 'l'
 
   rerender: ->
     @ctx.clearRect(0,0,10000,10000)
@@ -279,14 +298,15 @@ class window.WSCanvas
       @canvasTemp.addEventListener('touchend', @onend.bind(this), true)
       @canvasTemp.addEventListener('mouseup', @onend.bind(this), true)
     @colorPickerIconHammer.on 'tap', @showColorPicker.bind(this)
+    @brushPickerIconHammer.on 'tap', @showBrushPicker.bind(this)
     @colorPickerHammer.on 'tap', @selectColor.bind(this)
+    @brushPickerHammer.on 'tap', @selectBursh.bind(this)
     @undoHammer.on 'tap', @undoLocal.bind(this)
     @redoHammer.on 'tap', @redoLocal.bind(this)
     #@nextIconHammer.on 'tap', @nextFrame.bind(this)
     #@prevIconHammer.on 'tap', @previousFrame.bind(this)
     @circleHammer.on 'tap', => @mode = 'c'
     @rectangleHammer.on 'tap', => @mode = 'r'
-    @brushHammer.on 'tap', => @mode = 'l'
     @moveHammer.on 'tap', => @mode = 's'
 
   initHamers: ->
@@ -301,7 +321,8 @@ class window.WSCanvas
       @redoHammer = new Hammer document.getElementById('tool-redo')
       @circleHammer = new Hammer @circleIcon
       @rectangleHammer = new Hammer @rectangleIcon
-      @brushHammer = new Hammer @brushIcon
+      @brushPickerIconHammer = new Hammer @brushPickerIcon
+      @brushPickerHammer = new Hammer @brushPicker
       @moveHammer = new Hammer @moveIcon
       #@nextIconHammer = new Hammer @nextIcon
       #@prevIconHammer = new Hammer @prevIcon
@@ -314,11 +335,12 @@ class window.WSCanvas
     @ctx = @canvas.getContext("2d")
     @ctxTemp = @canvasTemp.getContext("2d")
     @colorPickerIcon = document.getElementById('tool-color-picker')
+    @colorPicker = document.getElementById('color-picker')
+    @brushPickerIcon = document.getElementById('tool-brush')
+    @brushPicker = document.getElementById('brush-picker')
     @circleIcon = document.getElementById('tool-circle')
-    @brushIcon = document.getElementById('tool-brush')
     @rectangleIcon = document.getElementById('tool-rectangle')
     @moveIcon = document.getElementById('tool-move')
-    @colorPicker = document.getElementById('color-picker')
     @toolbar = document.getElementById('toolbar')
     @mainScreen = document.getElementById('main')
     #@nextIcon = document.getElementById('tool-next')

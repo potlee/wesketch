@@ -20,6 +20,7 @@ window.WSCanvas = (function() {
     this.initElements();
     this.initHamers();
     this.attachEvents();
+    this.width = 4;
   }
 
   WSCanvas.prototype.fitToScreen = function() {
@@ -78,8 +79,7 @@ window.WSCanvas = (function() {
     }
     this.ctxTemp.beginPath();
     this.ctxTemp.lineJoin = this.ctxTemp.lineCap = 'round';
-    this.ctxTemp.lineWidth = 3;
-    this.ctxTemp.shadowColor = this.color;
+    this.ctxTemp.lineWidth = this.width;
     this.ctxTemp.strokeStyle = this.color;
     this.ctxTemp.fillStyle = this.color;
     this.ctxTemp.moveTo(e.pageX, e.pageY);
@@ -147,6 +147,7 @@ window.WSCanvas = (function() {
       id: Math.random(),
       mode: this.mode,
       moveRect: this.mode === 'm' ? this.moveRect : void 0,
+      width: this.mode === 'l' ? this.width : void 0,
       frame: this.currentFrame
     };
     this.moveRect = this.mode === 's' ? this.localPoints : [];
@@ -171,7 +172,7 @@ window.WSCanvas = (function() {
     points = stroke.points;
     this.ctx.beginPath();
     this.ctx.lineJoin = this.ctxTemp.lineCap = 'round';
-    this.ctx.lineWidth = 3;
+    this.ctx.lineWidth = stroke.width;
     this.ctx.shadowColor = stroke.color;
     this.ctx.strokeStyle = stroke.color;
     this.ctx.fillStyle = stroke.color;
@@ -200,7 +201,14 @@ window.WSCanvas = (function() {
         rect = this.rect(stroke.moveRect);
         tempImageData = (_ref1 = this.ctx).getImageData.apply(_ref1, rect);
         (_ref2 = this.ctx).clearRect.apply(_ref2, rect);
-        this.ctx.putImageData(tempImageData, Math.min(stroke.moveRect[0][0], stroke.moveRect[1][0]) - points[0][0] + points[1][0], Math.min(stroke.moveRect[0][1], stroke.moveRect[1][1]) - points[0][1] + points[1][1]);
+        this.ctxTemp.beginPath();
+        this.ctxTemp.clearRect(0, 0, 10000, 10000);
+        this.ctxTemp.closePath();
+        this.ctxTemp.putImageData(tempImageData, Math.min(stroke.moveRect[0][0], stroke.moveRect[1][0]) - points[0][0] + points[1][0], Math.min(stroke.moveRect[0][1], stroke.moveRect[1][1]) - points[0][1] + points[1][1]);
+        this.ctx.drawImage(this.canvasTemp, 0, 0);
+        ctxTemp.beginPath();
+        this.ctxTemp.clearRect(0, 0, 10000, 10000);
+        this.ctxTemp.closePath();
         break;
       case 'f':
         this.newFrame();
@@ -242,11 +250,25 @@ window.WSCanvas = (function() {
     return this.colorPicker.classList.remove('hidden');
   };
 
+  WSCanvas.prototype.showBrushPicker = function() {
+    this.canvas.classList.add('hidden');
+    this.canvasTemp.classList.add('hidden');
+    return this.brushPicker.classList.remove('hidden');
+  };
+
   WSCanvas.prototype.selectColor = function(e) {
     this.colorPicker.classList.add('hidden');
     this.canvas.classList.remove('hidden');
     this.canvasTemp.classList.remove('hidden');
     return this.color = getComputedStyle(e.target).backgroundColor;
+  };
+
+  WSCanvas.prototype.selectBursh = function(e) {
+    this.brushPicker.classList.add('hidden');
+    this.canvas.classList.remove('hidden');
+    this.canvasTemp.classList.remove('hidden');
+    this.width = parseInt(e.target.getAttribute('value'));
+    return this.mode = 'l';
   };
 
   WSCanvas.prototype.rerender = function() {
@@ -359,7 +381,9 @@ window.WSCanvas = (function() {
       this.canvasTemp.addEventListener('mouseup', this.onend.bind(this), true);
     }
     this.colorPickerIconHammer.on('tap', this.showColorPicker.bind(this));
+    this.brushPickerIconHammer.on('tap', this.showBrushPicker.bind(this));
     this.colorPickerHammer.on('tap', this.selectColor.bind(this));
+    this.brushPickerHammer.on('tap', this.selectBursh.bind(this));
     this.undoHammer.on('tap', this.undoLocal.bind(this));
     this.redoHammer.on('tap', this.redoLocal.bind(this));
     this.circleHammer.on('tap', (function(_this) {
@@ -370,11 +394,6 @@ window.WSCanvas = (function() {
     this.rectangleHammer.on('tap', (function(_this) {
       return function() {
         return _this.mode = 'r';
-      };
-    })(this));
-    this.brushHammer.on('tap', (function(_this) {
-      return function() {
-        return _this.mode = 'l';
       };
     })(this));
     return this.moveHammer.on('tap', (function(_this) {
@@ -391,7 +410,7 @@ window.WSCanvas = (function() {
       time: 2000,
       threshold: 5
     };
-    return [this.colorPickerHammer = new Hammer(this.colorPicker), this.colorPickerIconHammer = new Hammer(this.colorPickerIcon), this.undoHammer = new Hammer(document.getElementById('tool-undo')), this.redoHammer = new Hammer(document.getElementById('tool-redo')), this.circleHammer = new Hammer(this.circleIcon), this.rectangleHammer = new Hammer(this.rectangleIcon), this.brushHammer = new Hammer(this.brushIcon), this.moveHammer = new Hammer(this.moveIcon)].forEach(function(h) {
+    return [this.colorPickerHammer = new Hammer(this.colorPicker), this.colorPickerIconHammer = new Hammer(this.colorPickerIcon), this.undoHammer = new Hammer(document.getElementById('tool-undo')), this.redoHammer = new Hammer(document.getElementById('tool-redo')), this.circleHammer = new Hammer(this.circleIcon), this.rectangleHammer = new Hammer(this.rectangleIcon), this.brushPickerIconHammer = new Hammer(this.brushPickerIcon), this.brushPickerHammer = new Hammer(this.brushPicker), this.moveHammer = new Hammer(this.moveIcon)].forEach(function(h) {
       return h.get('tap').set(options);
     });
   };
@@ -402,11 +421,12 @@ window.WSCanvas = (function() {
     this.ctx = this.canvas.getContext("2d");
     this.ctxTemp = this.canvasTemp.getContext("2d");
     this.colorPickerIcon = document.getElementById('tool-color-picker');
+    this.colorPicker = document.getElementById('color-picker');
+    this.brushPickerIcon = document.getElementById('tool-brush');
+    this.brushPicker = document.getElementById('brush-picker');
     this.circleIcon = document.getElementById('tool-circle');
-    this.brushIcon = document.getElementById('tool-brush');
     this.rectangleIcon = document.getElementById('tool-rectangle');
     this.moveIcon = document.getElementById('tool-move');
-    this.colorPicker = document.getElementById('color-picker');
     this.toolbar = document.getElementById('toolbar');
     return this.mainScreen = document.getElementById('main');
   };
