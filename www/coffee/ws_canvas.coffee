@@ -1,24 +1,52 @@
 class window.WSCanvas
   constructor: () ->
     @undoStack = []
-    @color = '#666'
     @localPoints = []
     @moveRect = []
     @strokes = []
-    @paintingOn = false
+    @frames = [{strokes: @strokes, baseImage: null}]
     @drawnStrokes = {}
+    @color = '#666'
     @mode = 'l'
+    @currentFrame = 0
+    @paintingOn = false
     @initElements()
     @initHamers()
     @attachEvents()
 
   fitToScreen: () ->
-    @canvas.classList.remove('hidden')
-    @canvasTemp.classList.remove('hidden')
+    @mainScreen.classList.remove('hidden')
+    #@toolbar.classList.remove('hidden')
+    #@canvas.classList.remove('hidden')
+    #@canvasTemp.classList.remove('hidden')
     @canvas.height = @canvas.clientHeight
     @canvas.width = @canvas.clientWidth
     @canvasTemp.height = @canvas.clientHeight
     @canvasTemp.width = @canvas.clientWidth
+
+  nextFrame: ->
+    if @currentFrame + 1 is @frames.length
+      @tryNewFrame()
+    @goToFrame(@currentFrame + 1)
+
+  previousFrame: ->
+    @goToFrame(@currentFrame - 1)
+
+  goToFrame: (frame) ->
+    if @frames[frame]
+      @strokes = @frames[frame].strokes
+      @currentFrame = frame
+      @rerender()
+    else
+      console.log "no such frame"
+
+  newFrame: ->
+    @frames.push
+      strokes: []
+      baseImage: @ctx.getImageData(0, 0, @canvas.width, @canvas.height)
+
+  tryNewFrame: ->
+    c.broadcast mode: 'f'
 
   onstart: (e) ->
     e.preventDefault()
@@ -93,6 +121,7 @@ class window.WSCanvas
       id: Math.random()
       mode: @mode
       moveRect: @moveRect if @mode is 'm'
+      frame: @currentFrame
     @moveRect = if @mode is 's' then @localPoints else []
     @localPoints = []
     return if @mode is 's'
@@ -103,7 +132,7 @@ class window.WSCanvas
     @rerender()
 
   drawStroke: (stroke) ->
-    return if stroke.cancelled
+    return if stroke.cancelled or stroke.frame is not @currentFrame
     points = stroke.points
     @ctx.beginPath()
     @ctx.lineJoin = @ctxTemp.lineCap = 'round'
@@ -139,6 +168,9 @@ class window.WSCanvas
           Math.min(stroke.moveRect[0][1], stroke.moveRect[1][1]) - points[0][1] + points[1][1]
         )
 
+      when 'f'
+        @newFrame()
+
     @ctx.stroke()
     @ctx.closePath()
 
@@ -154,7 +186,6 @@ class window.WSCanvas
       height = - height
       y -= height
     [x, y, width, height]
-
 
   copyToTemp: (points) ->
     rect = @rect(points)
@@ -178,6 +209,8 @@ class window.WSCanvas
   rerender: ->
     @ctx.clearRect(0,0,10000,10000)
     @ctxTemp.clearRect(0,0,10000,10000)
+    if baseImage = @frames[@currentFrame].baseImage
+      @ctx.putImageData(baseImage, 0, 0)
 
     for s in @strokes
       @drawStroke(s)
@@ -249,6 +282,8 @@ class window.WSCanvas
     @colorPickerHammer.on 'tap', @selectColor.bind(this)
     @undoHammer.on 'tap', @undoLocal.bind(this)
     @redoHammer.on 'tap', @redoLocal.bind(this)
+    #@nextIconHammer.on 'tap', @nextFrame.bind(this)
+    #@prevIconHammer.on 'tap', @previousFrame.bind(this)
     @circleHammer.on 'tap', => @mode = 'c'
     @rectangleHammer.on 'tap', => @mode = 'r'
     @brushHammer.on 'tap', => @mode = 'l'
@@ -268,6 +303,8 @@ class window.WSCanvas
       @rectangleHammer = new Hammer @rectangleIcon
       @brushHammer = new Hammer @brushIcon
       @moveHammer = new Hammer @moveIcon
+      #@nextIconHammer = new Hammer @nextIcon
+      #@prevIconHammer = new Hammer @prevIcon
     ].forEach (h) ->
       h.get('tap').set options
 
@@ -282,3 +319,7 @@ class window.WSCanvas
     @rectangleIcon = document.getElementById('tool-rectangle')
     @moveIcon = document.getElementById('tool-move')
     @colorPicker = document.getElementById('color-picker')
+    @toolbar = document.getElementById('toolbar')
+    @mainScreen = document.getElementById('main')
+    #@nextIcon = document.getElementById('tool-next')
+    #@prevIcon = document.getElementById('tool-prev')

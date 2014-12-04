@@ -13,14 +13,9 @@
   <title>Hello World</title>
 </head>
 <body>
-  <div id="main">
-    <div id="welcome-screen">
-      <h1>What is this sketch going to be called</h1>
-      <input id="sketch-name"  type="text" />
-      <input id="go" type="button" value="go" />
-    </div>
-    <canvas id="canvas" class="canvas hidden"></canvas>
-    <canvas id="canvas-temp" class="canvas hidden"></canvas>
+  <div id="main" class="hidden">
+    <canvas id="canvas"></canvas>
+    <canvas id="canvas-temp"></canvas>
     <div id="color-picker" class="hidden">
       <div class="color turquoise"></div>
       <div class="color emerland"></div>
@@ -43,36 +38,49 @@
       <div class="color midnight-blue"></div>
       <div class="color asbestos"></div>
     </div>
+    <div id="toolbar">
+      <div class="tool" id="tool-color-picker">
+        <img class="tool-icon"   alt="colors" src="img/color-picker.png" />
+        colors
+      </div>
+      <div class="tool" id="tool-undo">
+        <img class="tool-icon undo-icon" alt="undo" src="img/undo17.svg" />
+        undo
+      </div>
+      <div class="tool" id="tool-redo">
+        <img class="tool-icon redo-icon" alt="undo" src="img/redo13.svg" />
+        redo
+      </div>
+      <div class="tool" id="tool-circle">
+        <div class="tool-icon circle-icon"></div>
+        circle
+      </div>
+      <div class="tool" id="tool-rectangle">
+        <div class="tool-icon rectangle-icon"></div>
+        rectangle
+      </div>
+      <div class="tool" id="tool-brush">
+        <img class="tool-icon brush-icon" alt="brushes" src="img/brushes.svg" />
+        brushes
+      </div>
+      <div class="tool" id="tool-move">
+        <div class="tool-icon move-icon"></div>
+        move
+      </div>
+      <!--<div class="tool" id="tool-next">-->
+      <!--  <img class="tool-icon prev-icon" alt="next" src="img/left.svg" />-->
+      <!--  previous-->
+      <!--</div>-->
+      <!--<div class="tool" id="tool-prev">-->
+      <!--  <img class="tool-icon prev-icon" alt="next" src="img/right.svg" />-->
+      <!--  next-->
+      <!--</div>-->
+    </div>
   </div>
-  <div id="toolbar">
-    <div class="tool" id="tool-color-picker">
-      <img class="tool-icon"   alt="colors" src="img/color-picker.png" />
-      colors
-    </div>
-    <div class="tool" id="tool-undo">
-      <img class="tool-icon undo-icon" alt="undo" src="img/undo17.svg" />
-      undo
-    </div>
-    <div class="tool" id="tool-redo">
-      <img class="tool-icon redo-icon" alt="undo" src="img/redo13.svg" />
-      redo
-    </div>
-    <div class="tool" id="tool-circle">
-      <div class="tool-icon circle-icon"></div>
-      circle
-    </div>
-    <div class="tool" id="tool-rectangle">
-      <div class="tool-icon rectangle-icon"></div>
-      rectangle
-    </div>
-    <div class="tool" id="tool-brush">
-      <div class="tool-icon brush-icon"></div>
-      brush
-    </div>
-    <div class="tool" id="tool-move">
-      <div class="tool-icon move-icon"></div>
-      move
-    </div>
+  <div id="welcome-screen">
+    <h1>What is this sketch going to be called</h1>
+    <input id="sketch-name"  type="text" />
+    <input id="go" type="button" value="go" />
   </div>
   <script>
     //ios8 fix

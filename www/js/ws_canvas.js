@@ -3,25 +3,65 @@ var __slice = [].slice;
 window.WSCanvas = (function() {
   function WSCanvas() {
     this.undoStack = [];
-    this.color = '#666';
     this.localPoints = [];
     this.moveRect = [];
     this.strokes = [];
-    this.paintingOn = false;
+    this.frames = [
+      {
+        strokes: this.strokes,
+        baseImage: null
+      }
+    ];
     this.drawnStrokes = {};
+    this.color = '#666';
     this.mode = 'l';
+    this.currentFrame = 0;
+    this.paintingOn = false;
     this.initElements();
     this.initHamers();
     this.attachEvents();
   }
 
   WSCanvas.prototype.fitToScreen = function() {
-    this.canvas.classList.remove('hidden');
-    this.canvasTemp.classList.remove('hidden');
+    this.mainScreen.classList.remove('hidden');
     this.canvas.height = this.canvas.clientHeight;
     this.canvas.width = this.canvas.clientWidth;
     this.canvasTemp.height = this.canvas.clientHeight;
     return this.canvasTemp.width = this.canvas.clientWidth;
+  };
+
+  WSCanvas.prototype.nextFrame = function() {
+    if (this.currentFrame + 1 === this.frames.length) {
+      this.tryNewFrame();
+    }
+    return this.goToFrame(this.currentFrame + 1);
+  };
+
+  WSCanvas.prototype.previousFrame = function() {
+    return this.goToFrame(this.currentFrame - 1);
+  };
+
+  WSCanvas.prototype.goToFrame = function(frame) {
+    if (this.frames[frame]) {
+      this.strokes = this.frames[frame].strokes;
+      this.currentFrame = frame;
+      return this.rerender();
+    } else {
+      return console.log("no such frame");
+    }
+  };
+
+  WSCanvas.prototype.newFrame = function() {
+    return this.frames.push({
+      strokes: [],
+      baseImage: this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height)
+    });
+  };
+
+  WSCanvas.prototype.tryNewFrame = function() {
+    return c.broadcast({
+      mode: 'f'
+    });
   };
 
   WSCanvas.prototype.onstart = function(e) {
@@ -106,7 +146,8 @@ window.WSCanvas = (function() {
       color: this.color,
       id: Math.random(),
       mode: this.mode,
-      moveRect: this.mode === 'm' ? this.moveRect : void 0
+      moveRect: this.mode === 'm' ? this.moveRect : void 0,
+      frame: this.currentFrame
     };
     this.moveRect = this.mode === 's' ? this.localPoints : [];
     this.localPoints = [];
@@ -124,7 +165,7 @@ window.WSCanvas = (function() {
 
   WSCanvas.prototype.drawStroke = function(stroke) {
     var p, points, radius, rect, tempImageData, _i, _len, _ref, _ref1, _ref2;
-    if (stroke.cancelled) {
+    if (stroke.cancelled || stroke.frame === !this.currentFrame) {
       return;
     }
     points = stroke.points;
@@ -160,6 +201,9 @@ window.WSCanvas = (function() {
         tempImageData = (_ref1 = this.ctx).getImageData.apply(_ref1, rect);
         (_ref2 = this.ctx).clearRect.apply(_ref2, rect);
         this.ctx.putImageData(tempImageData, Math.min(stroke.moveRect[0][0], stroke.moveRect[1][0]) - points[0][0] + points[1][0], Math.min(stroke.moveRect[0][1], stroke.moveRect[1][1]) - points[0][1] + points[1][1]);
+        break;
+      case 'f':
+        this.newFrame();
     }
     this.ctx.stroke();
     return this.ctx.closePath();
@@ -206,9 +250,12 @@ window.WSCanvas = (function() {
   };
 
   WSCanvas.prototype.rerender = function() {
-    var s, _i, _len, _ref, _results;
+    var baseImage, s, _i, _len, _ref, _results;
     this.ctx.clearRect(0, 0, 10000, 10000);
     this.ctxTemp.clearRect(0, 0, 10000, 10000);
+    if (baseImage = this.frames[this.currentFrame].baseImage) {
+      this.ctx.putImageData(baseImage, 0, 0);
+    }
     _ref = this.strokes;
     _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
@@ -359,7 +406,9 @@ window.WSCanvas = (function() {
     this.brushIcon = document.getElementById('tool-brush');
     this.rectangleIcon = document.getElementById('tool-rectangle');
     this.moveIcon = document.getElementById('tool-move');
-    return this.colorPicker = document.getElementById('color-picker');
+    this.colorPicker = document.getElementById('color-picker');
+    this.toolbar = document.getElementById('toolbar');
+    return this.mainScreen = document.getElementById('main');
   };
 
   return WSCanvas;
