@@ -272,18 +272,16 @@ window.WSCanvas = (function() {
   };
 
   WSCanvas.prototype.rerender = function() {
-    var baseImage, s, _i, _len, _ref;
+    var s, _i, _len, _ref, _results;
     this.ctx.clearRect(0, 0, 10000, 10000);
     this.ctxTemp.clearRect(0, 0, 10000, 10000);
-    if (baseImage = this.frames[this.currentFrame].baseImage) {
-      this.ctx.putImageData(baseImage, 0, 0);
-    }
     _ref = this.strokes;
+    _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       s = _ref[_i];
-      this.drawStroke(s);
+      _results.push(this.drawStroke(s));
     }
-    return this.ctx.stroke();
+    return _results;
   };
 
   WSCanvas.prototype.lastUncancelledStroke = function() {

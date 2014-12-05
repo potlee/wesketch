@@ -225,14 +225,14 @@ class window.WSCanvas
   rerender: ->
     @ctx.clearRect(0,0,10000,10000)
     @ctxTemp.clearRect(0,0,10000,10000)
-    if baseImage = @frames[@currentFrame].baseImage
-      @ctx.putImageData(baseImage, 0, 0)
+    #if baseImage = @frames[@currentFrame].baseImage
+    #  @ctx.putImageData(baseImage, 0, 0)
 
     for s in @strokes
       @drawStroke(s)
-    @ctx.stroke()
 
   lastUncancelledStroke: ->
+
     i = @strokes.length - 1
     i-- while @strokes[i].cancelled and i != 0
     @strokes[i]
