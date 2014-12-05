@@ -168,11 +168,12 @@ window.WSCanvas = (function() {
   };
 
   WSCanvas.prototype.drawStroke = function(stroke) {
-    var p, points, radius, rect, tempImageData, _i, _len, _ref, _ref1, _ref2, _results;
+    var p, points, radius, rect, tempImageData, _i, _len, _ref, _ref1, _ref2;
     if (stroke.cancelled || stroke.frame === !this.currentFrame) {
       return;
     }
     points = stroke.points;
+    this.ctx.beginPath();
     this.ctx.lineJoin = this.ctxTemp.lineCap = 'round';
     this.ctx.lineWidth = stroke.width;
     this.ctx.shadowColor = stroke.color;
@@ -180,38 +181,27 @@ window.WSCanvas = (function() {
     this.ctx.fillStyle = stroke.color;
     switch (stroke.mode) {
       case 'l':
-        if (points.length) {
-          this.ctx.moveTo(points[0][0], points[0][1]);
-          _results = [];
-          for (_i = 0, _len = points.length; _i < _len; _i++) {
-            p = points[_i];
-            _results.push(this.ctx.lineTo(p[0], p[1]));
-          }
-          return _results;
+        for (_i = 0, _len = points.length; _i < _len; _i++) {
+          p = points[_i];
+          this.ctx.lineTo(p[0], p[1]);
         }
         break;
       case 'r':
         if (!(points.length > 1)) {
           return;
         }
-        return (_ref = this.ctx).fillRect.apply(_ref, this.rect(points));
+        (_ref = this.ctx).fillRect.apply(_ref, this.rect(points));
+        break;
       case 'c':
         if (!(points.length > 1)) {
           return;
         }
         radius = Math.sqrt(Math.pow(points[0][0] - points[1][0], 2) + Math.pow(points[0][1] - points[1][1], 2));
-        this.ctx.stroke();
-        this.ctx.closePath();
-        this.ctx.beginPath();
         this.ctx.fillStyle = stroke.color;
         this.ctx.arc(points[0][0], points[0][1], radius, 0, Math.PI * 2, false);
         this.ctx.fill();
-        this.ctx.stroke();
-        this.ctx.closePath();
-        return this.ctx.beginPath();
+        break;
       case 'm':
-        this.ctx.stroke();
-        this.ctx.closePath();
         rect = this.rect(stroke.moveRect);
         tempImageData = (_ref1 = this.ctx).getImageData.apply(_ref1, rect);
         (_ref2 = this.ctx).clearRect.apply(_ref2, rect);
@@ -220,10 +210,11 @@ window.WSCanvas = (function() {
         this.ctxTemp.beginPath();
         this.ctxTemp.clearRect(0, 0, 10000, 10000);
         this.ctxTemp.closePath();
-        return this.ctx.beginPath();
+        break;
       case 'f':
-        return this.newFrame();
+        this.newFrame();
     }
+    return this.ctx.closePath();
   };
 
   WSCanvas.prototype.rect = function(points) {
@@ -287,14 +278,12 @@ window.WSCanvas = (function() {
     if (baseImage = this.frames[this.currentFrame].baseImage) {
       this.ctx.putImageData(baseImage, 0, 0);
     }
-    this.ctx.beginPath();
     _ref = this.strokes;
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       s = _ref[_i];
       this.drawStroke(s);
     }
-    this.ctx.stroke();
-    return this.ctx.closePath();
+    return this.ctx.stroke();
   };
 
   WSCanvas.prototype.lastUncancelledStroke = function() {
