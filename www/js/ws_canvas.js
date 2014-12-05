@@ -164,14 +164,14 @@ window.WSCanvas = (function() {
       this.mode = 's';
     }
     c.broadcast(stroke);
-    return this.rerender();
+    this.rerender();
+    if (stroke.cancelled || stroke.frame === !this.currentFrame) {
+
+    }
   };
 
   WSCanvas.prototype.drawStroke = function(stroke) {
     var p, points, radius, rect, tempImageData, _i, _len, _ref, _ref1, _ref2;
-    if (stroke.cancelled || stroke.frame === !this.currentFrame) {
-      return;
-    }
     points = stroke.points;
     this.ctx.beginPath();
     this.ctx.lineJoin = this.ctxTemp.lineCap = 'round';

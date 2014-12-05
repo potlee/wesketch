@@ -132,8 +132,8 @@ class window.WSCanvas
     c.broadcast stroke
     @rerender()
 
-  drawStroke: (stroke) ->
     return if stroke.cancelled or stroke.frame is not @currentFrame
+  drawStroke: (stroke) ->
     points = stroke.points
     @ctx.beginPath()
     @ctx.lineJoin = @ctxTemp.lineCap = 'round'
