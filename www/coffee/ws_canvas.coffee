@@ -17,9 +17,9 @@ class window.WSCanvas
 
   fitToScreen: () ->
     @mainScreen.classList.remove('hidden')
-    @toolbar.classList.remove('hidden')
-    @canvas.classList.remove('hidden')
-    @canvasTemp.classList.remove('hidden')
+    #@toolbar.classList.remove('hidden')
+    #@canvas.classList.remove('hidden')
+    #@canvasTemp.classList.remove('hidden')
     @canvas.height = @canvas.clientHeight
     @canvas.width = @canvas.clientWidth
     @canvasTemp.height = @canvas.clientHeight
@@ -295,8 +295,8 @@ class window.WSCanvas
       @canvasTemp.addEventListener('mousemove', @onmove.bind(this), true)
       @canvasTemp.addEventListener('touchend', @onend.bind(this), true)
       @canvasTemp.addEventListener('mouseup', @onend.bind(this), true)
-    @undoHammer.on 'tap', @undoLocal.bind(this)
     @redoHammer.on 'tap', @redoLocal.bind(this)
+    @undoHammer.on 'tap', @undoLocal.bind(this)
     @colorPickerIconHammer.on 'tap', @showColorPicker.bind(this)
     @brushPickerIconHammer.on 'tap', @showBrushPicker.bind(this)
     @colorPickerHammer.on 'tap', @selectColor.bind(this)
