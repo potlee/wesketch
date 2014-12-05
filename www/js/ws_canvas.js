@@ -206,6 +206,7 @@ window.WSCanvas = (function() {
         this.ctx.fillStyle = stroke.color;
         this.ctx.arc(points[0][0], points[0][1], radius, 0, Math.PI * 2, false);
         this.ctx.fill();
+        this.ctx.stroke();
         this.ctx.closePath();
         return this.ctx.beginPath();
       case 'm':

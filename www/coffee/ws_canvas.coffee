@@ -163,6 +163,7 @@ class window.WSCanvas
         @ctx.fillStyle = stroke.color
         @ctx.arc(points[0][0], points[0][1], radius,0, Math.PI * 2, false)
         @ctx.fill()
+        @ctx.stroke()
         @ctx.closePath()
         @ctx.beginPath()
 
