@@ -113,13 +113,17 @@ class window.WSCanvas
   onend: (e) ->
     e.preventDefault()
     @ctxTemp.closePath()
+    mode = @mode
     @paintingOn = false
     return if @mode is 'm' and @localPoints.length < 2
+    if @mode is 'l' and @localPoints.length < 2
+      mode = 'p'
+
     stroke =
       points: @localPoints
       color: @color
       id: Math.random()
-      mode: @mode
+      mode: mode
       moveRect: @moveRect if @mode is 'm'
       width: @width if @mode is 'l'
       frame: @currentFrame
@@ -158,6 +162,13 @@ class window.WSCanvas
         @ctx.fillStyle = stroke.color
         @ctx.arc(points[0][0], points[0][1], radius,0, Math.PI * 2, false)
         @ctx.fill()
+
+      when 'p'
+        radius = stroke.width/Math.PI
+        @ctx.fillStyle = stroke.color
+        @ctx.arc(points[0][0], points[0][1], radius,0, Math.PI * 2, false)
+        @ctx.fill()
+
 
       when 'm'
         rect = @rect(stroke.moveRect)

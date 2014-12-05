@@ -137,18 +137,22 @@ window.WSCanvas = (function() {
   };
 
   WSCanvas.prototype.onend = function(e) {
-    var stroke;
+    var mode, stroke;
     e.preventDefault();
     this.ctxTemp.closePath();
+    mode = this.mode;
     this.paintingOn = false;
     if (this.mode === 'm' && this.localPoints.length < 2) {
       return;
+    }
+    if (this.mode === 'l' && this.localPoints.length < 2) {
+      mode = 'p';
     }
     stroke = {
       points: this.localPoints,
       color: this.color,
       id: Math.random(),
-      mode: this.mode,
+      mode: mode,
       moveRect: this.mode === 'm' ? this.moveRect : void 0,
       width: this.mode === 'l' ? this.width : void 0,
       frame: this.currentFrame
@@ -197,6 +201,12 @@ window.WSCanvas = (function() {
           return;
         }
         radius = Math.sqrt(Math.pow(points[0][0] - points[1][0], 2) + Math.pow(points[0][1] - points[1][1], 2));
+        this.ctx.fillStyle = stroke.color;
+        this.ctx.arc(points[0][0], points[0][1], radius, 0, Math.PI * 2, false);
+        this.ctx.fill();
+        break;
+      case 'p':
+        radius = stroke.width / Math.PI;
         this.ctx.fillStyle = stroke.color;
         this.ctx.arc(points[0][0], points[0][1], radius, 0, Math.PI * 2, false);
         this.ctx.fill();
