@@ -141,6 +141,9 @@ window.WSCanvas = (function() {
     e.preventDefault();
     this.ctxTemp.closePath();
     this.paintingOn = false;
+    if (this.mode === 'm' && this.localPoints.length < 2) {
+      return;
+    }
     stroke = {
       points: this.localPoints,
       color: this.color,
@@ -170,7 +173,6 @@ window.WSCanvas = (function() {
       return;
     }
     points = stroke.points;
-    this.ctx.beginPath();
     this.ctx.lineJoin = this.ctxTemp.lineCap = 'round';
     this.ctx.lineWidth = stroke.width;
     this.ctx.shadowColor = stroke.color;
@@ -178,43 +180,46 @@ window.WSCanvas = (function() {
     this.ctx.fillStyle = stroke.color;
     switch (stroke.mode) {
       case 'l':
+        if (points.length) {
+          this.ctx.moveTo(points[0][0], points[0][1]);
+        }
         for (_i = 0, _len = points.length; _i < _len; _i++) {
           p = points[_i];
           this.ctx.lineTo(p[0], p[1]);
         }
-        break;
+        return this.ctx.stroke();
       case 'r':
         if (!(points.length > 1)) {
           return;
         }
-        (_ref = this.ctx).fillRect.apply(_ref, this.rect(points));
-        break;
+        return (_ref = this.ctx).fillRect.apply(_ref, this.rect(points));
       case 'c':
         if (!(points.length > 1)) {
           return;
         }
         radius = Math.sqrt(Math.pow(points[0][0] - points[1][0], 2) + Math.pow(points[0][1] - points[1][1], 2));
+        this.ctx.closePath();
+        this.ctx.beginPath();
+        this.ctx.fillStyle = stroke.color;
         this.ctx.arc(points[0][0], points[0][1], radius, 0, Math.PI * 2, false);
         this.ctx.fill();
-        break;
+        this.ctx.closePath();
+        return this.ctx.beginPath();
       case 'm':
+        this.ctx.closePath();
+        this.ctx.stroke();
         rect = this.rect(stroke.moveRect);
         tempImageData = (_ref1 = this.ctx).getImageData.apply(_ref1, rect);
         (_ref2 = this.ctx).clearRect.apply(_ref2, rect);
+        this.ctxTemp.putImageData(tempImageData, Math.min(stroke.moveRect[0][0], stroke.moveRect[1][0]) - points[0][0] + points[1][0], Math.min(stroke.moveRect[0][1], stroke.moveRect[1][1]) - points[0][1] + points[1][1]);
+        this.ctx.drawImage(this.canvasTemp, 0, 0);
         this.ctxTemp.beginPath();
         this.ctxTemp.clearRect(0, 0, 10000, 10000);
         this.ctxTemp.closePath();
-        this.ctxTemp.putImageData(tempImageData, Math.min(stroke.moveRect[0][0], stroke.moveRect[1][0]) - points[0][0] + points[1][0], Math.min(stroke.moveRect[0][1], stroke.moveRect[1][1]) - points[0][1] + points[1][1]);
-        this.ctx.drawImage(this.canvasTemp, 0, 0);
-        ctxTemp.beginPath();
-        this.ctxTemp.clearRect(0, 0, 10000, 10000);
-        this.ctxTemp.closePath();
-        break;
+        return this.ctx.beginPath();
       case 'f':
-        this.newFrame();
+        return this.newFrame();
     }
-    this.ctx.stroke();
-    return this.ctx.closePath();
   };
 
   WSCanvas.prototype.rect = function(points) {
@@ -272,19 +277,20 @@ window.WSCanvas = (function() {
   };
 
   WSCanvas.prototype.rerender = function() {
-    var baseImage, s, _i, _len, _ref, _results;
+    var baseImage, s, _i, _len, _ref;
     this.ctx.clearRect(0, 0, 10000, 10000);
     this.ctxTemp.clearRect(0, 0, 10000, 10000);
     if (baseImage = this.frames[this.currentFrame].baseImage) {
       this.ctx.putImageData(baseImage, 0, 0);
     }
+    this.ctx.beginPath();
     _ref = this.strokes;
-    _results = [];
     for (_i = 0, _len = _ref.length; _i < _len; _i++) {
       s = _ref[_i];
-      _results.push(this.drawStroke(s));
+      this.drawStroke(s);
     }
-    return _results;
+    this.ctx.stroke();
+    return this.ctx.closePath();
   };
 
   WSCanvas.prototype.lastUncancelledStroke = function() {
@@ -396,9 +402,15 @@ window.WSCanvas = (function() {
         return _this.mode = 'r';
       };
     })(this));
-    return this.moveHammer.on('tap', (function(_this) {
+    this.moveHammer.on('tap', (function(_this) {
       return function() {
         return _this.mode = 's';
+      };
+    })(this));
+    return window.addEventListener('resize', (function(_this) {
+      return function() {
+        _this.fitToScreen();
+        return _this.rerender();
       };
     })(this));
   };

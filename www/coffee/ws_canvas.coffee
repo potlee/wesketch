@@ -114,6 +114,7 @@ class window.WSCanvas
     e.preventDefault()
     @ctxTemp.closePath()
     @paintingOn = false
+    return if @mode is 'm' and @localPoints.length < 2
     stroke =
       points: @localPoints
       color: @color
@@ -134,7 +135,7 @@ class window.WSCanvas
   drawStroke: (stroke) ->
     return if stroke.cancelled or stroke.frame is not @currentFrame
     points = stroke.points
-    @ctx.beginPath()
+    #@ctx.beginPath()
     @ctx.lineJoin = @ctxTemp.lineCap = 'round'
     #@ctx.shadowBlur = 2
     @ctx.lineWidth = stroke.width
@@ -143,8 +144,11 @@ class window.WSCanvas
     @ctx.fillStyle = stroke.color
     switch stroke.mode
       when 'l'
+        if points.length
+          @ctx.moveTo points[0][0], points[0][1]
         for p in points
           @ctx.lineTo p[0], p[1]
+        @ctx.stroke()
 
       when 'r'
         return if !(points.length > 1)
@@ -155,31 +159,38 @@ class window.WSCanvas
         radius = Math.sqrt(
           Math.pow(points[0][0] - points[1][0], 2) + Math.pow(points[0][1] - points[1][1],2)
         )
+        @ctx.closePath()
+        @ctx.beginPath()
+        @ctx.fillStyle = stroke.color
         @ctx.arc(points[0][0], points[0][1], radius,0, Math.PI * 2, false)
         @ctx.fill()
+        @ctx.closePath()
+        @ctx.beginPath()
 
       when 'm'
+        @ctx.closePath()
+        @ctx.stroke()
         rect = @rect(stroke.moveRect)
         tempImageData = @ctx.getImageData rect...
         @ctx.clearRect rect...
-        @ctxTemp.beginPath()
-        @ctxTemp.clearRect(0,0,10000,10000)
-        @ctxTemp.closePath()
+        #@ctxTemp.beginPath()
+        #@ctxTemp.clearRect(0,0,10000,10000)
+        #@ctxTemp.closePath()
         @ctxTemp.putImageData(
           tempImageData
           Math.min(stroke.moveRect[0][0], stroke.moveRect[1][0]) - points[0][0] + points[1][0]
           Math.min(stroke.moveRect[0][1], stroke.moveRect[1][1]) - points[0][1] + points[1][1]
         )
         @ctx.drawImage(@canvasTemp, 0,0)
-        ctxTemp.beginPath()
+        @ctxTemp.beginPath()
         @ctxTemp.clearRect(0,0,10000,10000)
         @ctxTemp.closePath()
+        @ctx.beginPath()
 
       when 'f'
         @newFrame()
 
-    @ctx.stroke()
-    @ctx.closePath()
+    #@ctx.closePath()
 
   rect: (points) ->
     x = points[0][0]
@@ -231,8 +242,11 @@ class window.WSCanvas
     if baseImage = @frames[@currentFrame].baseImage
       @ctx.putImageData(baseImage, 0, 0)
 
+    @ctx.beginPath()
     for s in @strokes
       @drawStroke(s)
+    @ctx.stroke()
+    @ctx.closePath()
 
   lastUncancelledStroke: ->
     i = @strokes.length - 1
@@ -308,6 +322,9 @@ class window.WSCanvas
     @circleHammer.on 'tap', => @mode = 'c'
     @rectangleHammer.on 'tap', => @mode = 'r'
     @moveHammer.on 'tap', => @mode = 's'
+    window.addEventListener 'resize', =>
+      @fitToScreen()
+      @rerender()
 
   initHamers: ->
     options =
