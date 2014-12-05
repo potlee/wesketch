@@ -175,8 +175,8 @@ class window.WSCanvas
 
       when 'f'
         @newFrame()
-    @ctx.closePath()
     @ctx.stroke()
+    @ctx.closePath()
 
   rect: (points) ->
     x = points[0][0]

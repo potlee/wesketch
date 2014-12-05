@@ -214,8 +214,8 @@ window.WSCanvas = (function() {
       case 'f':
         this.newFrame();
     }
-    this.ctx.closePath();
-    return this.ctx.stroke();
+    this.ctx.stroke();
+    return this.ctx.closePath();
   };
 
   WSCanvas.prototype.rect = function(points) {
