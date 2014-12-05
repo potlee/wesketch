@@ -84,11 +84,11 @@ canvas {
 
 #welcome-screen {
   padding: 10px;
-  height: calc(100% - 20px);
+  height: 100%;
   overflow: scroll;
   -webkit-overflow-scrolling: touch;
   position: absolute;
-  width: calc(100%-20px);
+  width: 100%;
 }
 
 #color-picker {
