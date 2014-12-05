@@ -175,7 +175,7 @@ class window.WSCanvas
 
       when 'f'
         @newFrame()
-
+    @ctx.stroke()
     @ctx.closePath()
 
   rect: (points) ->
@@ -230,8 +230,8 @@ class window.WSCanvas
 
     for s in @strokes
       @drawStroke(s)
-
   lastUncancelledStroke: ->
+
 
     i = @strokes.length - 1
     i-- while @strokes[i].cancelled and i != 0

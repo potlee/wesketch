@@ -214,6 +214,7 @@ window.WSCanvas = (function() {
       case 'f':
         this.newFrame();
     }
+    this.ctx.stroke();
     return this.ctx.closePath();
   };
 
