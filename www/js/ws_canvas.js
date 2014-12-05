@@ -25,6 +25,9 @@ window.WSCanvas = (function() {
 
   WSCanvas.prototype.fitToScreen = function() {
     this.mainScreen.classList.remove('hidden');
+    this.toolbar.classList.remove('hidden');
+    this.canvas.classList.remove('hidden');
+    this.canvasTemp.classList.remove('hidden');
     this.canvas.height = this.canvas.clientHeight;
     this.canvas.width = this.canvas.clientWidth;
     this.canvasTemp.height = this.canvas.clientHeight;
@@ -378,12 +381,12 @@ window.WSCanvas = (function() {
       this.canvasTemp.addEventListener('touchend', this.onend.bind(this), true);
       this.canvasTemp.addEventListener('mouseup', this.onend.bind(this), true);
     }
+    this.undoHammer.on('tap', this.undoLocal.bind(this));
+    this.redoHammer.on('tap', this.redoLocal.bind(this));
     this.colorPickerIconHammer.on('tap', this.showColorPicker.bind(this));
     this.brushPickerIconHammer.on('tap', this.showBrushPicker.bind(this));
     this.colorPickerHammer.on('tap', this.selectColor.bind(this));
     this.brushPickerHammer.on('tap', this.selectBursh.bind(this));
-    this.undoHammer.on('tap', this.undoLocal.bind(this));
-    this.redoHammer.on('tap', this.redoLocal.bind(this));
     this.circleHammer.on('tap', (function(_this) {
       return function() {
         return _this.mode = 'c';
