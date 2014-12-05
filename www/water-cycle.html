@@ -129,8 +129,8 @@
     <input id="sketch-name"  type="text" />
     <input id="go" type="button" value="go" />
   </div>
-  <script>
     //ios8 fix
+  <script>
     var o =XMLHttpRequest.prototype.open;
     XMLHttpRequest.prototype.open = function(a) {
       arguments[1] = arguments[1].replace('file:','http:');

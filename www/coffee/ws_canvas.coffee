@@ -137,7 +137,6 @@ class window.WSCanvas
     points = stroke.points
     #@ctx.beginPath()
     @ctx.lineJoin = @ctxTemp.lineCap = 'round'
-    #@ctx.shadowBlur = 2
     @ctx.lineWidth = stroke.width
     @ctx.shadowColor = stroke.color
     @ctx.strokeStyle = stroke.color
@@ -146,9 +145,8 @@ class window.WSCanvas
       when 'l'
         if points.length
           @ctx.moveTo points[0][0], points[0][1]
-        for p in points
-          @ctx.lineTo p[0], p[1]
-        @ctx.stroke()
+          for p in points
+            @ctx.lineTo p[0], p[1]
 
       when 'r'
         return if !(points.length > 1)
@@ -159,6 +157,7 @@ class window.WSCanvas
         radius = Math.sqrt(
           Math.pow(points[0][0] - points[1][0], 2) + Math.pow(points[0][1] - points[1][1],2)
         )
+        @ctx.stroke()
         @ctx.closePath()
         @ctx.beginPath()
         @ctx.fillStyle = stroke.color
@@ -168,14 +167,11 @@ class window.WSCanvas
         @ctx.beginPath()
 
       when 'm'
-        @ctx.closePath()
         @ctx.stroke()
+        @ctx.closePath()
         rect = @rect(stroke.moveRect)
         tempImageData = @ctx.getImageData rect...
         @ctx.clearRect rect...
-        #@ctxTemp.beginPath()
-        #@ctxTemp.clearRect(0,0,10000,10000)
-        #@ctxTemp.closePath()
         @ctxTemp.putImageData(
           tempImageData
           Math.min(stroke.moveRect[0][0], stroke.moveRect[1][0]) - points[0][0] + points[1][0]

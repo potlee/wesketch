@@ -168,7 +168,7 @@ window.WSCanvas = (function() {
   };
 
   WSCanvas.prototype.drawStroke = function(stroke) {
-    var p, points, radius, rect, tempImageData, _i, _len, _ref, _ref1, _ref2;
+    var p, points, radius, rect, tempImageData, _i, _len, _ref, _ref1, _ref2, _results;
     if (stroke.cancelled || stroke.frame === !this.currentFrame) {
       return;
     }
@@ -182,12 +182,14 @@ window.WSCanvas = (function() {
       case 'l':
         if (points.length) {
           this.ctx.moveTo(points[0][0], points[0][1]);
+          _results = [];
+          for (_i = 0, _len = points.length; _i < _len; _i++) {
+            p = points[_i];
+            _results.push(this.ctx.lineTo(p[0], p[1]));
+          }
+          return _results;
         }
-        for (_i = 0, _len = points.length; _i < _len; _i++) {
-          p = points[_i];
-          this.ctx.lineTo(p[0], p[1]);
-        }
-        return this.ctx.stroke();
+        break;
       case 'r':
         if (!(points.length > 1)) {
           return;
@@ -198,6 +200,7 @@ window.WSCanvas = (function() {
           return;
         }
         radius = Math.sqrt(Math.pow(points[0][0] - points[1][0], 2) + Math.pow(points[0][1] - points[1][1], 2));
+        this.ctx.stroke();
         this.ctx.closePath();
         this.ctx.beginPath();
         this.ctx.fillStyle = stroke.color;
@@ -206,8 +209,8 @@ window.WSCanvas = (function() {
         this.ctx.closePath();
         return this.ctx.beginPath();
       case 'm':
-        this.ctx.closePath();
         this.ctx.stroke();
+        this.ctx.closePath();
         rect = this.rect(stroke.moveRect);
         tempImageData = (_ref1 = this.ctx).getImageData.apply(_ref1, rect);
         (_ref2 = this.ctx).clearRect.apply(_ref2, rect);
