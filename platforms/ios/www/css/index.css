@@ -20,6 +20,10 @@
   -webkit-tap-highlight-color: rgba(0,0,0,0); /* make transparent link selection, adjust last value opacity 0 to 1.0 */
 }
 
+body {
+  font-family: "Avenir Next";
+}
+
 canvas {
   position: fixed;
   touch-action: none;
@@ -74,6 +78,31 @@ canvas {
   border-style: dashed;
 }
 
+h1 {
+  text-align: center;
+  color: #F1C40F;
+  padding-top: 20%;
+  max-width: 400px;
+  width: 80%;
+  margin: auto;
+}
+
+input {
+  font-family: "Avenir Next";
+  text-align: center;
+  background-color: #F1C40F;
+  max-width: 300px;
+  width: 60%;
+  margin: auto;
+  display: block;
+  border: none;
+  margin-top: 22px;
+  height: 30px;
+  font-size: 16px;
+  color: #2ecc71;
+  font-weight: bold;
+  -webkit-appearance: none;
+}
 
 .rectangle-icon {
   background-color: #ddd;
@@ -83,8 +112,6 @@ canvas {
 }
 
 #welcome-screen {
-  box-sizing: border-box;
-  padding: 10px;
   height: 100%;
   overflow: scroll;
   -webkit-overflow-scrolling: touch;

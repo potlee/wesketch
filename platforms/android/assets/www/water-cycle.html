@@ -1,0 +1,177 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="utf-8" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="format-detection" content="telephone=no" />
+  <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
+  <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, target-densitydpi=device-dpi" />
+  <link rel="stylesheet" type="text/css" href="css/index.css" />
+  <meta name="msapplication-tap-highlight" content="no" />
+  <title>Hello World</title>
+</head>
+<body>
+  <div id="main" class="hidden">
+    <canvas id="canvas"></canvas>
+    <canvas id="canvas-temp"></canvas>
+    <div id="color-picker" class="hidden">
+      <div class="color turquoise"></div>
+      <div class="color emerland"></div>
+      <div class="color green-sea"></div>
+      <div class="color nephritis"></div>
+      <div class="color sun-flower"></div>
+      <div class="color carrot"></div>
+      <div class="color orange"></div>
+      <div class="color pumpkin"></div>
+      <div class="color peter-river"></div>
+      <div class="color amethyst"></div>
+      <div class="color belize-hole"></div>
+      <div class="color wisteria"></div>
+      <div class="color alizarin"></div>
+      <div class="color clouds"></div>
+      <div class="color pomegranate"></div>
+      <div class="color silver"></div>
+      <div class="color wet-asphalt"></div>
+      <div class="color concrete"></div>
+      <div class="color midnight-blue"></div>
+      <div class="color asbestos"></div>
+    </div>
+    <div id="brush-picker" class="hidden">
+      <div class="brush-wraper" value="2">
+        <div class="brush" style="height: 2px" value="2"></div>
+      </div>
+      <div class="brush-wraper" value="4">
+        <div class="brush" style="height: 4px" value="4"></div>
+      </div>
+      <div class="brush-wraper" value="6">
+        <div class="brush" style="height: 8px" value="8"></div>
+      </div>
+      <div class="brush-wraper" value="10">
+        <div class="brush" style="height: 10px" value="10"></div>
+      </div>
+      <div class="brush-wraper" value="12">
+        <div class="brush" style="height: 12px" value="12"></div>
+      </div>
+      <div class="brush-wraper" value="14">
+        <div class="brush" style="height: 14px" value="14"></div>
+      </div>
+      <div class="brush-wraper" value="16">
+        <div class="brush" style="height: 16px" value="16"></div>
+      </div>
+      <div class="brush-wraper" value="18">
+        <div class="brush" style="height: 18px" value="18"></div>
+      </div>
+      <div class="brush-wraper" value="20">
+        <div class="brush" style="height: 20px" value="20"></div>
+      </div>
+      <div class="brush-wraper" value="23">
+        <div class="brush" style="height: 23px" value="23"></div>
+      </div>
+      <div class="brush-wraper" value="26">
+        <div class="brush" style="height: 26px" value="26"></div>
+      </div>
+      <div class="brush-wraper" value="30">
+        <div class="brush" style="height: 30px" value="30"></div>
+      </div>
+      <div class="brush-wraper" value="36">
+        <div class="brush" style="height: 36px" value="36"></div>
+      </div>
+      <div class="brush-wraper" value="42">
+        <div class="brush" style="height: 42px" value="42"></div>
+      </div>
+    </div>
+    <div id="toolbar">
+      <div class="tool" id="tool-color-picker">
+        <img class="tool-icon"   alt="colors" src="img/color-picker.png" />
+        colors
+      </div>
+      <div class="tool" id="tool-undo">
+        <img class="tool-icon undo-icon" alt="undo" src="img/undo17.svg" />
+        undo
+      </div>
+      <div class="tool" id="tool-redo">
+        <img class="tool-icon redo-icon" alt="undo" src="img/redo13.svg" />
+        redo
+      </div>
+      <div class="tool" id="tool-circle">
+        <div class="tool-icon circle-icon"></div>
+        circle
+      </div>
+      <div class="tool" id="tool-rectangle">
+        <div class="tool-icon rectangle-icon"></div>
+        rectangle
+      </div>
+      <div class="tool" id="tool-brush">
+        <img class="tool-icon brush-icon" alt="brushes" src="img/brushes.svg" />
+        brushes
+      </div>
+      <div class="tool" id="tool-eraser">
+        <img class="tool-icon eraser-icon" alt="brushes" src="img/eraser.svg" />
+        erasor
+      </div>
+      <div class="tool" id="tool-move">
+        <div class="tool-icon move-icon"></div>
+        move
+      </div>
+      <!--<div class="tool" id="tool-next">-->
+      <!--  <img class="tool-icon prev-icon" alt="next" src="img/left.svg" />-->
+      <!--  previous-->
+      <!--</div>-->
+      <!--<div class="tool" id="tool-prev">-->
+      <!--  <img class="tool-icon prev-icon" alt="next" src="img/right.svg" />-->
+      <!--  next-->
+      <!--</div>-->
+    </div>
+  </div>
+  <div style="text-align: left;" id="welcome-screen">
+    <h1>The Water Cycle: A Description</h1>
+    The Sun, which drives the water cycle, heats water in oceans and seas. Water evaporates as water vapor into the air. Ice, rain and snow can sublimate directly into water vapor. Evapotranspiration is water transpired from plants and evaporated from the soil. Rising air currents take the vapor up into the atmosphere where cooler temperatures cause it to condense into clouds. Air currents move water vapor around the globe, cloud particles collide, grow, and fall out of the upper atmospheric layers as precipitation. Some precipitation falls as snow or hail, sleet, and can accumulate as ice caps and glaciers, which can store frozen water for thousands of years. Most water falls back into the oceans or onto land as rain, where the water flows over the ground as surface runoff. A portion of runoff enters rivers in valleys in the landscape, with stream flow moving water towards the oceans. Runoff and water emerging from the ground (groundwater) may be stored as freshwater in lakes. Not all runoff flows into rivers, much of it soaks into the ground as infiltration. Some water infiltrates deep into the ground and replenishes aquifers, which can store freshwater for long periods of time. Some infiltration stays close to the land surface and can seep back into surface-water bodies (and the ocean) as groundwater discharge. Some groundwater finds openings in the land surface and comes out as freshwater springs. In river valleys and flood-plains there is often continuous water exchange between surface water and ground water in the hypothetic zone. Over time, the water returns to the ocean, to continue the water cycle. (Borrowed from Wikipedia)
+    <h2>Give your collaboration session a name: </h2>
+    <input id="sketch-name"  type="text" />
+    <input id="go" type="button" value="go" />
+    <h3>Using WeSketch, please create a drawing to represent the water cycle.</h3>
+  </div>
+  <script>
+  </div>
+    var o =XMLHttpRequest.prototype.open;
+    XMLHttpRequest.prototype.open = function(a) {
+      arguments[1] = arguments[1].replace('file:','http:');
+      return o.apply(this, arguments);
+    };
+  </script>
+  <script src="js/arraybuffer_slice.js"></script>
+  <script src="js/spin.js"> </script>
+  <script>
+    var opts = {
+      lines: 13, // The number of lines to draw
+      length: 20, // The length of each line
+      width: 10, // The line thickness
+      radius: 30, // The radius of the inner circle
+      corners: 1, // Corner roundness (0..1)
+      rotate: 0, // The rotation offset
+      direction: 1, // 1: clockwise, -1: counterclockwise
+      color: '#000', // #rgb or #rrggbb or array of colors
+      speed: 1, // Rounds per second
+      trail: 60, // Afterglow percentage
+      shadow: false, // Whether to render a shadow
+      hwaccel: false, // Whether to use hardware acceleration
+      className: 'spinner', // The CSS class to assign to the spinner
+      zIndex: 2e9, // The z-index (defaults to 2000000000)
+      top: '50%', // Top position relative to parent
+      left: '50%' // Left position relative to parent
+      };
+      var spinner = new Spinner(opts).spin(document.body);
+      spinner.stop()
+    </script>
+  <script src="cordova.js"></script>
+  <script src="bower_components/hammerjs/hammer.js"></script>
+  <script src="bower_components/rsvp/rsvp.js"></script>
+  <script>window.Promise = RSVP.Promise</script>
+	<script src="release/collabrify.js"></script>
+  <script src="js/monkey_matches.js"></script>
+  <script src="js/ws_canvas.js"></script>
+	<script src="js/collabrify_init.js"></script>
+</body>
+</html>

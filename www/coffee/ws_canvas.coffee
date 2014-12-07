@@ -79,6 +79,9 @@ class window.WSCanvas
         @ctxTemp.fillRect(@rect(@localPoints)...)
 
       when 's'
+        @ctxTemp.lineWidth = 4
+        @ctxTemp.strokeStyle = '#222'
+        @ctxTemp.fillStyle = '#222'
         @localPoints[1] = [e.pageX, e.pageY]
         @ctxTemp.strokeRect(@rect(@localPoints)...)
         if @localPoints[0][0] == e.pageX or @localPoints[0][1] == e.pageY
@@ -106,6 +109,15 @@ class window.WSCanvas
         for p in @localPoints
           @ctxTemp.lineTo(p[0],p[1])
 
+      when 'e'
+        @localPoints.push [e.pageX, e.pageY]
+        @ctxTemp.lineWidth = 36
+        @ctxTemp.strokeStyle = '#fff'
+        @ctxTemp.fillStyle = '#fff'
+        for p in @localPoints
+          @ctxTemp.lineTo(p[0],p[1])
+
+
       else throw new Error('mode: ', @mode)
 
     @ctxTemp.stroke()
@@ -113,19 +125,27 @@ class window.WSCanvas
   onend: (e) ->
     e.preventDefault()
     @ctxTemp.closePath()
+    return if !@localPoints.length
     mode = @mode
+    width = @width
+    color = @color
     @paintingOn = false
     return if @mode is 'm' and @localPoints.length < 2
-    if @mode is 'l' and @localPoints.length < 2
+    if @mode is 'l' and @localPoints.length == 1
       mode = 'p'
+
+    if @mode is 'e'
+      width = 36
+      mode = 'l'
+      color = '#fff'
 
     stroke =
       points: @localPoints
-      color: @color
+      color: color
       id: Math.random()
       mode: mode
       moveRect: @moveRect if @mode is 'm'
-      width: @width if @mode is 'l'
+      width: width if mode is 'l' or mode is 'p'
       frame: @currentFrame
     @moveRect = if @mode is 's' then @localPoints else []
     @localPoints = []
@@ -315,7 +335,7 @@ class window.WSCanvas
     @brushPickerIconHammer.on 'tap', @showBrushPicker.bind(this)
     @colorPickerHammer.on 'tap', @selectColor.bind(this)
     @brushPickerHammer.on 'tap', @selectBursh.bind(this)
-    @eraserHammer.on 'tap', => @selectColor color: 'rgb(255,255,255)'
+    @eraserHammer.on 'tap', => @mode = 'e'
     #@nextIconHammer.on 'tap', @nextFrame.bind(this)
     #@prevIconHammer.on 'tap', @previousFrame.bind(this)
     @circleHammer.on 'tap', => @mode = 'c'

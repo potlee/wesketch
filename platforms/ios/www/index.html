@@ -135,9 +135,10 @@
   </div>
   <div id="welcome-screen">
     <h1>What is this sketch going to be called</h1>
-    <input id="sketch-name"  type="text" />
-    <input id="go" type="button" value="go" />
+    <input placeholder="unique session name" id="sketch-name"  type="text" />
+    <input id="go" type="button" value="Go!" />
   </div>
+  <script>window.alert = cnosole.log;</script>
   <script>
     //ios8 fix
     var o =XMLHttpRequest.prototype.open;

@@ -89,7 +89,7 @@ window.WSCanvas = (function() {
   };
 
   WSCanvas.prototype.onmove = function(e) {
-    var p, radius, _i, _len, _ref, _ref1, _ref2;
+    var p, radius, _i, _j, _len, _len1, _ref, _ref1, _ref2, _ref3;
     e.preventDefault();
     if (!this.paintingOn) {
       return;
@@ -106,6 +106,9 @@ window.WSCanvas = (function() {
         (_ref = this.ctxTemp).fillRect.apply(_ref, this.rect(this.localPoints));
         break;
       case 's':
+        this.ctxTemp.lineWidth = 4;
+        this.ctxTemp.strokeStyle = '#222';
+        this.ctxTemp.fillStyle = '#222';
         this.localPoints[1] = [e.pageX, e.pageY];
         (_ref1 = this.ctxTemp).strokeRect.apply(_ref1, this.rect(this.localPoints));
         if (this.localPoints[0][0] === e.pageX || this.localPoints[0][1] === e.pageY) {
@@ -131,6 +134,17 @@ window.WSCanvas = (function() {
           this.ctxTemp.lineTo(p[0], p[1]);
         }
         break;
+      case 'e':
+        this.localPoints.push([e.pageX, e.pageY]);
+        this.ctxTemp.lineWidth = 36;
+        this.ctxTemp.strokeStyle = '#fff';
+        this.ctxTemp.fillStyle = '#fff';
+        _ref3 = this.localPoints;
+        for (_j = 0, _len1 = _ref3.length; _j < _len1; _j++) {
+          p = _ref3[_j];
+          this.ctxTemp.lineTo(p[0], p[1]);
+        }
+        break;
       default:
         throw new Error('mode: ', this.mode);
     }
@@ -138,24 +152,34 @@ window.WSCanvas = (function() {
   };
 
   WSCanvas.prototype.onend = function(e) {
-    var mode, stroke;
+    var color, mode, stroke, width;
     e.preventDefault();
     this.ctxTemp.closePath();
+    if (!this.localPoints.length) {
+      return;
+    }
     mode = this.mode;
+    width = this.width;
+    color = this.color;
     this.paintingOn = false;
     if (this.mode === 'm' && this.localPoints.length < 2) {
       return;
     }
-    if (this.mode === 'l' && this.localPoints.length < 2) {
+    if (this.mode === 'l' && this.localPoints.length === 1) {
       mode = 'p';
+    }
+    if (this.mode === 'e') {
+      width = 36;
+      mode = 'l';
+      color = '#fff';
     }
     stroke = {
       points: this.localPoints,
-      color: this.color,
+      color: color,
       id: Math.random(),
       mode: mode,
       moveRect: this.mode === 'm' ? this.moveRect : void 0,
-      width: this.mode === 'l' ? this.width : void 0,
+      width: mode === 'l' || mode === 'p' ? width : void 0,
       frame: this.currentFrame
     };
     this.moveRect = this.mode === 's' ? this.localPoints : [];
@@ -401,9 +425,7 @@ window.WSCanvas = (function() {
     this.brushPickerHammer.on('tap', this.selectBursh.bind(this));
     this.eraserHammer.on('tap', (function(_this) {
       return function() {
-        return _this.selectColor({
-          color: 'rgb(255,255,255)'
-        });
+        return _this.mode = 'e';
       };
     })(this));
     this.circleHammer.on('tap', (function(_this) {

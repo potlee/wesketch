@@ -1,0 +1,19 @@
+{
+  "name": "wesketch",
+  "version": "0.0.0",
+  "authors": [
+    "Potlee <deeep.deep@gmail.com>"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "rsvp": "~3.0.13",
+    "slick.js": "~1.3.15"
+  }
+}
