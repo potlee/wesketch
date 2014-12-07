@@ -25,6 +25,7 @@ window.WSCanvas = (function() {
 
   WSCanvas.prototype.fitToScreen = function() {
     this.mainScreen.classList.remove('hidden');
+    this.toolbar.classList.remove('hidden');
     this.canvas.height = this.canvas.clientHeight;
     this.canvas.width = this.canvas.clientWidth;
     this.canvasTemp.height = this.canvas.clientHeight;
@@ -271,7 +272,11 @@ window.WSCanvas = (function() {
     this.colorPicker.classList.add('hidden');
     this.canvas.classList.remove('hidden');
     this.canvasTemp.classList.remove('hidden');
-    return this.color = getComputedStyle(e.target).backgroundColor;
+    if (e.color) {
+      return this.color = e.color;
+    } else {
+      return this.color = getComputedStyle(e.target).backgroundColor;
+    }
   };
 
   WSCanvas.prototype.selectBursh = function(e) {
@@ -394,6 +399,13 @@ window.WSCanvas = (function() {
     this.brushPickerIconHammer.on('tap', this.showBrushPicker.bind(this));
     this.colorPickerHammer.on('tap', this.selectColor.bind(this));
     this.brushPickerHammer.on('tap', this.selectBursh.bind(this));
+    this.eraserHammer.on('tap', (function(_this) {
+      return function() {
+        return _this.selectColor({
+          color: 'rgb(255,255,255)'
+        });
+      };
+    })(this));
     this.circleHammer.on('tap', (function(_this) {
       return function() {
         return _this.mode = 'c';
@@ -424,7 +436,7 @@ window.WSCanvas = (function() {
       time: 2000,
       threshold: 5
     };
-    return [this.colorPickerHammer = new Hammer(this.colorPicker), this.colorPickerIconHammer = new Hammer(this.colorPickerIcon), this.undoHammer = new Hammer(document.getElementById('tool-undo')), this.redoHammer = new Hammer(document.getElementById('tool-redo')), this.circleHammer = new Hammer(this.circleIcon), this.rectangleHammer = new Hammer(this.rectangleIcon), this.brushPickerIconHammer = new Hammer(this.brushPickerIcon), this.brushPickerHammer = new Hammer(this.brushPicker), this.moveHammer = new Hammer(this.moveIcon)].forEach(function(h) {
+    return [this.colorPickerHammer = new Hammer(this.colorPicker), this.colorPickerIconHammer = new Hammer(this.colorPickerIcon), this.undoHammer = new Hammer(document.getElementById('tool-undo')), this.redoHammer = new Hammer(document.getElementById('tool-redo')), this.circleHammer = new Hammer(this.circleIcon), this.rectangleHammer = new Hammer(this.rectangleIcon), this.brushPickerIconHammer = new Hammer(this.brushPickerIcon), this.brushPickerHammer = new Hammer(this.brushPicker), this.moveHammer = new Hammer(this.moveIcon), this.eraserHammer = new Hammer(this.eraser)].forEach(function(h) {
       return h.get('tap').set(options);
     });
   };
@@ -434,6 +446,7 @@ window.WSCanvas = (function() {
     this.canvasTemp = document.getElementById("canvas-temp");
     this.ctx = this.canvas.getContext("2d");
     this.ctxTemp = this.canvasTemp.getContext("2d");
+    this.eraser = document.getElementById('tool-eraser');
     this.colorPickerIcon = document.getElementById('tool-color-picker');
     this.colorPicker = document.getElementById('color-picker');
     this.brushPickerIcon = document.getElementById('tool-brush');

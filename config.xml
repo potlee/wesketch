@@ -6,11 +6,13 @@
     </description>
     <author email="dev@cordova.apache.org" href="http://cordova.io">
         Apache Cordova Team
-    </author>
-    <content src="index.html" />
-    <access origin="*" />
-    <preference name="DisallowOverscroll" value="true" />
-    <feature name="Keyboard">
-      <param name="ios-package" value="CDVKeyboard" onload="true" />
-    </feature>
+      </author>
+      <content src="index.html" />
+      <access origin="*" />
+      <preference name="DisallowOverscroll" value="true" />
+      <feature name="Keyboard">
+        <param name="ios-package" value="CDVKeyboard" onload="true" />
+      </feature>
+      <preference name="HideKeyboardFormAccessoryBar" value="true" />
+      <preference name="KeyboardShrinksView" value="false" />
 </widget>

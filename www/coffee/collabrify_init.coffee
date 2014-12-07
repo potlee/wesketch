@@ -1,9 +1,8 @@
-console.log "INIT COLLABRIFY FROM coffee"
 window.onerror = (e) -> alert JSON.stringify(e)
 window.wsCanvas = new WSCanvas
 Keyboard.automaticScrollToTopOnHiding = true if window.Keyboard
 document.addEventListener 'focusout', (e) -> scrollTo(0, 0)
-document.getElementById('go').onclick = ->
+go = ->
   document.getElementById('welcome-screen').classList.add('hidden')
   spinner.spin(document.body)
   tag = 'watercycledemo' + document.getElementById('sketch-name').value
@@ -17,18 +16,13 @@ document.getElementById('go').onclick = ->
     startPaused: false
 
   .then (session) ->
-    console.log('CREATED: ', session)
-    #alert('CREATED: ')
     spinner.stop()
+    2
 
   .catch (error) ->
     c.listSessions([tag])
     .then (sessions) ->
       c.joinSession session: sessions[0]
-
-    .then (session) ->
-      console.log 'JOINED: ', session
-      #alert 'JOINED: '
 
     .catch (e) -> alert(e)
 
@@ -54,3 +48,9 @@ document.getElementById('go').onclick = ->
       wsCanvas.drawStroke(e)
     wsCanvas.drawnStrokes[e.id] = true
   c.on 'error', (e) -> alert(e)
+
+document.getElementById('go').onclick = go
+document.getElementById('go').ontouchstart = (e) -> 
+  e.preventDefault() if e.preventDefault
+  go()
+

@@ -3,25 +3,67 @@ var __slice = [].slice;
 window.WSCanvas = (function() {
   function WSCanvas() {
     this.undoStack = [];
-    this.color = '#666';
     this.localPoints = [];
     this.moveRect = [];
     this.strokes = [];
-    this.paintingOn = false;
+    this.frames = [
+      {
+        strokes: this.strokes,
+        baseImage: null
+      }
+    ];
     this.drawnStrokes = {};
+    this.color = '#666';
     this.mode = 'l';
+    this.currentFrame = 0;
+    this.paintingOn = false;
     this.initElements();
     this.initHamers();
     this.attachEvents();
+    this.width = 4;
   }
 
   WSCanvas.prototype.fitToScreen = function() {
-    this.canvas.classList.remove('hidden');
-    this.canvasTemp.classList.remove('hidden');
+    this.mainScreen.classList.remove('hidden');
+    this.toolbar.classList.remove('hidden');
     this.canvas.height = this.canvas.clientHeight;
     this.canvas.width = this.canvas.clientWidth;
     this.canvasTemp.height = this.canvas.clientHeight;
     return this.canvasTemp.width = this.canvas.clientWidth;
+  };
+
+  WSCanvas.prototype.nextFrame = function() {
+    if (this.currentFrame + 1 === this.frames.length) {
+      this.tryNewFrame();
+    }
+    return this.goToFrame(this.currentFrame + 1);
+  };
+
+  WSCanvas.prototype.previousFrame = function() {
+    return this.goToFrame(this.currentFrame - 1);
+  };
+
+  WSCanvas.prototype.goToFrame = function(frame) {
+    if (this.frames[frame]) {
+      this.strokes = this.frames[frame].strokes;
+      this.currentFrame = frame;
+      return this.rerender();
+    } else {
+      return console.log("no such frame");
+    }
+  };
+
+  WSCanvas.prototype.newFrame = function() {
+    return this.frames.push({
+      strokes: [],
+      baseImage: this.ctx.getImageData(0, 0, this.canvas.width, this.canvas.height)
+    });
+  };
+
+  WSCanvas.prototype.tryNewFrame = function() {
+    return c.broadcast({
+      mode: 'f'
+    });
   };
 
   WSCanvas.prototype.onstart = function(e) {
@@ -38,8 +80,7 @@ window.WSCanvas = (function() {
     }
     this.ctxTemp.beginPath();
     this.ctxTemp.lineJoin = this.ctxTemp.lineCap = 'round';
-    this.ctxTemp.lineWidth = 3;
-    this.ctxTemp.shadowColor = this.color;
+    this.ctxTemp.lineWidth = this.width;
     this.ctxTemp.strokeStyle = this.color;
     this.ctxTemp.fillStyle = this.color;
     this.ctxTemp.moveTo(e.pageX, e.pageY);
@@ -48,7 +89,7 @@ window.WSCanvas = (function() {
   };
 
   WSCanvas.prototype.onmove = function(e) {
-    var radius, _ref, _ref1;
+    var p, radius, _i, _len, _ref, _ref1, _ref2;
     e.preventDefault();
     if (!this.paintingOn) {
       return;
@@ -56,7 +97,9 @@ window.WSCanvas = (function() {
     if (e.touches) {
       e = e.touches[0];
     }
+    this.ctxTemp.beginPath();
     this.ctxTemp.clearRect(0, 0, 10000, 10000);
+    this.ctxTemp.closePath();
     switch (this.mode) {
       case 'r':
         this.localPoints[1] = [e.pageX, e.pageY];
@@ -64,7 +107,6 @@ window.WSCanvas = (function() {
         break;
       case 's':
         this.localPoints[1] = [e.pageX, e.pageY];
-        this.ctxTemp.setLineDash([1, 1]);
         (_ref1 = this.ctxTemp).strokeRect.apply(_ref1, this.rect(this.localPoints));
         if (this.localPoints[0][0] === e.pageX || this.localPoints[0][1] === e.pageY) {
           return;
@@ -73,7 +115,7 @@ window.WSCanvas = (function() {
         break;
       case 'm':
         this.localPoints[1] = [e.pageX, e.pageY];
-        this.ctxTemp.putImageData(this.moveImageData, this.moveRect[0][0] - this.localPoints[0][0] + e.pageX, this.moveRect[0][1] - this.localPoints[0][1] + e.pageY);
+        this.ctxTemp.putImageData(this.moveImageData, Math.min(this.moveRect[0][0], this.moveRect[1][0]) - this.localPoints[0][0] + e.pageX, Math.min(this.moveRect[0][1], this.moveRect[1][1]) - this.localPoints[0][1] + e.pageY);
         break;
       case 'c':
         this.localPoints[1] = [e.pageX, e.pageY];
@@ -83,7 +125,11 @@ window.WSCanvas = (function() {
         break;
       case 'l':
         this.localPoints.push([e.pageX, e.pageY]);
-        this.ctxTemp.lineTo(e.pageX, e.pageY);
+        _ref2 = this.localPoints;
+        for (_i = 0, _len = _ref2.length; _i < _len; _i++) {
+          p = _ref2[_i];
+          this.ctxTemp.lineTo(p[0], p[1]);
+        }
         break;
       default:
         throw new Error('mode: ', this.mode);
@@ -92,16 +138,25 @@ window.WSCanvas = (function() {
   };
 
   WSCanvas.prototype.onend = function(e) {
-    var stroke;
+    var mode, stroke;
     e.preventDefault();
     this.ctxTemp.closePath();
+    mode = this.mode;
     this.paintingOn = false;
+    if (this.mode === 'm' && this.localPoints.length < 2) {
+      return;
+    }
+    if (this.mode === 'l' && this.localPoints.length < 2) {
+      mode = 'p';
+    }
     stroke = {
       points: this.localPoints,
       color: this.color,
       id: Math.random(),
-      mode: this.mode,
-      moveRect: this.mode === 'm' ? this.moveRect : void 0
+      mode: mode,
+      moveRect: this.mode === 'm' ? this.moveRect : void 0,
+      width: this.mode === 'l' ? this.width : void 0,
+      frame: this.currentFrame
     };
     this.moveRect = this.mode === 's' ? this.localPoints : [];
     this.localPoints = [];
@@ -119,13 +174,13 @@ window.WSCanvas = (function() {
 
   WSCanvas.prototype.drawStroke = function(stroke) {
     var p, points, radius, rect, tempImageData, _i, _len, _ref, _ref1, _ref2;
-    if (stroke.cancelled) {
+    if (stroke.cancelled || stroke.frame === !this.currentFrame) {
       return;
     }
     points = stroke.points;
     this.ctx.beginPath();
     this.ctx.lineJoin = this.ctxTemp.lineCap = 'round';
-    this.ctx.lineWidth = 3;
+    this.ctx.lineWidth = stroke.width;
     this.ctx.shadowColor = stroke.color;
     this.ctx.strokeStyle = stroke.color;
     this.ctx.fillStyle = stroke.color;
@@ -147,6 +202,13 @@ window.WSCanvas = (function() {
           return;
         }
         radius = Math.sqrt(Math.pow(points[0][0] - points[1][0], 2) + Math.pow(points[0][1] - points[1][1], 2));
+        this.ctx.fillStyle = stroke.color;
+        this.ctx.arc(points[0][0], points[0][1], radius, 0, Math.PI * 2, false);
+        this.ctx.fill();
+        break;
+      case 'p':
+        radius = stroke.width / Math.PI;
+        this.ctx.fillStyle = stroke.color;
         this.ctx.arc(points[0][0], points[0][1], radius, 0, Math.PI * 2, false);
         this.ctx.fill();
         break;
@@ -154,7 +216,14 @@ window.WSCanvas = (function() {
         rect = this.rect(stroke.moveRect);
         tempImageData = (_ref1 = this.ctx).getImageData.apply(_ref1, rect);
         (_ref2 = this.ctx).clearRect.apply(_ref2, rect);
-        this.ctx.putImageData(tempImageData, stroke.moveRect[0][0] - points[0][0] + points[1][0], stroke.moveRect[0][1] - points[0][1] + points[1][1]);
+        this.ctxTemp.putImageData(tempImageData, Math.min(stroke.moveRect[0][0], stroke.moveRect[1][0]) - points[0][0] + points[1][0], Math.min(stroke.moveRect[0][1], stroke.moveRect[1][1]) - points[0][1] + points[1][1]);
+        this.ctx.drawImage(this.canvasTemp, 0, 0);
+        this.ctxTemp.beginPath();
+        this.ctxTemp.clearRect(0, 0, 10000, 10000);
+        this.ctxTemp.closePath();
+        break;
+      case 'f':
+        this.newFrame();
     }
     this.ctx.stroke();
     return this.ctx.closePath();
@@ -184,7 +253,7 @@ window.WSCanvas = (function() {
   };
 
   WSCanvas.prototype.inMoveRect = function(x, y) {
-    return (this.moveRect[0][0] < x && x < this.moveRect[1][0]) && (this.moveRect[0][1] < y && y < this.moveRect[1][1]);
+    return (((this.moveRect[0][0] < x && x < this.moveRect[1][0])) || ((this.moveRect[1][0] < x && x < this.moveRect[0][0]))) && (((this.moveRect[0][1] < y && y < this.moveRect[1][1])) || ((this.moveRect[1][1] < y && y < this.moveRect[0][1])));
   };
 
   WSCanvas.prototype.showColorPicker = function() {
@@ -193,11 +262,29 @@ window.WSCanvas = (function() {
     return this.colorPicker.classList.remove('hidden');
   };
 
+  WSCanvas.prototype.showBrushPicker = function() {
+    this.canvas.classList.add('hidden');
+    this.canvasTemp.classList.add('hidden');
+    return this.brushPicker.classList.remove('hidden');
+  };
+
   WSCanvas.prototype.selectColor = function(e) {
     this.colorPicker.classList.add('hidden');
     this.canvas.classList.remove('hidden');
     this.canvasTemp.classList.remove('hidden');
-    return this.color = getComputedStyle(e.target).backgroundColor;
+    if (e.color) {
+      return this.color = e.color;
+    } else {
+      return this.color = getComputedStyle(e.target).backgroundColor;
+    }
+  };
+
+  WSCanvas.prototype.selectBursh = function(e) {
+    this.brushPicker.classList.add('hidden');
+    this.canvas.classList.remove('hidden');
+    this.canvasTemp.classList.remove('hidden');
+    this.width = parseInt(e.target.getAttribute('value'));
+    return this.mode = 'l';
   };
 
   WSCanvas.prototype.rerender = function() {
@@ -306,10 +393,19 @@ window.WSCanvas = (function() {
       this.canvasTemp.addEventListener('touchend', this.onend.bind(this), true);
       this.canvasTemp.addEventListener('mouseup', this.onend.bind(this), true);
     }
-    this.colorPickerIconHammer.on('tap', this.showColorPicker.bind(this));
-    this.colorPickerHammer.on('tap', this.selectColor.bind(this));
-    this.undoHammer.on('tap', this.undoLocal.bind(this));
     this.redoHammer.on('tap', this.redoLocal.bind(this));
+    this.undoHammer.on('tap', this.undoLocal.bind(this));
+    this.colorPickerIconHammer.on('tap', this.showColorPicker.bind(this));
+    this.brushPickerIconHammer.on('tap', this.showBrushPicker.bind(this));
+    this.colorPickerHammer.on('tap', this.selectColor.bind(this));
+    this.brushPickerHammer.on('tap', this.selectBursh.bind(this));
+    this.eraserHammer.on('tap', (function(_this) {
+      return function() {
+        return _this.selectColor({
+          color: 'rgb(255,255,255)'
+        });
+      };
+    })(this));
     this.circleHammer.on('tap', (function(_this) {
       return function() {
         return _this.mode = 'c';
@@ -320,14 +416,15 @@ window.WSCanvas = (function() {
         return _this.mode = 'r';
       };
     })(this));
-    this.brushHammer.on('tap', (function(_this) {
-      return function() {
-        return _this.mode = 'l';
-      };
-    })(this));
-    return this.moveHammer.on('tap', (function(_this) {
+    this.moveHammer.on('tap', (function(_this) {
       return function() {
         return _this.mode = 's';
+      };
+    })(this));
+    return window.addEventListener('resize', (function(_this) {
+      return function() {
+        _this.fitToScreen();
+        return _this.rerender();
       };
     })(this));
   };
@@ -339,7 +436,7 @@ window.WSCanvas = (function() {
       time: 2000,
       threshold: 5
     };
-    return [this.colorPickerHammer = new Hammer(this.colorPicker), this.colorPickerIconHammer = new Hammer(this.colorPickerIcon), this.undoHammer = new Hammer(document.getElementById('tool-undo')), this.redoHammer = new Hammer(document.getElementById('tool-redo')), this.circleHammer = new Hammer(this.circleIcon), this.rectangleHammer = new Hammer(this.rectangleIcon), this.brushHammer = new Hammer(this.brushIcon), this.moveHammer = new Hammer(this.moveIcon)].forEach(function(h) {
+    return [this.colorPickerHammer = new Hammer(this.colorPicker), this.colorPickerIconHammer = new Hammer(this.colorPickerIcon), this.undoHammer = new Hammer(document.getElementById('tool-undo')), this.redoHammer = new Hammer(document.getElementById('tool-redo')), this.circleHammer = new Hammer(this.circleIcon), this.rectangleHammer = new Hammer(this.rectangleIcon), this.brushPickerIconHammer = new Hammer(this.brushPickerIcon), this.brushPickerHammer = new Hammer(this.brushPicker), this.moveHammer = new Hammer(this.moveIcon), this.eraserHammer = new Hammer(this.eraser)].forEach(function(h) {
       return h.get('tap').set(options);
     });
   };
@@ -349,12 +446,16 @@ window.WSCanvas = (function() {
     this.canvasTemp = document.getElementById("canvas-temp");
     this.ctx = this.canvas.getContext("2d");
     this.ctxTemp = this.canvasTemp.getContext("2d");
+    this.eraser = document.getElementById('tool-eraser');
     this.colorPickerIcon = document.getElementById('tool-color-picker');
+    this.colorPicker = document.getElementById('color-picker');
+    this.brushPickerIcon = document.getElementById('tool-brush');
+    this.brushPicker = document.getElementById('brush-picker');
     this.circleIcon = document.getElementById('tool-circle');
-    this.brushIcon = document.getElementById('tool-brush');
     this.rectangleIcon = document.getElementById('tool-rectangle');
     this.moveIcon = document.getElementById('tool-move');
-    return this.colorPicker = document.getElementById('color-picker');
+    this.toolbar = document.getElementById('toolbar');
+    return this.mainScreen = document.getElementById('main');
   };
 
   return WSCanvas;

@@ -7,7 +7,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="format-detection" content="telephone=no" />
   <!-- WARNING: for iOS 7, remove the width=device-width and height=device-height attributes. See https://issues.apache.org/jira/browse/CB-4323 -->
-  <meta name="viewport" content="user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, target-densitydpi=device-dpi" />
+  <meta name="viewport" content="height=device-height, user-scalable=no, initial-scale=1, maximum-scale=1, minimum-scale=1, target-densitydpi=device-dpi" />
   <link rel="stylesheet" type="text/css" href="css/index.css" />
   <meta name="msapplication-tap-highlight" content="no" />
   <title>Hello World</title>
@@ -37,6 +37,14 @@
       <div class="color concrete"></div>
       <div class="color midnight-blue"></div>
       <div class="color asbestos"></div>
+      <div class="color gold"></div>
+      <div class="color goldenrod"></div>
+      <div class="color saddlebrown"></div>
+      <div class="color choclate"></div>
+      <div class="color sandybrown"></div>
+      <div class="color peru"></div>
+      <div class="color black"></div>
+      <div class="color gray"></div>
     </div>
     <div id="brush-picker" class="hidden">
       <div class="brush-wraper" value="2">
@@ -82,7 +90,7 @@
         <div class="brush" style="height: 42px" value="42"></div>
       </div>
     </div>
-    <div id="toolbar">
+    <div id="toolbar" class="hidden">
       <div class="tool" id="tool-color-picker">
         <img class="tool-icon"   alt="colors" src="img/color-picker.png" />
         colors
@@ -107,6 +115,10 @@
         <img class="tool-icon brush-icon" alt="brushes" src="img/brushes.svg" />
         brushes
       </div>
+      <div class="tool" id="tool-eraser">
+        <img class="tool-icon eraser-icon" alt="brushes" src="img/eraser.svg" />
+        erasor
+      </div>
       <div class="tool" id="tool-move">
         <div class="tool-icon move-icon"></div>
         move
@@ -123,8 +135,8 @@
   </div>
   <div id="welcome-screen">
     <h1>What is this sketch going to be called</h1>
-    <input id="sketch-name"  type="text" />
-    <input id="go" type="button" value="go" />
+    <input placeholder="unique session name" id="sketch-name"  type="text" />
+    <input id="go" type="button" value="Go!" />
   </div>
   <script>
     //ios8 fix

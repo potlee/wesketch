@@ -20,6 +20,10 @@
   -webkit-tap-highlight-color: rgba(0,0,0,0); /* make transparent link selection, adjust last value opacity 0 to 1.0 */
 }
 
+body {
+  font-family: "Avenir Next";
+}
+
 canvas {
   position: fixed;
   touch-action: none;
@@ -74,6 +78,29 @@ canvas {
   border-style: dashed;
 }
 
+h1 {
+  text-align: center;
+  color: #F1C40F;
+  padding-top: 20%;
+  max-width: 400px;
+  width: 80%;
+  margin: auto;
+}
+
+input {
+  font-family: "Avenir Next";
+  text-align: center;
+  color: #F1C40F;
+  max-width: 300px;
+  width: 60%;
+  margin: auto;
+  display: block;
+  border: none;
+  margin-top: 22px;
+  height: 30px;
+  font-size: 16px;
+  background-color: #2ecc71
+}
 
 .rectangle-icon {
   background-color: #ddd;
@@ -83,12 +110,12 @@ canvas {
 }
 
 #welcome-screen {
-  padding: 10px;
   height: 100%;
   overflow: scroll;
   -webkit-overflow-scrolling: touch;
   position: absolute;
   width: 100%;
+  background-color: #27ae60;
 }
 
 #color-picker {
@@ -195,6 +222,38 @@ canvas {
 }
 .color.asbestos {
   background: #7F8C8D;
+}
+
+.gray {
+  background-color: #444
+}
+
+.gold {
+  background-color: rgb(255,215,0);
+}
+
+.goldenrod {
+  background-color: rgb(218,165,32);
+}
+
+.saddlebrown {
+  background-color: rgb(139,69,19);
+}
+
+.choclate {
+  background-color: rgb(210,105,30);
+}
+
+.sandybrown {
+  background-color: rgb(244,164,96);
+}
+
+.peru {
+  background-color: rgb(205,133,63);
+}
+
+.black {
+  background-color: #181818;
 }
 
 .gray {

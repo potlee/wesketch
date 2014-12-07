@@ -1,4 +1,4 @@
-console.log("INIT COLLABRIFY FROM coffee");
+var go;
 
 window.onerror = function(e) {
   return alert(JSON.stringify(e));
@@ -14,7 +14,7 @@ document.addEventListener('focusout', function(e) {
   return scrollTo(0, 0);
 });
 
-document.getElementById('go').onclick = function() {
+go = function() {
   var tag;
   document.getElementById('welcome-screen').classList.add('hidden');
   spinner.spin(document.body);
@@ -28,15 +28,13 @@ document.getElementById('go').onclick = function() {
     tags: [tag],
     startPaused: false
   }).then(function(session) {
-    console.log('CREATED: ', session);
-    return spinner.stop();
+    spinner.stop();
+    return 2;
   })["catch"](function(error) {
     return c.listSessions([tag]).then(function(sessions) {
       return c.joinSession({
         session: sessions[0]
       });
-    }).then(function(session) {
-      return console.log('JOINED: ', session);
     })["catch"](function(e) {
       return alert(e);
     });
@@ -64,4 +62,13 @@ document.getElementById('go').onclick = function() {
   return c.on('error', function(e) {
     return alert(e);
   });
+};
+
+document.getElementById('go').onclick = go;
+
+document.getElementById('go').ontouchstart = function(e) {
+  if (e.preventDefault) {
+    e.preventDefault();
+  }
+  return go();
 };

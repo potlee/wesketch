@@ -87,3 +87,107 @@ You could find it at the following address https://developer.apple.com/icloud/do
 
 2014-10-06 21:11:35.905 HelloCordova[3176:44719] Resetting plugins due to page load.
 2014-10-06 21:11:36.234 HelloCordova[3176:44719] Finished load of: file:///Users/deeppatel/Library/Developer/CoreSimulator/Devices/ECB0915C-0E86-424A-BEA8-D3FE933E2BD5/data/Containers/Bundle/Application/0F019404-4C3B-42B4-8D2A-6F7A0BE53E4A/HelloCordova.app/www/index.html
+2014-12-06 18:16:31.287 HelloCordova[30275:5318889] DiskCookieStorage changing policy from 2 to 0, cookie file: file:///Users/deeppatel/Library/Developer/CoreSimulator/Devices/379E7D70-9934-4344-A29F-5555ED7AA502/data/Containers/Data/Application/F849353C-D085-4B2D-8BFD-DBE1F2358718/Library/Cookies/Cookies.binarycookies
+2014-12-06 18:16:31.502 HelloCordova[30275:5318889] Multi-tasking -> Device: YES, App: YES
+2014-12-06 18:16:31.523 HelloCordova[30275:5318889] Unlimited access to network resources
+2014-12-06 18:16:31.537 HelloCordova[30275:5318889] 
+
+Started backup to iCloud! Please be careful.
+Your application might rejected by Apple if you store too much data.
+For more information please read "iOS Data Storage Guidelines"
+You could find it at the following address https://developer.apple.com/icloud/documentation/data-storage/ .
+
+2014-12-06 18:16:32.235 HelloCordova[30275:5318889] [CDVTimer][keyboard] 0.095010ms
+2014-12-06 18:16:32.503 HelloCordova[30275:5318889] [CDVTimer][splashscreen] 267.804027ms
+2014-12-06 18:16:32.503 HelloCordova[30275:5318889] [CDVTimer][TotalPluginStartup] 268.362045ms
+2014-12-06 18:16:33.981 HelloCordova[30275:5318889] Resetting plugins due to page load.
+2014-12-06 18:16:35.746 HelloCordova[30275:5318889] Finished load of: file:///Users/deeppatel/Library/Developer/CoreSimulator/Devices/379E7D70-9934-4344-A29F-5555ED7AA502/data/Containers/Bundle/Application/F7112CBB-FC66-48DA-9E72-FFF658EACD14/HelloCordova.app/www/index.html
+2014-12-06 18:17:47.217 HelloCordova[30743:5320929] DiskCookieStorage changing policy from 2 to 0, cookie file: file:///Users/deeppatel/Library/Developer/CoreSimulator/Devices/379E7D70-9934-4344-A29F-5555ED7AA502/data/Containers/Data/Application/F122E680-E309-47B6-BC98-DBEB8848E664/Library/Cookies/Cookies.binarycookies
+2014-12-06 18:17:47.338 HelloCordova[30743:5320929] Multi-tasking -> Device: YES, App: YES
+2014-12-06 18:17:47.360 HelloCordova[30743:5320929] Unlimited access to network resources
+2014-12-06 18:17:47.370 HelloCordova[30743:5320929] 
+
+Started backup to iCloud! Please be careful.
+Your application might rejected by Apple if you store too much data.
+For more information please read "iOS Data Storage Guidelines"
+You could find it at the following address https://developer.apple.com/icloud/documentation/data-storage/ .
+
+2014-12-06 18:17:47.854 HelloCordova[30743:5320929] [CDVTimer][keyboard] 0.111043ms
+2014-12-06 18:17:48.003 HelloCordova[30743:5320929] [CDVTimer][splashscreen] 149.515033ms
+2014-12-06 18:17:48.004 HelloCordova[30743:5320929] [CDVTimer][TotalPluginStartup] 150.020003ms
+2014-12-06 18:17:48.108 HelloCordova[30743:5320929] Resetting plugins due to page load.
+2014-12-06 18:17:48.480 HelloCordova[30743:5320929] Finished load of: file:///Users/deeppatel/Library/Developer/CoreSimulator/Devices/379E7D70-9934-4344-A29F-5555ED7AA502/data/Containers/Bundle/Application/787C9F89-E485-47E8-B25D-CE5CD7DAFC2A/HelloCordova.app/www/index.html
+2014-12-06 18:19:04.268 HelloCordova[31199:5322698] DiskCookieStorage changing policy from 2 to 0, cookie file: file:///Users/deeppatel/Library/Developer/CoreSimulator/Devices/47B682FC-E1C3-4609-811B-502C9CAC182E/data/Containers/Data/Application/08E4FBC0-0BD4-4B42-9945-3C732A824560/Library/Cookies/Cookies.binarycookies
+2014-12-06 18:19:04.487 HelloCordova[31199:5322698] Multi-tasking -> Device: YES, App: YES
+2014-12-06 18:19:04.505 HelloCordova[31199:5322698] Unlimited access to network resources
+2014-12-06 18:19:04.525 HelloCordova[31199:5322698] 
+
+Started backup to iCloud! Please be careful.
+Your application might rejected by Apple if you store too much data.
+For more information please read "iOS Data Storage Guidelines"
+You could find it at the following address https://developer.apple.com/icloud/documentation/data-storage/ .
+
+2014-12-06 18:19:05.251 HelloCordova[31199:5322698] [CDVTimer][keyboard] 0.160992ms
+2014-12-06 18:19:05.501 HelloCordova[31199:5322698] [CDVTimer][splashscreen] 249.632001ms
+2014-12-06 18:19:05.501 HelloCordova[31199:5322698] [CDVTimer][TotalPluginStartup] 250.442982ms
+2014-12-06 18:19:08.220 HelloCordova[31199:5322698] Resetting plugins due to page load.
+2014-12-06 18:24:34.633 HelloCordova[31670:5326294] DiskCookieStorage changing policy from 2 to 0, cookie file: file:///Users/deeppatel/Library/Developer/CoreSimulator/Devices/379E7D70-9934-4344-A29F-5555ED7AA502/data/Containers/Data/Application/A3BF4AB0-4DDB-465F-A180-F9A7782FC3B3/Library/Cookies/Cookies.binarycookies
+2014-12-06 18:24:34.793 HelloCordova[31670:5326294] Multi-tasking -> Device: YES, App: YES
+2014-12-06 18:24:34.810 HelloCordova[31670:5326294] Unlimited access to network resources
+2014-12-06 18:24:34.815 HelloCordova[31670:5326294] 
+
+Started backup to iCloud! Please be careful.
+Your application might rejected by Apple if you store too much data.
+For more information please read "iOS Data Storage Guidelines"
+You could find it at the following address https://developer.apple.com/icloud/documentation/data-storage/ .
+
+2014-12-06 18:24:35.136 HelloCordova[31670:5326294] [CDVTimer][keyboard] 0.090957ms
+2014-12-06 18:24:35.275 HelloCordova[31670:5326294] [CDVTimer][splashscreen] 138.113976ms
+2014-12-06 18:24:35.275 HelloCordova[31670:5326294] [CDVTimer][TotalPluginStartup] 138.952017ms
+2014-12-06 18:24:35.455 HelloCordova[31670:5326294] Resetting plugins due to page load.
+2014-12-06 18:24:35.976 HelloCordova[31670:5326294] Finished load of: file:///Users/deeppatel/Library/Developer/CoreSimulator/Devices/379E7D70-9934-4344-A29F-5555ED7AA502/data/Containers/Bundle/Application/9DBF5BC0-8CF0-4AC6-8AF3-DF071A9B5DFA/HelloCordova.app/www/index.html
+2014-12-06 18:25:31.789 HelloCordova[32041:5327305] DiskCookieStorage changing policy from 2 to 0, cookie file: file:///Users/deeppatel/Library/Developer/CoreSimulator/Devices/379E7D70-9934-4344-A29F-5555ED7AA502/data/Containers/Data/Application/34B759E8-84D7-47D3-ACE4-F57E8F068378/Library/Cookies/Cookies.binarycookies
+2014-12-06 18:25:31.918 HelloCordova[32041:5327305] Multi-tasking -> Device: YES, App: YES
+2014-12-06 18:25:31.925 HelloCordova[32041:5327305] Unlimited access to network resources
+2014-12-06 18:25:31.928 HelloCordova[32041:5327305] 
+
+Started backup to iCloud! Please be careful.
+Your application might rejected by Apple if you store too much data.
+For more information please read "iOS Data Storage Guidelines"
+You could find it at the following address https://developer.apple.com/icloud/documentation/data-storage/ .
+
+2014-12-06 18:25:32.227 HelloCordova[32041:5327305] [CDVTimer][keyboard] 0.088036ms
+2014-12-06 18:25:32.305 HelloCordova[32041:5327305] [CDVTimer][splashscreen] 77.723026ms
+2014-12-06 18:25:32.305 HelloCordova[32041:5327305] [CDVTimer][TotalPluginStartup] 78.300059ms
+2014-12-06 18:25:32.465 HelloCordova[32041:5327305] Resetting plugins due to page load.
+2014-12-06 18:25:32.774 HelloCordova[32041:5327305] Finished load of: file:///Users/deeppatel/Library/Developer/CoreSimulator/Devices/379E7D70-9934-4344-A29F-5555ED7AA502/data/Containers/Bundle/Application/DEE32948-2E06-4164-8232-9E56165F3F21/HelloCordova.app/www/index.html
+2014-12-06 18:25:53.398 HelloCordova[32401:5327977] DiskCookieStorage changing policy from 2 to 0, cookie file: file:///Users/deeppatel/Library/Developer/CoreSimulator/Devices/379E7D70-9934-4344-A29F-5555ED7AA502/data/Containers/Data/Application/C5BDA13C-0AEA-459B-8C11-0A9209629913/Library/Cookies/Cookies.binarycookies
+2014-12-06 18:25:53.512 HelloCordova[32401:5327977] Multi-tasking -> Device: YES, App: YES
+2014-12-06 18:25:53.519 HelloCordova[32401:5327977] Unlimited access to network resources
+2014-12-06 18:25:53.522 HelloCordova[32401:5327977] 
+
+Started backup to iCloud! Please be careful.
+Your application might rejected by Apple if you store too much data.
+For more information please read "iOS Data Storage Guidelines"
+You could find it at the following address https://developer.apple.com/icloud/documentation/data-storage/ .
+
+2014-12-06 18:25:53.772 HelloCordova[32401:5327977] [CDVTimer][keyboard] 0.087023ms
+2014-12-06 18:25:53.849 HelloCordova[32401:5327977] [CDVTimer][splashscreen] 76.712012ms
+2014-12-06 18:25:53.849 HelloCordova[32401:5327977] [CDVTimer][TotalPluginStartup] 77.179968ms
+2014-12-06 18:25:53.982 HelloCordova[32401:5327977] Resetting plugins due to page load.
+2014-12-06 18:25:54.197 HelloCordova[32401:5327977] Finished load of: file:///Users/deeppatel/Library/Developer/CoreSimulator/Devices/379E7D70-9934-4344-A29F-5555ED7AA502/data/Containers/Bundle/Application/7418F46B-D373-42FE-A506-14947EE8518C/HelloCordova.app/www/index.html
+2014-12-06 18:31:20.028 HelloCordova[32922:5331348] DiskCookieStorage changing policy from 2 to 0, cookie file: file:///Users/deeppatel/Library/Developer/CoreSimulator/Devices/4EC69B0A-B151-4BE8-9677-6559709CF396/data/Containers/Data/Application/C9C57DB1-CCDF-4A03-832A-061C96FF684C/Library/Cookies/Cookies.binarycookies
+2014-12-06 18:31:20.255 HelloCordova[32922:5331348] Multi-tasking -> Device: YES, App: YES
+2014-12-06 18:31:20.272 HelloCordova[32922:5331348] Unlimited access to network resources
+2014-12-06 18:31:20.286 HelloCordova[32922:5331348] 
+
+Started backup to iCloud! Please be careful.
+Your application might rejected by Apple if you store too much data.
+For more information please read "iOS Data Storage Guidelines"
+You could find it at the following address https://developer.apple.com/icloud/documentation/data-storage/ .
+
+2014-12-06 18:31:20.980 HelloCordova[32922:5331348] [CDVTimer][keyboard] 0.151992ms
+2014-12-06 18:31:21.207 HelloCordova[32922:5331348] [CDVTimer][splashscreen] 227.195978ms
+2014-12-06 18:31:21.208 HelloCordova[32922:5331348] [CDVTimer][TotalPluginStartup] 227.840006ms
+2014-12-06 18:31:23.079 HelloCordova[32922:5331348] Resetting plugins due to page load.
+2014-12-06 18:31:26.171 HelloCordova[32922:5331348] Finished load of: file:///Users/deeppatel/Library/Developer/CoreSimulator/Devices/4EC69B0A-B151-4BE8-9677-6559709CF396/data/Containers/Bundle/Application/58DDB84E-C90A-4C13-9700-ACD9FACCE2B0/HelloCordova.app/www/index.html

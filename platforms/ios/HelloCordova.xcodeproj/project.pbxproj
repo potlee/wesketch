@@ -39,6 +39,7 @@
 		7E7966E71810823500FA85AD /* icon-small@2x.png in Resources */ = {isa = PBXBuildFile; fileRef = 7E7966DD1810823500FA85AD /* icon-small@2x.png */; };
 		D4A0D8761607E02300AEF8BB /* Default-568h@2x~iphone.png in Resources */ = {isa = PBXBuildFile; fileRef = D4A0D8751607E02300AEF8BB /* Default-568h@2x~iphone.png */; };
 		C6BD7E168C8540E89CCC4E67 /* CDVKeyboard.m in Sources */ = {isa = PBXBuildFile; fileRef = 90ACA6AD787D44EDBA451508 /* CDVKeyboard.m */; };
+		BFDF1A92473744E1BF6ADFCD /* CDVSplashScreen.m in Sources */ = {isa = PBXBuildFile; fileRef = 6354DA5618CD44DCABAC694F /* CDVSplashScreen.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -105,6 +106,8 @@
 		F840E1F0165FE0F500CFE078 /* config.xml */ = {isa = PBXFileReference; lastKnownFileType = text.xml; name = config.xml; path = "HelloCordova/config.xml"; sourceTree = "<group>"; };
 		90ACA6AD787D44EDBA451508 /* CDVKeyboard.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "CDVKeyboard.m"; path = "org.apache.cordova.labs.keyboard/CDVKeyboard.m"; sourceTree = "<group>"; fileEncoding = 4; };
 		E25AA97745934AF896E6EE7A /* CDVKeyboard.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CDVKeyboard.h"; path = "org.apache.cordova.labs.keyboard/CDVKeyboard.h"; sourceTree = "<group>"; fileEncoding = 4; };
+		6354DA5618CD44DCABAC694F /* CDVSplashScreen.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = "CDVSplashScreen.m"; path = "org.apache.cordova.splashscreen/CDVSplashScreen.m"; sourceTree = "<group>"; fileEncoding = 4; };
+		6D04F393C369443AA0D6AF38 /* CDVSplashScreen.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = "CDVSplashScreen.h"; path = "org.apache.cordova.splashscreen/CDVSplashScreen.h"; sourceTree = "<group>"; fileEncoding = 4; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -227,6 +230,8 @@
 			children = (
 				90ACA6AD787D44EDBA451508 /* CDVKeyboard.m */,
 				E25AA97745934AF896E6EE7A /* CDVKeyboard.h */,
+				6354DA5618CD44DCABAC694F /* CDVSplashScreen.m */,
+				6D04F393C369443AA0D6AF38 /* CDVSplashScreen.h */,
 			);
 			name = Plugins;
 			path = "HelloCordova/Plugins";
@@ -422,6 +427,7 @@
 				1D3623260D0F684500981E51 /* AppDelegate.m in Sources */,
 				302D95F114D2391D003F00A1 /* MainViewController.m in Sources */,
 				C6BD7E168C8540E89CCC4E67 /* CDVKeyboard.m in Sources */,
+				BFDF1A92473744E1BF6ADFCD /* CDVSplashScreen.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -17,7 +17,7 @@ class window.WSCanvas
 
   fitToScreen: () ->
     @mainScreen.classList.remove('hidden')
-    #@toolbar.classList.remove('hidden')
+    @toolbar.classList.remove('hidden')
     #@canvas.classList.remove('hidden')
     #@canvasTemp.classList.remove('hidden')
     @canvas.height = @canvas.clientHeight
@@ -224,7 +224,10 @@ class window.WSCanvas
     @colorPicker.classList.add 'hidden'
     @canvas.classList.remove 'hidden'
     @canvasTemp.classList.remove 'hidden'
-    @color = getComputedStyle(e.target).backgroundColor
+    if e.color
+      @color = e.color
+    else
+      @color = getComputedStyle(e.target).backgroundColor
 
   selectBursh: (e) ->
     @brushPicker.classList.add 'hidden'
@@ -312,6 +315,7 @@ class window.WSCanvas
     @brushPickerIconHammer.on 'tap', @showBrushPicker.bind(this)
     @colorPickerHammer.on 'tap', @selectColor.bind(this)
     @brushPickerHammer.on 'tap', @selectBursh.bind(this)
+    @eraserHammer.on 'tap', => @selectColor color: 'rgb(255,255,255)'
     #@nextIconHammer.on 'tap', @nextFrame.bind(this)
     #@prevIconHammer.on 'tap', @previousFrame.bind(this)
     @circleHammer.on 'tap', => @mode = 'c'
@@ -336,6 +340,7 @@ class window.WSCanvas
       @brushPickerIconHammer = new Hammer @brushPickerIcon
       @brushPickerHammer = new Hammer @brushPicker
       @moveHammer = new Hammer @moveIcon
+      @eraserHammer = new Hammer @eraser
       #@nextIconHammer = new Hammer @nextIcon
       #@prevIconHammer = new Hammer @prevIcon
     ].forEach (h) ->
@@ -346,6 +351,7 @@ class window.WSCanvas
     @canvasTemp = document.getElementById("canvas-temp")
     @ctx = @canvas.getContext("2d")
     @ctxTemp = @canvasTemp.getContext("2d")
+    @eraser = document.getElementById('tool-eraser')
     @colorPickerIcon = document.getElementById('tool-color-picker')
     @colorPicker = document.getElementById('color-picker')
     @brushPickerIcon = document.getElementById('tool-brush')
