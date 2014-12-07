@@ -135,6 +135,7 @@ window.WSCanvas = (function() {
         }
         break;
       case 'e':
+        this.localPoints.push([e.pageX, e.pageY]);
         this.ctxTemp.lineWidth = 36;
         this.ctxTemp.strokeStyle = '#fff';
         this.ctxTemp.fillStyle = '#fff';
@@ -151,7 +152,7 @@ window.WSCanvas = (function() {
   };
 
   WSCanvas.prototype.onend = function(e) {
-    var mode, stroke, width;
+    var color, mode, stroke, width;
     e.preventDefault();
     this.ctxTemp.closePath();
     if (!this.localPoints.length) {
@@ -159,6 +160,7 @@ window.WSCanvas = (function() {
     }
     mode = this.mode;
     width = this.width;
+    color = this.color;
     this.paintingOn = false;
     if (this.mode === 'm' && this.localPoints.length < 2) {
       return;
@@ -169,10 +171,11 @@ window.WSCanvas = (function() {
     if (this.mode === 'e') {
       width = 36;
       mode = 'l';
+      color = '#fff';
     }
     stroke = {
       points: this.localPoints,
-      color: this.color,
+      color: color,
       id: Math.random(),
       mode: mode,
       moveRect: this.mode === 'm' ? this.moveRect : void 0,
@@ -283,13 +286,14 @@ window.WSCanvas = (function() {
     return this.colorPicker.classList.remove('hidden');
   };
 
-  WSCanvas.prototype.showBrushPicker = function() {
+  WSCanvas.prototype.showBrushPicker = function(e) {
     this.canvas.classList.add('hidden');
     this.canvasTemp.classList.add('hidden');
     return this.brushPicker.classList.remove('hidden');
   };
 
   WSCanvas.prototype.selectColor = function(e) {
+    e.preventDefault();
     this.colorPicker.classList.add('hidden');
     this.canvas.classList.remove('hidden');
     this.canvasTemp.classList.remove('hidden');
@@ -301,6 +305,7 @@ window.WSCanvas = (function() {
   };
 
   WSCanvas.prototype.selectBursh = function(e) {
+    e.preventDefault();
     this.brushPicker.classList.add('hidden');
     this.canvas.classList.remove('hidden');
     this.canvasTemp.classList.remove('hidden');

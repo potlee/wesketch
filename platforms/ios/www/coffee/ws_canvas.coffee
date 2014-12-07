@@ -110,6 +110,7 @@ class window.WSCanvas
           @ctxTemp.lineTo(p[0],p[1])
 
       when 'e'
+        @localPoints.push [e.pageX, e.pageY]
         @ctxTemp.lineWidth = 36
         @ctxTemp.strokeStyle = '#fff'
         @ctxTemp.fillStyle = '#fff'
@@ -127,6 +128,7 @@ class window.WSCanvas
     return if !@localPoints.length
     mode = @mode
     width = @width
+    color = @color
     @paintingOn = false
     return if @mode is 'm' and @localPoints.length < 2
     if @mode is 'l' and @localPoints.length == 1
@@ -135,10 +137,11 @@ class window.WSCanvas
     if @mode is 'e'
       width = 36
       mode = 'l'
+      color = '#fff'
 
     stroke =
       points: @localPoints
-      color: @color
+      color: color
       id: Math.random()
       mode: mode
       moveRect: @moveRect if @mode is 'm'
@@ -232,12 +235,13 @@ class window.WSCanvas
     @canvasTemp.classList.add 'hidden'
     @colorPicker.classList.remove 'hidden'
 
-  showBrushPicker: () ->
+  showBrushPicker: (e) ->
     @canvas.classList.add 'hidden'
     @canvasTemp.classList.add 'hidden'
     @brushPicker.classList.remove 'hidden'
 
   selectColor: (e) ->
+    e.preventDefault()
     @colorPicker.classList.add 'hidden'
     @canvas.classList.remove 'hidden'
     @canvasTemp.classList.remove 'hidden'
@@ -247,6 +251,7 @@ class window.WSCanvas
       @color = getComputedStyle(e.target).backgroundColor
 
   selectBursh: (e) ->
+    e.preventDefault()
     @brushPicker.classList.add 'hidden'
     @canvas.classList.remove 'hidden'
     @canvasTemp.classList.remove 'hidden'

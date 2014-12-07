@@ -160,13 +160,13 @@ class window.WSCanvas
     return if stroke.cancelled or stroke.frame is not @currentFrame
     points = stroke.points
     @ctx.beginPath()
-    @ctx.lineJoin = @ctxTemp.lineCap = 'round'
     @ctx.lineWidth = stroke.width
     @ctx.shadowColor = stroke.color
     @ctx.strokeStyle = stroke.color
     @ctx.fillStyle = stroke.color
     switch stroke.mode
       when 'l'
+        @ctx.lineCap = 'round'
         for p in points
           @ctx.lineTo p[0], p[1]
 
@@ -235,12 +235,13 @@ class window.WSCanvas
     @canvasTemp.classList.add 'hidden'
     @colorPicker.classList.remove 'hidden'
 
-  showBrushPicker: () ->
+  showBrushPicker: (e) ->
     @canvas.classList.add 'hidden'
     @canvasTemp.classList.add 'hidden'
     @brushPicker.classList.remove 'hidden'
 
   selectColor: (e) ->
+    e.preventDefault()
     @colorPicker.classList.add 'hidden'
     @canvas.classList.remove 'hidden'
     @canvasTemp.classList.remove 'hidden'
@@ -250,6 +251,7 @@ class window.WSCanvas
       @color = getComputedStyle(e.target).backgroundColor
 
   selectBursh: (e) ->
+    e.preventDefault()
     @brushPicker.classList.add 'hidden'
     @canvas.classList.remove 'hidden'
     @canvasTemp.classList.remove 'hidden'

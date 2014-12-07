@@ -110,12 +110,12 @@ class window.WSCanvas
           @ctxTemp.lineTo(p[0],p[1])
 
       when 'e'
+        @localPoints.push [e.pageX, e.pageY]
         @ctxTemp.lineWidth = 36
-        @ctxTemp.strokeStyle = '#222'
-        @ctxTemp.fillStyle = '#222'
+        @ctxTemp.strokeStyle = '#fff'
+        @ctxTemp.fillStyle = '#fff'
         for p in @localPoints
           @ctxTemp.lineTo(p[0],p[1])
-
 
 
       else throw new Error('mode: ', @mode)
@@ -125,24 +125,27 @@ class window.WSCanvas
   onend: (e) ->
     e.preventDefault()
     @ctxTemp.closePath()
+    return if !@localPoints.length
     mode = @mode
+    width = @width
+    color = @color
     @paintingOn = false
     return if @mode is 'm' and @localPoints.length < 2
-    if @mode is 'l' and @localPoints.length < 2
+    if @mode is 'l' and @localPoints.length == 1
       mode = 'p'
 
     if @mode is 'e'
-      @mode = 'l'
-      @color = '#fff'
-      @width = 36
+      width = 36
+      mode = 'l'
+      color = '#fff'
 
     stroke =
       points: @localPoints
-      color: @color
+      color: color
       id: Math.random()
       mode: mode
       moveRect: @moveRect if @mode is 'm'
-      width: @width if @mode is 'l'
+      width: width if mode is 'l' or mode is 'p'
       frame: @currentFrame
     @moveRect = if @mode is 's' then @localPoints else []
     @localPoints = []
@@ -232,12 +235,13 @@ class window.WSCanvas
     @canvasTemp.classList.add 'hidden'
     @colorPicker.classList.remove 'hidden'
 
-  showBrushPicker: () ->
+  showBrushPicker: (e) ->
     @canvas.classList.add 'hidden'
     @canvasTemp.classList.add 'hidden'
     @brushPicker.classList.remove 'hidden'
 
   selectColor: (e) ->
+    e.preventDefault()
     @colorPicker.classList.add 'hidden'
     @canvas.classList.remove 'hidden'
     @canvasTemp.classList.remove 'hidden'
@@ -247,6 +251,7 @@ class window.WSCanvas
       @color = getComputedStyle(e.target).backgroundColor
 
   selectBursh: (e) ->
+    e.preventDefault()
     @brushPicker.classList.add 'hidden'
     @canvas.classList.remove 'hidden'
     @canvasTemp.classList.remove 'hidden'

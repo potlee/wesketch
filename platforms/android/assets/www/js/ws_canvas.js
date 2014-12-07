@@ -135,9 +135,10 @@ window.WSCanvas = (function() {
         }
         break;
       case 'e':
+        this.localPoints.push([e.pageX, e.pageY]);
         this.ctxTemp.lineWidth = 36;
-        this.ctxTemp.strokeStyle = '#222';
-        this.ctxTemp.fillStyle = '#222';
+        this.ctxTemp.strokeStyle = '#fff';
+        this.ctxTemp.fillStyle = '#fff';
         _ref3 = this.localPoints;
         for (_j = 0, _len1 = _ref3.length; _j < _len1; _j++) {
           p = _ref3[_j];
@@ -151,29 +152,34 @@ window.WSCanvas = (function() {
   };
 
   WSCanvas.prototype.onend = function(e) {
-    var mode, stroke;
+    var color, mode, stroke, width;
     e.preventDefault();
     this.ctxTemp.closePath();
+    if (!this.localPoints.length) {
+      return;
+    }
     mode = this.mode;
+    width = this.width;
+    color = this.color;
     this.paintingOn = false;
     if (this.mode === 'm' && this.localPoints.length < 2) {
       return;
     }
-    if (this.mode === 'l' && this.localPoints.length < 2) {
+    if (this.mode === 'l' && this.localPoints.length === 1) {
       mode = 'p';
     }
     if (this.mode === 'e') {
-      this.mode = 'l';
-      this.color = '#fff';
-      this.width = 36;
+      width = 36;
+      mode = 'l';
+      color = '#fff';
     }
     stroke = {
       points: this.localPoints,
-      color: this.color,
+      color: color,
       id: Math.random(),
       mode: mode,
       moveRect: this.mode === 'm' ? this.moveRect : void 0,
-      width: this.mode === 'l' ? this.width : void 0,
+      width: mode === 'l' || mode === 'p' ? width : void 0,
       frame: this.currentFrame
     };
     this.moveRect = this.mode === 's' ? this.localPoints : [];
@@ -280,13 +286,14 @@ window.WSCanvas = (function() {
     return this.colorPicker.classList.remove('hidden');
   };
 
-  WSCanvas.prototype.showBrushPicker = function() {
+  WSCanvas.prototype.showBrushPicker = function(e) {
     this.canvas.classList.add('hidden');
     this.canvasTemp.classList.add('hidden');
     return this.brushPicker.classList.remove('hidden');
   };
 
   WSCanvas.prototype.selectColor = function(e) {
+    e.preventDefault();
     this.colorPicker.classList.add('hidden');
     this.canvas.classList.remove('hidden');
     this.canvasTemp.classList.remove('hidden');
@@ -298,6 +305,7 @@ window.WSCanvas = (function() {
   };
 
   WSCanvas.prototype.selectBursh = function(e) {
+    e.preventDefault();
     this.brushPicker.classList.add('hidden');
     this.canvas.classList.remove('hidden');
     this.canvasTemp.classList.remove('hidden');

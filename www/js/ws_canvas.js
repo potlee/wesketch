@@ -203,13 +203,13 @@ window.WSCanvas = (function() {
     }
     points = stroke.points;
     this.ctx.beginPath();
-    this.ctx.lineJoin = this.ctxTemp.lineCap = 'round';
     this.ctx.lineWidth = stroke.width;
     this.ctx.shadowColor = stroke.color;
     this.ctx.strokeStyle = stroke.color;
     this.ctx.fillStyle = stroke.color;
     switch (stroke.mode) {
       case 'l':
+        this.ctx.lineCap = 'round';
         for (_i = 0, _len = points.length; _i < _len; _i++) {
           p = points[_i];
           this.ctx.lineTo(p[0], p[1]);
@@ -286,13 +286,14 @@ window.WSCanvas = (function() {
     return this.colorPicker.classList.remove('hidden');
   };
 
-  WSCanvas.prototype.showBrushPicker = function() {
+  WSCanvas.prototype.showBrushPicker = function(e) {
     this.canvas.classList.add('hidden');
     this.canvasTemp.classList.add('hidden');
     return this.brushPicker.classList.remove('hidden');
   };
 
   WSCanvas.prototype.selectColor = function(e) {
+    e.preventDefault();
     this.colorPicker.classList.add('hidden');
     this.canvas.classList.remove('hidden');
     this.canvasTemp.classList.remove('hidden');
@@ -304,6 +305,7 @@ window.WSCanvas = (function() {
   };
 
   WSCanvas.prototype.selectBursh = function(e) {
+    e.preventDefault();
     this.brushPicker.classList.add('hidden');
     this.canvas.classList.remove('hidden');
     this.canvasTemp.classList.remove('hidden');
