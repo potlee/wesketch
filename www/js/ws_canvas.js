@@ -153,21 +153,18 @@ window.WSCanvas = (function() {
   WSCanvas.prototype.onend = function(e) {
     var color, mode, stroke, width;
     e.preventDefault();
+    this.paintingOn = false;
     this.ctxTemp.closePath();
     if (!this.localPoints.length) {
+      return;
+    }
+    if (this.mode === 'm' && this.localPoints.length < 2) {
       return;
     }
     mode = this.mode;
     width = this.width;
     color = this.color;
-    this.paintingOn = false;
-    if (this.mode === 'm' && this.localPoints.length < 2) {
-      return;
-    }
-    if (this.mode === 'l' && this.localPoints.length === 1) {
-      mode = 'p';
-    }
-    if (this.mode === 'e') {
+    if (mode === 'e') {
       width = 36;
       mode = 'l';
       color = '#fff';
@@ -177,13 +174,13 @@ window.WSCanvas = (function() {
       color: color,
       id: Math.random(),
       mode: mode,
-      moveRect: this.mode === 'm' ? this.moveRect : void 0,
-      width: mode === 'l' || mode === 'p' ? width : void 0,
+      moveRect: mode === 'm' ? this.moveRect : void 0,
+      width: mode === 'l' ? width : void 0,
       frame: this.currentFrame
     };
-    this.moveRect = this.mode === 's' ? this.localPoints : [];
+    this.moveRect = mode === 's' ? this.localPoints : [];
     this.localPoints = [];
-    if (this.mode === 's') {
+    if (mode === 's') {
       return;
     }
     this.strokes.push(stroke);
@@ -225,12 +222,6 @@ window.WSCanvas = (function() {
           return;
         }
         radius = Math.sqrt(Math.pow(points[0][0] - points[1][0], 2) + Math.pow(points[0][1] - points[1][1], 2));
-        this.ctx.fillStyle = stroke.color;
-        this.ctx.arc(points[0][0], points[0][1], radius, 0, Math.PI * 2, false);
-        this.ctx.fill();
-        break;
-      case 'p':
-        radius = stroke.width / Math.PI;
         this.ctx.fillStyle = stroke.color;
         this.ctx.arc(points[0][0], points[0][1], radius, 0, Math.PI * 2, false);
         this.ctx.fill();

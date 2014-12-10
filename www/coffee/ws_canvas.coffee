@@ -123,17 +123,18 @@ class window.WSCanvas
 
   onend: (e) ->
     e.preventDefault()
+    @paintingOn = false
     @ctxTemp.closePath()
     return if !@localPoints.length
+    return if @mode is 'm' and @localPoints.length < 2 #clear localpoints?
     mode = @mode
     width = @width
     color = @color
-    @paintingOn = false
-    return if @mode is 'm' and @localPoints.length < 2
-    if @mode is 'l' and @localPoints.length == 1
-      mode = 'p'
+    #if @mode is 'l' and @localPoints.length == 1
+    #  mode = 'c'
+    #  @localPoints[1] = [@localPoints[0][0], @localPoints[0][1] + width/8]
 
-    if @mode is 'e'
+    if mode is 'e'
       width = 36
       mode = 'l'
       color = '#fff'
@@ -143,12 +144,12 @@ class window.WSCanvas
       color: color
       id: Math.random()
       mode: mode
-      moveRect: @moveRect if @mode is 'm'
-      width: width if mode is 'l' or mode is 'p'
+      moveRect: @moveRect if mode is 'm'
+      width: width if mode is 'l'
       frame: @currentFrame
-    @moveRect = if @mode is 's' then @localPoints else []
+    @moveRect = if mode is 's' then @localPoints else []
     @localPoints = []
-    return if @mode is 's'
+    return if mode is 's'
     @strokes.push stroke
     @drawnStrokes[stroke.id] = true
     @mode = 's' if @mode is 'm'
@@ -182,11 +183,6 @@ class window.WSCanvas
         @ctx.arc(points[0][0], points[0][1], radius,0, Math.PI * 2, false)
         @ctx.fill()
 
-      when 'p'
-        radius = stroke.width/Math.PI
-        @ctx.fillStyle = stroke.color
-        @ctx.arc(points[0][0], points[0][1], radius,0, Math.PI * 2, false)
-        @ctx.fill()
 
       when 'm'
         rect = @rect(stroke.moveRect)
