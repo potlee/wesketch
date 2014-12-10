@@ -10647,7 +10647,7 @@ ProtoBuf = require("./ProtoBuf.js");
 
 http = require('http');
 
-builder = ProtoBuf.loadProtoFile("https://collabrify-client-js.appspot.com/static/proto/CollabrifyProtocolBuffer.proto");
+builder = ProtoBuf.loadProtoFile("http://collabrify-client-js.appspot.com/static/proto/CollabrifyProtocolBuffer.proto");
 
 RequestType = builder.build("CollabrifyRequestType_PB");
 
