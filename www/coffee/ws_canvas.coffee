@@ -71,8 +71,7 @@ class window.WSCanvas
     return unless @paintingOn
     e = e.touches[0] if e.touches
     @ctxTemp.beginPath()
-    @ctxTemp.clearRect(0,0,10000,10000)
-    @ctxTemp.closePath()
+    @ctxTemp.clearRect(0,0,5000,5000)
     switch @mode
       when 'r'
         @localPoints[1] = [e.pageX, e.pageY]
@@ -157,16 +156,16 @@ class window.WSCanvas
     @rerender()
 
   drawStroke: (stroke) ->
-    return if stroke.cancelled or stroke.frame is not @currentFrame
+    return if stroke.cancelled# or stroke.frame is not @currentFrame
     points = stroke.points
     @ctx.beginPath()
     @ctx.lineWidth = stroke.width
-    @ctx.shadowColor = stroke.color
     @ctx.strokeStyle = stroke.color
     @ctx.fillStyle = stroke.color
+    @ctx.lineJoin = @ctx.lineCap = 'round'
     switch stroke.mode
       when 'l'
-        @ctx.lineCap = 'round'
+        @ctx.moveTo points[0][0], points[0][1]
         for p in points
           @ctx.lineTo p[0], p[1]
 
@@ -189,7 +188,6 @@ class window.WSCanvas
         @ctx.arc(points[0][0], points[0][1], radius,0, Math.PI * 2, false)
         @ctx.fill()
 
-
       when 'm'
         rect = @rect(stroke.moveRect)
         tempImageData = @ctx.getImageData rect...
@@ -202,12 +200,10 @@ class window.WSCanvas
         @ctx.drawImage(@canvasTemp, 0,0)
         @ctxTemp.beginPath()
         @ctxTemp.clearRect(0,0,10000,10000)
-        @ctxTemp.closePath()
 
       when 'f'
         @newFrame()
     @ctx.stroke()
-    @ctx.closePath()
 
   rect: (points) ->
     x = points[0][0]
@@ -266,9 +262,8 @@ class window.WSCanvas
 
     for s in @strokes
       @drawStroke(s)
+
   lastUncancelledStroke: ->
-
-
     i = @strokes.length - 1
     i-- while @strokes[i].cancelled and i != 0
     @strokes[i]
@@ -343,6 +338,7 @@ class window.WSCanvas
     @circleHammer.on 'tap', => @mode = 'c'
     @rectangleHammer.on 'tap', => @mode = 'r'
     @moveHammer.on 'tap', => @mode = 's'
+    @closeHammer.on 'tap', => location.reload()
     window.addEventListener 'resize', =>
       @fitToScreen()
       @rerender()
@@ -363,6 +359,8 @@ class window.WSCanvas
       @brushPickerHammer = new Hammer @brushPicker
       @moveHammer = new Hammer @moveIcon
       @eraserHammer = new Hammer @eraser
+      @moveHammer = new Hammer @moveIcon
+      @closeHammer = new Hammer @closeIcon
       #@nextIconHammer = new Hammer @nextIcon
       #@prevIconHammer = new Hammer @prevIcon
     ].forEach (h) ->
@@ -380,6 +378,7 @@ class window.WSCanvas
     @brushPicker = document.getElementById('brush-picker')
     @circleIcon = document.getElementById('tool-circle')
     @rectangleIcon = document.getElementById('tool-rectangle')
+    @closeIcon = document.getElementById('tool-close')
     @moveIcon = document.getElementById('tool-move')
     @toolbar = document.getElementById('toolbar')
     @mainScreen = document.getElementById('main')
