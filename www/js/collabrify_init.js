@@ -16,6 +16,7 @@ document.addEventListener('focusout', function(e) {
 
 go = function() {
   var tag;
+  document.activeElement.blur();
   document.getElementById('welcome-screen').classList.add('hidden');
   spinner.spin(document.body);
   tag = 'watercycledemo' + document.getElementById('sketch-name').value;
