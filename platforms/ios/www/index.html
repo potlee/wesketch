@@ -123,6 +123,10 @@
         <div class="tool-icon move-icon"></div>
         move
       </div>
+      <div class="tool" id="tool-close">
+        <img class="tool-icon close-icon" src="img/close.svg"/>
+        close
+      </div>
       <!--<div class="tool" id="tool-next">-->
       <!--  <img class="tool-icon prev-icon" alt="next" src="img/left.svg" />-->
       <!--  previous-->
@@ -136,9 +140,8 @@
   <div id="welcome-screen">
     <h1>What is this sketch going to be called</h1>
     <input placeholder="unique session name" id="sketch-name"  type="text" />
-    <input id="go" type="button" value="Go!" />
+    <button id="go" type="button">Go!</button>
   </div>
-  <script>window.alert = cnosole.log;</script>
   <script>
     //ios8 fix
     var o =XMLHttpRequest.prototype.open;

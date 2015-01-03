@@ -71,8 +71,7 @@ class window.WSCanvas
     return unless @paintingOn
     e = e.touches[0] if e.touches
     @ctxTemp.beginPath()
-    @ctxTemp.clearRect(0,0,10000,10000)
-    @ctxTemp.closePath()
+    @ctxTemp.clearRect(0,0,5000,5000)
     switch @mode
       when 'r'
         @localPoints[1] = [e.pageX, e.pageY]
@@ -124,17 +123,18 @@ class window.WSCanvas
 
   onend: (e) ->
     e.preventDefault()
+    @paintingOn = false
     @ctxTemp.closePath()
     return if !@localPoints.length
+    return if @mode is 'm' and @localPoints.length < 2 #clear localpoints?
     mode = @mode
     width = @width
     color = @color
-    @paintingOn = false
-    return if @mode is 'm' and @localPoints.length < 2
-    if @mode is 'l' and @localPoints.length == 1
-      mode = 'p'
+    #if @mode is 'l' and @localPoints.length == 1
+    #  mode = 'c'
+    #  @localPoints[1] = [@localPoints[0][0], @localPoints[0][1] + width/8]
 
-    if @mode is 'e'
+    if mode is 'e'
       width = 36
       mode = 'l'
       color = '#fff'
@@ -144,12 +144,12 @@ class window.WSCanvas
       color: color
       id: Math.random()
       mode: mode
-      moveRect: @moveRect if @mode is 'm'
-      width: width if mode is 'l' or mode is 'p'
+      moveRect: @moveRect if mode is 'm'
+      width: width if mode is 'l'
       frame: @currentFrame
-    @moveRect = if @mode is 's' then @localPoints else []
+    @moveRect = if mode is 's' then @localPoints else []
     @localPoints = []
-    return if @mode is 's'
+    return if mode is 's'
     @strokes.push stroke
     @drawnStrokes[stroke.id] = true
     @mode = 's' if @mode is 'm'
@@ -157,16 +157,16 @@ class window.WSCanvas
     @rerender()
 
   drawStroke: (stroke) ->
-    return if stroke.cancelled or stroke.frame is not @currentFrame
+    return if stroke.cancelled# or stroke.frame is not @currentFrame
     points = stroke.points
     @ctx.beginPath()
-    @ctx.lineJoin = @ctxTemp.lineCap = 'round'
     @ctx.lineWidth = stroke.width
-    @ctx.shadowColor = stroke.color
     @ctx.strokeStyle = stroke.color
     @ctx.fillStyle = stroke.color
+    @ctx.lineJoin = @ctx.lineCap = 'round'
     switch stroke.mode
       when 'l'
+        @ctx.moveTo points[0][0], points[0][1]
         for p in points
           @ctx.lineTo p[0], p[1]
 
@@ -179,12 +179,6 @@ class window.WSCanvas
         radius = Math.sqrt(
           Math.pow(points[0][0] - points[1][0], 2) + Math.pow(points[0][1] - points[1][1],2)
         )
-        @ctx.fillStyle = stroke.color
-        @ctx.arc(points[0][0], points[0][1], radius,0, Math.PI * 2, false)
-        @ctx.fill()
-
-      when 'p'
-        radius = stroke.width/Math.PI
         @ctx.fillStyle = stroke.color
         @ctx.arc(points[0][0], points[0][1], radius,0, Math.PI * 2, false)
         @ctx.fill()
@@ -202,12 +196,10 @@ class window.WSCanvas
         @ctx.drawImage(@canvasTemp, 0,0)
         @ctxTemp.beginPath()
         @ctxTemp.clearRect(0,0,10000,10000)
-        @ctxTemp.closePath()
 
       when 'f'
         @newFrame()
     @ctx.stroke()
-    @ctx.closePath()
 
   rect: (points) ->
     x = points[0][0]
@@ -266,9 +258,8 @@ class window.WSCanvas
 
     for s in @strokes
       @drawStroke(s)
+
   lastUncancelledStroke: ->
-
-
     i = @strokes.length - 1
     i-- while @strokes[i].cancelled and i != 0
     @strokes[i]
@@ -343,6 +334,7 @@ class window.WSCanvas
     @circleHammer.on 'tap', => @mode = 'c'
     @rectangleHammer.on 'tap', => @mode = 'r'
     @moveHammer.on 'tap', => @mode = 's'
+    @closeHammer.on 'tap', => location.reload()
     window.addEventListener 'resize', =>
       @fitToScreen()
       @rerender()
@@ -363,6 +355,8 @@ class window.WSCanvas
       @brushPickerHammer = new Hammer @brushPicker
       @moveHammer = new Hammer @moveIcon
       @eraserHammer = new Hammer @eraser
+      @moveHammer = new Hammer @moveIcon
+      @closeHammer = new Hammer @closeIcon
       #@nextIconHammer = new Hammer @nextIcon
       #@prevIconHammer = new Hammer @prevIcon
     ].forEach (h) ->
@@ -380,6 +374,7 @@ class window.WSCanvas
     @brushPicker = document.getElementById('brush-picker')
     @circleIcon = document.getElementById('tool-circle')
     @rectangleIcon = document.getElementById('tool-rectangle')
+    @closeIcon = document.getElementById('tool-close')
     @moveIcon = document.getElementById('tool-move')
     @toolbar = document.getElementById('toolbar')
     @mainScreen = document.getElementById('main')

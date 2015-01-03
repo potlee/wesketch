@@ -393,6 +393,7 @@
 /Users/deeppatel/wesketch/platforms/android/assets/www/coffee/ws_canvas.coffee \
 /Users/deeppatel/wesketch/platforms/android/assets/www/css/index.css \
 /Users/deeppatel/wesketch/platforms/android/assets/www/img/brushes.svg \
+/Users/deeppatel/wesketch/platforms/android/assets/www/img/close.svg \
 /Users/deeppatel/wesketch/platforms/android/assets/www/img/color-picker.png \
 /Users/deeppatel/wesketch/platforms/android/assets/www/img/eraser.spv \
 /Users/deeppatel/wesketch/platforms/android/assets/www/img/eraser.svg \

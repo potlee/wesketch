@@ -3,6 +3,7 @@ window.wsCanvas = new WSCanvas
 Keyboard.automaticScrollToTopOnHiding = true if window.Keyboard
 document.addEventListener 'focusout', (e) -> scrollTo(0, 0)
 go = ->
+  document.activeElement.blur()
   document.getElementById('welcome-screen').classList.add('hidden')
   spinner.spin(document.body)
   tag = 'watercycledemo' + document.getElementById('sketch-name').value

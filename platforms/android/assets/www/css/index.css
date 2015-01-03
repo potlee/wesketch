@@ -33,7 +33,7 @@ canvas {
 
 #main {
   position: fixed;
-  bottom: 65px;
+  bottom: 62px;
   top: 0px;
   width: 100%;
 }
@@ -46,8 +46,8 @@ canvas {
 }
 
 .tool {
-  width: 65px;
-  height: 65px;
+  width: 62px;
+  height: 62px;
   font-size: 15px;
   text-align: center;
   color: #DDD;
@@ -73,6 +73,7 @@ canvas {
   box-sizing:border-box;
   -moz-box-sizing:border-box;
   -webkit-box-sizing:border-box;
+  -ms-box-sizing:border-box;
   border-color: #ddd;
   border-width: 2px;
   border-style: dashed;
@@ -87,10 +88,10 @@ h1 {
   margin: auto;
 }
 
-input {
+input, button {
   font-family: "Avenir Next";
   text-align: center;
-  background-color: #F1C40F;
+  color: white;
   max-width: 300px;
   width: 60%;
   margin: auto;
@@ -99,9 +100,10 @@ input {
   margin-top: 22px;
   height: 30px;
   font-size: 16px;
-  color: #2ecc71;
+  background-color: #2ecc71;
   font-weight: bold;
   -webkit-appearance: none;
+  border-radius: 6px;
 }
 
 .rectangle-icon {
@@ -140,6 +142,16 @@ input {
   -webkit-overflow-scrolling: touch;
 }
 
+.water-cycle {
+  padding: 10px;
+  box-sizing:border-box;
+  -moz-box-sizing:border-box;
+  -webkit-box-sizing:border-box;
+  -ms-box-sizing:border-box;
+  background-color: white !important;
+  color: black;
+}
+
 .brush {
   background-color: #2f2f2f;
   width: 100%;
@@ -150,14 +162,14 @@ input {
 
 .brush-wraper{
   width: 100%;
-  height: 55px;
+  height: 75px;
 }
 
 .color {
   float: left;
   padding: 0px;
   margin: 0px;
-  width: 50%;
+  width: 25%;
   height: 25%;
   padding: 0px;
   margin: 0px;
@@ -290,4 +302,20 @@ body {
   width: 100%;
   overflow: scroll;
   -webkit-overflow-scrolling: touch;
+}
+
+::-webkit-input-placeholder {
+  color: #ddd;
+}
+
+:-moz-placeholder { /* Firefox 18- */
+  color: #ddd;
+}
+
+::-moz-placeholder {  /* Firefox 19+ */
+  color: #ddd;
+}
+
+:-ms-input-placeholder {
+  color: #ddd;
 }

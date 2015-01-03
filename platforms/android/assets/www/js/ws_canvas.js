@@ -98,8 +98,7 @@ window.WSCanvas = (function() {
       e = e.touches[0];
     }
     this.ctxTemp.beginPath();
-    this.ctxTemp.clearRect(0, 0, 10000, 10000);
-    this.ctxTemp.closePath();
+    this.ctxTemp.clearRect(0, 0, 5000, 5000);
     switch (this.mode) {
       case 'r':
         this.localPoints[1] = [e.pageX, e.pageY];
@@ -154,21 +153,18 @@ window.WSCanvas = (function() {
   WSCanvas.prototype.onend = function(e) {
     var color, mode, stroke, width;
     e.preventDefault();
+    this.paintingOn = false;
     this.ctxTemp.closePath();
     if (!this.localPoints.length) {
+      return;
+    }
+    if (this.mode === 'm' && this.localPoints.length < 2) {
       return;
     }
     mode = this.mode;
     width = this.width;
     color = this.color;
-    this.paintingOn = false;
-    if (this.mode === 'm' && this.localPoints.length < 2) {
-      return;
-    }
-    if (this.mode === 'l' && this.localPoints.length === 1) {
-      mode = 'p';
-    }
-    if (this.mode === 'e') {
+    if (mode === 'e') {
       width = 36;
       mode = 'l';
       color = '#fff';
@@ -178,13 +174,13 @@ window.WSCanvas = (function() {
       color: color,
       id: Math.random(),
       mode: mode,
-      moveRect: this.mode === 'm' ? this.moveRect : void 0,
-      width: mode === 'l' || mode === 'p' ? width : void 0,
+      moveRect: mode === 'm' ? this.moveRect : void 0,
+      width: mode === 'l' ? width : void 0,
       frame: this.currentFrame
     };
-    this.moveRect = this.mode === 's' ? this.localPoints : [];
+    this.moveRect = mode === 's' ? this.localPoints : [];
     this.localPoints = [];
-    if (this.mode === 's') {
+    if (mode === 's') {
       return;
     }
     this.strokes.push(stroke);
@@ -198,18 +194,18 @@ window.WSCanvas = (function() {
 
   WSCanvas.prototype.drawStroke = function(stroke) {
     var p, points, radius, rect, tempImageData, _i, _len, _ref, _ref1, _ref2;
-    if (stroke.cancelled || stroke.frame === !this.currentFrame) {
+    if (stroke.cancelled) {
       return;
     }
     points = stroke.points;
     this.ctx.beginPath();
-    this.ctx.lineJoin = this.ctxTemp.lineCap = 'round';
     this.ctx.lineWidth = stroke.width;
-    this.ctx.shadowColor = stroke.color;
     this.ctx.strokeStyle = stroke.color;
     this.ctx.fillStyle = stroke.color;
+    this.ctx.lineJoin = this.ctx.lineCap = 'round';
     switch (stroke.mode) {
       case 'l':
+        this.ctx.moveTo(points[0][0], points[0][1]);
         for (_i = 0, _len = points.length; _i < _len; _i++) {
           p = points[_i];
           this.ctx.lineTo(p[0], p[1]);
@@ -230,12 +226,6 @@ window.WSCanvas = (function() {
         this.ctx.arc(points[0][0], points[0][1], radius, 0, Math.PI * 2, false);
         this.ctx.fill();
         break;
-      case 'p':
-        radius = stroke.width / Math.PI;
-        this.ctx.fillStyle = stroke.color;
-        this.ctx.arc(points[0][0], points[0][1], radius, 0, Math.PI * 2, false);
-        this.ctx.fill();
-        break;
       case 'm':
         rect = this.rect(stroke.moveRect);
         tempImageData = (_ref1 = this.ctx).getImageData.apply(_ref1, rect);
@@ -244,13 +234,11 @@ window.WSCanvas = (function() {
         this.ctx.drawImage(this.canvasTemp, 0, 0);
         this.ctxTemp.beginPath();
         this.ctxTemp.clearRect(0, 0, 10000, 10000);
-        this.ctxTemp.closePath();
         break;
       case 'f':
         this.newFrame();
     }
-    this.ctx.stroke();
-    return this.ctx.closePath();
+    return this.ctx.stroke();
   };
 
   WSCanvas.prototype.rect = function(points) {
@@ -445,6 +433,11 @@ window.WSCanvas = (function() {
         return _this.mode = 's';
       };
     })(this));
+    this.closeHammer.on('tap', (function(_this) {
+      return function() {
+        return location.reload();
+      };
+    })(this));
     return window.addEventListener('resize', (function(_this) {
       return function() {
         _this.fitToScreen();
@@ -460,7 +453,7 @@ window.WSCanvas = (function() {
       time: 2000,
       threshold: 5
     };
-    return [this.colorPickerHammer = new Hammer(this.colorPicker), this.colorPickerIconHammer = new Hammer(this.colorPickerIcon), this.undoHammer = new Hammer(document.getElementById('tool-undo')), this.redoHammer = new Hammer(document.getElementById('tool-redo')), this.circleHammer = new Hammer(this.circleIcon), this.rectangleHammer = new Hammer(this.rectangleIcon), this.brushPickerIconHammer = new Hammer(this.brushPickerIcon), this.brushPickerHammer = new Hammer(this.brushPicker), this.moveHammer = new Hammer(this.moveIcon), this.eraserHammer = new Hammer(this.eraser)].forEach(function(h) {
+    return [this.colorPickerHammer = new Hammer(this.colorPicker), this.colorPickerIconHammer = new Hammer(this.colorPickerIcon), this.undoHammer = new Hammer(document.getElementById('tool-undo')), this.redoHammer = new Hammer(document.getElementById('tool-redo')), this.circleHammer = new Hammer(this.circleIcon), this.rectangleHammer = new Hammer(this.rectangleIcon), this.brushPickerIconHammer = new Hammer(this.brushPickerIcon), this.brushPickerHammer = new Hammer(this.brushPicker), this.moveHammer = new Hammer(this.moveIcon), this.eraserHammer = new Hammer(this.eraser), this.moveHammer = new Hammer(this.moveIcon), this.closeHammer = new Hammer(this.closeIcon)].forEach(function(h) {
       return h.get('tap').set(options);
     });
   };
@@ -477,6 +470,7 @@ window.WSCanvas = (function() {
     this.brushPicker = document.getElementById('brush-picker');
     this.circleIcon = document.getElementById('tool-circle');
     this.rectangleIcon = document.getElementById('tool-rectangle');
+    this.closeIcon = document.getElementById('tool-close');
     this.moveIcon = document.getElementById('tool-move');
     this.toolbar = document.getElementById('toolbar');
     return this.mainScreen = document.getElementById('main');

@@ -191,3 +191,18 @@ You could find it at the following address https://developer.apple.com/icloud/do
 2014-12-06 18:31:21.208 HelloCordova[32922:5331348] [CDVTimer][TotalPluginStartup] 227.840006ms
 2014-12-06 18:31:23.079 HelloCordova[32922:5331348] Resetting plugins due to page load.
 2014-12-06 18:31:26.171 HelloCordova[32922:5331348] Finished load of: file:///Users/deeppatel/Library/Developer/CoreSimulator/Devices/4EC69B0A-B151-4BE8-9677-6559709CF396/data/Containers/Bundle/Application/58DDB84E-C90A-4C13-9700-ACD9FACCE2B0/HelloCordova.app/www/index.html
+2014-12-10 23:56:21.945 WeDraw[1254:6718824] DiskCookieStorage changing policy from 2 to 0, cookie file: file:///Users/deeppatel/Library/Developer/CoreSimulator/Devices/379E7D70-9934-4344-A29F-5555ED7AA502/data/Containers/Data/Application/A97DA377-2496-4A0C-9558-6299D5EEF1EF/Library/Cookies/Cookies.binarycookies
+2014-12-10 23:56:22.409 WeDraw[1254:6718824] Multi-tasking -> Device: YES, App: YES
+2014-12-10 23:56:22.462 WeDraw[1254:6718824] Unlimited access to network resources
+2014-12-10 23:56:22.471 WeDraw[1254:6718824] 
+
+Started backup to iCloud! Please be careful.
+Your application might rejected by Apple if you store too much data.
+For more information please read "iOS Data Storage Guidelines"
+You could find it at the following address https://developer.apple.com/icloud/documentation/data-storage/ .
+
+2014-12-10 23:56:23.360 WeDraw[1254:6718824] [CDVTimer][splashscreen] 266.011000ms
+2014-12-10 23:56:23.361 WeDraw[1254:6718824] [CDVTimer][keyboard] 0.523031ms
+2014-12-10 23:56:23.361 WeDraw[1254:6718824] [CDVTimer][TotalPluginStartup] 267.033994ms
+2014-12-10 23:56:23.674 WeDraw[1254:6718824] Resetting plugins due to page load.
+2014-12-10 23:56:24.954 WeDraw[1254:6718824] Finished load of: file:///Users/deeppatel/Library/Developer/CoreSimulator/Devices/379E7D70-9934-4344-A29F-5555ED7AA502/data/Containers/Bundle/Application/1E8B0873-9E4D-4334-BB37-67D65709A06D/WeDraw.app/www/index.html
